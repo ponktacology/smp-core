@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="Test" tests="1" skipped="0" failures="0" errors="0" timestamp="2022-09-14T22:42:10" hostname="DESKTOP-HMOFNSD" time="0.015">
+  <properties/>
+  <testcase name="tesThisNiggerShit()" classname="Test" time="0.015"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[Sep 15, 2022 12:42:10 AM com.mongodb.diagnostics.logging.Loggers shouldUseSLF4J
+WARNING: SLF4J not found on the classpath.  Logging is disabled for the 'org.mongodb.driver' component
+]]></system-err>
+</testsuite>

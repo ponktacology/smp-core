@@ -1,0 +1,14 @@
+package me.smp.core
+
+import org.bukkit.Bukkit
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
+
+object TaskDispatcher : KoinComponent {
+
+    private val plugin: Plugin by inject()
+
+    fun dispatchAsync(runnable: Runnable) = Bukkit.getServer().scheduler.runTaskAsynchronously(plugin, runnable)
+
+    fun dispatch(runnable: Runnable) = Bukkit.getServer().scheduler.runTask(plugin, runnable)
+}

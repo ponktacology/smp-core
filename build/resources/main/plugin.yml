@@ -1,0 +1,5 @@
+name: Core
+main: me.smp.core.Plugin
+version: 0.1
+api-version: 1.17
+author: ponktacology
