@@ -2,6 +2,7 @@ package me.smp.core.teleport
 
 import me.smp.core.Plugin
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.scheduler.BukkitRunnable
@@ -37,6 +38,10 @@ class DelayedTeleport(
 
         if (passedSeconds >= delayInSeconds) {
             player()?.teleport(location)
+            player()?.let {
+                it.teleport(location)
+                it.sendActionBar(Component.text("Teleported", NamedTextColor.GREEN))
+            }
             cancel()
         } else player()?.sendActionBar(Component.text("Teleporting in ${delayInSeconds - passedSeconds}s"))
 
