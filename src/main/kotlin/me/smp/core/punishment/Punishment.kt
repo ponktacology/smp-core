@@ -21,7 +21,7 @@ object Punishments : Table<Punishment>("punishments") {
     val removeReason = varchar("remove_reason").bindTo { it.removeReason }
 }
 
-interface Punishment : Entity<Punishment> {
+interface  Punishment : Entity<Punishment> {
     companion object : Entity.Factory<Punishment>()
 
     val id: Int

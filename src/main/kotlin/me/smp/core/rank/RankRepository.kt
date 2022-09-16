@@ -5,7 +5,7 @@ import org.bukkit.entity.Player
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.ktorm.database.Database
-import org.ktorm.dsl.eq
+import org.ktorm.dsl.*
 import org.ktorm.entity.*
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
@@ -22,7 +22,7 @@ class RankRepository : KoinComponent, UUIDCache {
 
     fun getByUUID(uuid: UUID): Rank {
         SyncCatcher.verify()
-        if(uuid == Console.UUID) return Rank.CONSOLE
+        if (uuid == Console.UUID) return Rank.CONSOLE
 
         cache[uuid]?.let {
             return it
@@ -33,7 +33,7 @@ class RankRepository : KoinComponent, UUIDCache {
         return if (grants.isEmpty()) {
             Rank.DEFAULT
         } else {
-            grants.filter { it.isActive() }.maxBy { it.rank.power }.rank
+            grants.filter { it.isActive() }.maxBy { it.rank }.rank
         }
     }
 
@@ -52,7 +52,7 @@ class RankRepository : KoinComponent, UUIDCache {
             })
             Rank.DEFAULT
         } else {
-            grants.filter { it.isActive() }.maxBy { it.rank.power }.rank
+            grants.filter { it.isActive() }.maxBy { it.rank }.rank
         }
     }
 
@@ -60,11 +60,15 @@ class RankRepository : KoinComponent, UUIDCache {
         cache.remove(uuid)
     }
 
+    fun flushCache() {
+        cache.clear()
+    }
+
     fun grantRank(uuid: UUID, grant: Grant): Int {
         SyncCatcher.verify()
         return database.grants.add(grant).also {
             cache[uuid]?.let {
-                if (it.power < grant.rank.power) {
+                if (it < grant.rank) {
                     cache[uuid] = grant.rank
                 }
             }
@@ -73,28 +77,22 @@ class RankRepository : KoinComponent, UUIDCache {
 
     fun removeRank(uuid: UUID, rank: Rank, issuer: UUID, reason: String) {
         SyncCatcher.verify()
-        database.grants.filter {
-            it.player eq uuid
-        }.filter {
-            it.rank eq rank
-        }.forEach {
-            if (it.isActive()) {
-                it.removed = true
-                it.removedAt = System.currentTimeMillis()
-                it.remover = issuer
-                it.removeReason = reason
-                println(it)
-                it.flushChanges()
+        database.batchUpdate(Grants) {
+            item {
+                set(it.removed, true)
+                set(it.removedAt, System.currentTimeMillis())
+                set(it.remover, issuer)
+                set(it.removeReason, reason)
+                where {
+                    it.player eq uuid and !it.removed and (it.rank eq rank)
+                }
             }
         }
 
         cache[uuid]?.let {
-            cache[uuid] = database.grants
-                .filter { it.player eq uuid }
-                .toList()
-                .filter { it.isActive() }
-                .map { it.rank }
-                .maxBy { it.power }
+            if (it == rank) {
+                loadCache(uuid) //Resolve rank again
+            }
         }
     }
 }

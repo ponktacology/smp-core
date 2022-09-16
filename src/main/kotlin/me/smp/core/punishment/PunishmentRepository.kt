@@ -7,7 +7,10 @@ import org.bukkit.entity.Player
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.ktorm.database.Database
+import org.ktorm.dsl.and
+import org.ktorm.dsl.batchUpdate
 import org.ktorm.dsl.eq
+import org.ktorm.dsl.not
 import org.ktorm.entity.*
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
@@ -43,6 +46,10 @@ class PunishmentRepository : KoinComponent, UUIDCache {
         cache.remove(uuid)
     }
 
+    fun flushCache() {
+        cache.clear()
+    }
+
     fun punish(punishment: Punishment) {
         SyncCatcher.verify()
         database.punishments.add(punishment)
@@ -53,18 +60,25 @@ class PunishmentRepository : KoinComponent, UUIDCache {
 
     fun removePunishments(uuid: UUID, type: Punishment.Type, issuer: UUID, reason: String) {
         SyncCatcher.verify()
-        val punishments =
-            cache[uuid] ?: database.punishments.filter { it.player eq uuid }.filter { it.type eq type }.toList()
-
-        punishments.forEach {
-            if (it.isActive()) {
-                it.removed = true
-                it.removedAt = System.currentTimeMillis()
-                it.remover = issuer
-                it.removeReason = reason
-                println(it)
-                it.flushChanges()
+        database.batchUpdate(Punishments) {
+            item {
+                set(it.removed, true)
+                set(it.removedAt, System.currentTimeMillis())
+                set(it.remover, issuer)
+                set(it.removeReason, reason)
+                where {
+                    it.player eq uuid and !it.removed and (it.type eq type)
+                }
             }
+        }
+        cache[uuid]?.let {
+            it.filter { punishment -> !punishment.removed && punishment.type == type }
+                .forEach { punishment ->
+                    punishment.removed = true
+                    punishment.removedAt = System.currentTimeMillis()
+                    punishment.remover = issuer
+                    punishment.removeReason = reason
+                }
         }
     }
 }

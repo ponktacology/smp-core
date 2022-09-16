@@ -26,4 +26,8 @@ enum class Rank(val power: Int, val color: TextColor) {
         MVIP, SVIP, VIP -> true
         else -> false
     }
+
+    operator fun Rank.compareTo(rank: Rank): Int {
+        return this.power.compareTo(rank.power)
+    }
 }

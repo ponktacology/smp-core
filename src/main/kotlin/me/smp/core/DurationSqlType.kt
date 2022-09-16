@@ -14,7 +14,5 @@ object DurationSqlType : SqlType<Duration>(Types.BIGINT, typeName = "duration") 
         ps.setLong(index, parameter.toMillis())
     }
 
-    override fun doGetResult(rs: ResultSet, index: Int): Duration? = rs.getLong(index)?.let {
-        Duration(it)
-    }
+    override fun doGetResult(rs: ResultSet, index: Int): Duration? = Duration(rs.getLong(index))
 }
