@@ -11,7 +11,7 @@ import org.koin.core.component.inject
 import java.util.UUID
 
 class DelayedTeleport(
-    private val player: UUID,
+    private val playerUUID: UUID,
     private val location: Location,
     private val delayInSeconds: Int,
     val cleanUp: (UUID) -> Unit = {}
@@ -27,7 +27,7 @@ class DelayedTeleport(
 
     override fun cancel() {
         super.cancel()
-        cleanUp(player)
+        cleanUp(playerUUID)
     }
 
     override fun run() {
@@ -37,7 +37,6 @@ class DelayedTeleport(
         }
 
         if (passedSeconds >= delayInSeconds) {
-            player()?.teleport(location)
             player()?.let {
                 it.teleport(location)
                 it.sendActionBar(Component.text("Teleported", NamedTextColor.GREEN))
@@ -48,5 +47,5 @@ class DelayedTeleport(
         passedSeconds++
     }
 
-    private fun player() = Bukkit.getPlayer(player)
+    private fun player() = Bukkit.getPlayer(playerUUID)
 }

@@ -1,0 +1,11 @@
+version: "3"
+services:
+  smp_psql:
+    image: "postgres:13.6-alpine"
+    container_name: "smp_db"
+    environment:
+      - POSTGRES_USER=smp
+      - POSTGRES_PASSWORD=1234
+      - POSTGRES_DB=smp
+    ports:
+      - "54320:5432"
