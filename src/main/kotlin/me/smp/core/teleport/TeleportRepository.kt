@@ -5,7 +5,7 @@ import org.bukkit.entity.Player
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 
-class TeleportRepository {
+internal class TeleportRepository {
 
     private val cache = ConcurrentHashMap<UUID, DelayedTeleport>()
 

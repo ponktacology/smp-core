@@ -12,7 +12,7 @@ import org.ktorm.entity.forEach
 import org.ktorm.entity.sequenceOf
 import java.util.concurrent.ConcurrentHashMap
 
-class WarpRepository : KoinComponent {
+internal class WarpRepository : KoinComponent {
 
     private val database: Database by inject()
     private val Database.warps get() = this.sequenceOf(Warps)

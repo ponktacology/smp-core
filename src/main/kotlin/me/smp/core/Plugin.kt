@@ -23,8 +23,12 @@ import java.util.logging.Level
 
 class Plugin : JavaPlugin() {
 
-    private val koinApp = startKoin {
-        modules(MODULE)
+    companion object {
+        val koinApp = startKoin {
+            modules(MODULE)
+        }
+
+        lateinit var blade: Blade
     }
 
     override fun onEnable() {
@@ -33,7 +37,6 @@ class Plugin : JavaPlugin() {
         System.setProperty(
             "org.litote.mongo.test.mapping.service", "org.litote.kmongo.pojo.PojoClassMappingTypeService"
         )
-
 
         val warpRepository: WarpRepository = koinApp.koin.get()
         warpRepository.loadCache()
@@ -44,7 +47,7 @@ class Plugin : JavaPlugin() {
         server.pluginManager.registerEvents(CacheListener(), this)
         server.pluginManager.registerEvents(TeleportListener(), this)
 
-        val blade = Blade.forPlatform(BladeBukkitPlatform(this)).bind {
+        blade = Blade.forPlatform(BladeBukkitPlatform(this)).bind {
             it.bind(ChatState::class.java, ChatStateArgumentProvider)
             it.bind(PlayerMetadata::class.java, PlayerMetadataArgumentProvider)
             it.bind(Rank::class.java, RankArgumentProvider)

@@ -12,4 +12,8 @@ object TaskDispatcher : KoinComponent {
 
     fun dispatch(runnable: Runnable) = Bukkit.getServer().scheduler.runTask(plugin, runnable)
 
+    fun dispatchLater(runnable: Runnable, ticks: Long) {
+        Bukkit.getServer().scheduler.runTaskLater(plugin, runnable, ticks)
+    }
+
 }

@@ -10,7 +10,7 @@ import org.ktorm.entity.*
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 
-class RankRepository : KoinComponent, UUIDCache {
+internal class RankRepository : KoinComponent, UUIDCache {
 
     private val database: Database by inject()
     private val Database.grants get() = this.sequenceOf(Grants)

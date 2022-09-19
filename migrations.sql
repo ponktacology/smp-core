@@ -25,7 +25,7 @@ CREATE TABLE grants
     remove_reason VARCHAR(256)
 );
 
--- Table to store player ranks
+-- Table to store player punishments
 CREATE TABLE punishments
 (
     id            SERIAL       NOT NULL PRIMARY KEY,

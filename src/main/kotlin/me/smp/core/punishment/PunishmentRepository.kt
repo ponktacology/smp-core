@@ -15,7 +15,7 @@ import org.ktorm.entity.*
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
-class PunishmentRepository : KoinComponent, UUIDCache {
+internal class PunishmentRepository : KoinComponent, UUIDCache {
 
     private val database: Database by inject()
     private val Database.punishments get() = this.sequenceOf(Punishments)
