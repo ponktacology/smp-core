@@ -15,6 +15,10 @@ object ChatCommands : KoinComponent {
     @Command("chat state")
     @Permission("core.chat.state")
     fun state(@Sender sender: CommandSender, @Name("state") state: ChatState) {
+        if (chatService.chatState() == state) {
+            sender.sendMessage("This state is already set.")
+            return
+        }
         chatService.updateState(state)
     }
 }

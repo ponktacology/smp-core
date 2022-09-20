@@ -1,6 +1,5 @@
 package me.smp.core.rank
 
-import com.google.common.base.Strings
 import me.vaperion.blade.argument.Argument
 import me.vaperion.blade.argument.ArgumentProvider
 import me.vaperion.blade.context.Context

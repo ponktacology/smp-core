@@ -17,7 +17,7 @@ class ChatListener : Listener, KoinComponent {
     @EventHandler(ignoreCancelled = true)
     fun onPlayerChat(event: AsyncChatEvent) {
         val player = event.player
-        val rank = rankService.getByOnlinePlayer(player)
+        val rank = rankService.getByPlayer(player)
         val cancelled = when (chatService.chatState()) {
             ChatState.DISABLED -> {
                 if (!rank.isStaff()) {

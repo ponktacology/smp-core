@@ -14,14 +14,15 @@ import org.ktorm.dsl.not
 import org.ktorm.entity.*
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.CopyOnWriteArrayList
 
-internal class PunishmentRepository : KoinComponent, UUIDCache {
+class PunishmentRepository : KoinComponent, UUIDCache {
 
     private val database: Database by inject()
     private val Database.punishments get() = this.sequenceOf(Punishments)
     private val cache = ConcurrentHashMap<UUID, MutableList<Punishment>>()
 
-    fun getByOnlinePlayer(player: Player, type: Punishment.Type): Punishment? {
+    fun getByPlayer(player: Player, type: Punishment.Type): Punishment? {
         val punishments = cache[player.uniqueId] ?: throw PlayerNotOnlineException()
         return punishments.firstOrNull { it.type == type && it.isActive() }
     }
@@ -39,7 +40,7 @@ internal class PunishmentRepository : KoinComponent, UUIDCache {
 
     override fun loadCache(uuid: UUID) {
         SyncCatcher.verify()
-        cache[uuid] = database.punishments.filter { it.player eq uuid }.toMutableList()
+        cache[uuid] = database.punishments.filter { it.player eq uuid }.toCollection(CopyOnWriteArrayList())
     }
 
     override fun flushCache(uuid: UUID) {
@@ -54,7 +55,7 @@ internal class PunishmentRepository : KoinComponent, UUIDCache {
         SyncCatcher.verify()
         database.punishments.add(punishment)
         cache[punishment.player]?.let {
-            cache[punishment.player]!!.add(punishment)
+            it.add(punishment)
         }
     }
 

@@ -1,15 +1,19 @@
 package me.smp.core.rank
 
+import me.smp.core.name.NameService
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.entity.Player
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import java.util.UUID
+import java.util.*
 
 class RankService : KoinComponent {
 
     private val rankRepository: RankRepository by inject()
+    private val nameService: NameService by inject()
 
-    fun getByOnlinePlayer(player: Player) = rankRepository.getByOnlinePlayer(player)
+    fun getByPlayer(player: Player) = rankRepository.getByPlayer(player)
 
     fun getByUUID(uuid: UUID) = rankRepository.getByUUID(uuid)
 
@@ -21,5 +25,25 @@ class RankService : KoinComponent {
     fun removeRanks(uuid: UUID, rank: Rank, issuer: UUID, reason: String) {
         require(rank != Rank.DEFAULT) { "can't remove default rank" }
         rankRepository.removeRank(uuid, rank, issuer, reason)
+    }
+
+    fun getDisplayName(player: Player): Component {
+        val rank = getByPlayer(player)
+
+        return Component.text(player.name, rank.color)
+    }
+
+    fun getDisplayName(uuid: UUID): Component {
+        val rank = getByUUID(uuid)
+        val name = nameService.getByUUID(uuid) ?: error("player not found")
+        return Component.text(name, rank.color, *rank.decorations)
+    }
+
+    fun getFullDisplayName(player: Player): Component {
+        val rank = getByPlayer(player)
+        val prefix = if (rank == Rank.DEFAULT) Component.empty() else Component.empty()
+            .append(Component.text("${rank.displayName} ", rank.color, TextDecoration.BOLD))
+
+        return prefix.append(getDisplayName(player))
     }
 }

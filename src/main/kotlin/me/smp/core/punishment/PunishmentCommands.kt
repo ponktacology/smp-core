@@ -1,8 +1,8 @@
 package me.smp.core.punishment
 
 import me.smp.core.Duration
-import me.smp.core.SenderUtil
 import me.smp.core.PlayerMetadata
+import me.smp.core.SenderUtil
 import me.vaperion.blade.annotation.argument.*
 import me.vaperion.blade.annotation.command.Async
 import me.vaperion.blade.annotation.command.Command
@@ -73,6 +73,12 @@ object PunishmentCommands : KoinComponent {
         silent: Boolean
     ) {
         val issuerUUID = SenderUtil.resolveIssuerUUID(sender)
+
+        punishmentService.getByUUID(player.uuid, type)?.let {
+            sender.sendMessage("This player is already punished.")
+            return
+        }
+
         punishmentService.punish(Punishment {
             this.player = player.uuid
             this.type = type
@@ -90,6 +96,11 @@ object PunishmentCommands : KoinComponent {
         silent: Boolean
     ) {
         val issuerUUID = SenderUtil.resolveIssuerUUID(sender)
+
+        punishmentService.getByUUID(player.uuid, type) ?: kotlin.run {
+            sender.sendMessage("This player is not punished.")
+            return
+        }
 
         punishmentService.removePunishments(player.uuid, type, issuerUUID, reason, silent)
     }

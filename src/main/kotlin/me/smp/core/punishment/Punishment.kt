@@ -1,10 +1,9 @@
 package me.smp.core.punishment
 
-import me.smp.core.Duration
+import me.smp.core.Manageable
 import me.smp.core.duration
 import org.ktorm.entity.Entity
 import org.ktorm.schema.*
-import java.util.*
 
 
 object Punishments : Table<Punishment>("punishments") {
@@ -21,22 +20,10 @@ object Punishments : Table<Punishment>("punishments") {
     val removeReason = varchar("remove_reason").bindTo { it.removeReason }
 }
 
-interface  Punishment : Entity<Punishment> {
+interface  Punishment : Entity<Punishment>, Manageable {
     companion object : Entity.Factory<Punishment>()
 
-    val id: Int
-    var player: UUID
     var type: Type
-    var issuer: UUID
-    var reason: String
-    var duration: Duration
-    var addedAt: Long
-    var removed: Boolean
-    var removedAt: Long?
-    var remover: UUID?
-    var removeReason: String?
-
-    fun isActive() = !(removed || (!duration.isPermanent() && duration + addedAt < System.currentTimeMillis()))
 
     enum class Type(
         val addFormat: String,

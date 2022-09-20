@@ -5,7 +5,6 @@ import me.smp.core.name.NameService
 import me.smp.core.rank.RankService
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.event.HoverEvent
-import net.kyori.adventure.text.event.HoverEventSource
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
@@ -19,7 +18,7 @@ class PunishmentService : KoinComponent {
     private val nameService: NameService by inject()
     private val rankService: RankService by inject()
 
-    fun getByOnlinePlayer(player: Player, type: Punishment.Type) = punishmentRepository.getByOnlinePlayer(player, type)
+    fun getByPlayer(player: Player, type: Punishment.Type) = punishmentRepository.getByPlayer(player, type)
 
     fun getByUUID(uuid: UUID, type: Punishment.Type): Punishment? = punishmentRepository.getByUUID(uuid, type)
 
@@ -32,13 +31,6 @@ class PunishmentService : KoinComponent {
             }
         }
 
-        val issuerName = nameService.getByUUID(punishment.issuer)
-            ?: error("Couldn't fetch issuer's name ${punishment.issuer}")
-        val issuerRank = rankService.getByUUID(punishment.issuer)
-        val playerName = nameService.getByUUID(punishment.player)
-            ?: error("Couldn't fetch punished player's name ${punishment.player}")
-        val rank = rankService.getByUUID(punishment.player)
-
         var component = Component.text("")
 
         if (silent) {
@@ -46,7 +38,7 @@ class PunishmentService : KoinComponent {
         }
 
         component = component.append(Component.text("Player ", NamedTextColor.RED))
-            .append(Component.text(playerName, rank.color))
+            .append(rankService.getDisplayName(punishment.player))
             .append(Component.text(" has been", NamedTextColor.RED))
 
         if (punishment.duration.isPermanent()) {
@@ -56,12 +48,12 @@ class PunishmentService : KoinComponent {
         component = component.append(Component.text(" "))
             .append(Component.text(punishment.type.addFormat, NamedTextColor.RED))
             .append(Component.text(" by ", NamedTextColor.RED))
-            .append(Component.text(issuerName, issuerRank.color))
+            .append(rankService.getDisplayName(punishment.issuer))
             .hoverEvent(HoverEvent.showText(Component.text(punishment.reason)))
 
         if (silent) {
             for (player in Bukkit.getOnlinePlayers()) {
-                val rank = rankService.getByOnlinePlayer(player)
+                val rank = rankService.getByPlayer(player)
                 if (rank.isStaff()) {
                     player.sendMessage(component)
                 }
@@ -98,7 +90,7 @@ class PunishmentService : KoinComponent {
 
         if (silent) {
             for (player in Bukkit.getOnlinePlayers()) {
-                val rank = rankService.getByOnlinePlayer(player)
+                val rank = rankService.getByPlayer(player)
                 if (rank.isStaff()) {
                     player.sendMessage(component)
                 }

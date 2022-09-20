@@ -1,17 +1,14 @@
 package me.smp.core.name
 
-import me.smp.core.Console
-import org.bukkit.Bukkit
-import java.util.UUID
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
+import java.util.*
 
-//TODO: Add redis caching
-class NameService {
+class NameService : KoinComponent {
 
-    fun getByUUID(uuid: UUID): String? {
-        return if(uuid == Console.UUID) Console.DISPLAY_NAME else Bukkit.getPlayer(uuid)?.name
-    }
+    private val nameRepository: NameRepository by inject()
 
-    fun getByName(name: String): UUID? {
-        return Bukkit.getPlayer(name)?.uniqueId
-    }
+    fun getByUUID(uuid: UUID) = nameRepository.getByUUID(uuid)
+
+    fun getByName(name: String) = nameRepository.getByName(name)
 }

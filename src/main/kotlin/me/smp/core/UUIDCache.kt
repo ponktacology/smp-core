@@ -1,8 +1,10 @@
 package me.smp.core
 
-import java.util.UUID
+import java.util.*
 
 interface UUIDCache {
-    fun flushCache(uuid: UUID)
+
     fun loadCache(uuid: UUID)
+    fun flushCache(uuid: UUID)
+
 }

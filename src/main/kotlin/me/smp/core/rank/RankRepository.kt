@@ -5,18 +5,24 @@ import org.bukkit.entity.Player
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.ktorm.database.Database
-import org.ktorm.dsl.*
-import org.ktorm.entity.*
-import java.util.UUID
+import org.ktorm.dsl.and
+import org.ktorm.dsl.batchUpdate
+import org.ktorm.dsl.eq
+import org.ktorm.dsl.not
+import org.ktorm.entity.add
+import org.ktorm.entity.filter
+import org.ktorm.entity.sequenceOf
+import org.ktorm.entity.toList
+import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
-internal class RankRepository : KoinComponent, UUIDCache {
+class RankRepository : KoinComponent, UUIDCache {
 
     private val database: Database by inject()
     private val Database.grants get() = this.sequenceOf(Grants)
     private val cache = ConcurrentHashMap<UUID, Rank>()
 
-    fun getByOnlinePlayer(player: Player): Rank {
+    fun getByPlayer(player: Player): Rank {
         return cache[player.uniqueId] ?: throw PlayerNotOnlineException()
     }
 
@@ -28,32 +34,12 @@ internal class RankRepository : KoinComponent, UUIDCache {
             return it
         }
 
-        val grants = database.grants.filter { it.player eq uuid }.toList()
-
-        return if (grants.isEmpty()) {
-            Rank.DEFAULT
-        } else {
-            grants.filter { it.isActive() }.maxBy { it.rank }.rank
-        }
+        return findOrCreate(uuid)
     }
 
     override fun loadCache(uuid: UUID) {
         SyncCatcher.verify()
-        val grants = database.grants.filter { it.player eq uuid }.toList()
-        cache[uuid] = if (grants.isEmpty()) {
-            database.grants.add(Grant {
-                this.player = uuid
-                this.rank = Rank.DEFAULT
-                this.addedAt = System.currentTimeMillis()
-                this.issuer = Console.UUID
-                this.reason = "Default Rank"
-                this.duration = Duration.PERMANENT
-                this.removed = false
-            })
-            Rank.DEFAULT
-        } else {
-            grants.filter { it.isActive() }.maxBy { it.rank }.rank
-        }
+        cache[uuid] = findOrCreate(uuid)
     }
 
     override fun flushCache(uuid: UUID) {
@@ -68,7 +54,7 @@ internal class RankRepository : KoinComponent, UUIDCache {
         SyncCatcher.verify()
         return database.grants.add(grant).also {
             cache[uuid]?.let {
-                if (it < grant.rank) {
+                if (it.power < grant.rank.power) {
                     cache[uuid] = grant.rank
                 }
             }
@@ -94,5 +80,21 @@ internal class RankRepository : KoinComponent, UUIDCache {
                 loadCache(uuid) //Resolve rank again
             }
         }
+    }
+
+    private fun findOrCreate(uuid: UUID): Rank {
+        val grants = database.grants.filter { it.player eq uuid }.toList()
+        return if (grants.isEmpty()) {
+            database.grants.add(Grant {
+                this.player = uuid
+                this.rank = Rank.DEFAULT
+                this.addedAt = System.currentTimeMillis()
+                this.issuer = Console.UUID
+                this.reason = "Default Rank"
+                this.duration = Duration.PERMANENT
+                this.removed = false
+            })
+            Rank.DEFAULT
+        } else grants.filter { it.isActive() }.maxBy { it.rank.power }.rank
     }
 }

@@ -18,33 +18,25 @@ repositories {
 }
 
 dependencies {
-    compileOnly("org.purpurmc.purpur:purpur-api:1.17.1-R0.1-SNAPSHOT")
+    implementation("org.purpurmc.purpur:purpur-api:1.17.1-R0.1-SNAPSHOT")
     implementation("org.jetbrains.kotlin:kotlin-stdlib:1.7.10")
     implementation("io.insert-koin:koin-core:3.2.1")
     implementation("org.ktorm:ktorm-core:3.5.0")
     implementation("org.ktorm:ktorm-support-postgresql:3.5.0")
     implementation("fr.mrmicky:FastInv:3.0.3")
     implementation("com.github.vaperion.blade:bukkit:3.0.0")
+    implementation("io.lettuce:lettuce-core:6.2.0.RELEASE")
     testImplementation(kotlin("test"))
 }
 
-tasks.test {
-    useJUnitPlatform()
-}
 
 tasks.build {
     dependsOn("shadowJar")
-
-    doLast {
-        println("Build successful!")
-    }
 }
 
 tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "16"
 }
-
-
 
 publishing {
     publications {
