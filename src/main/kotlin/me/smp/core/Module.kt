@@ -1,6 +1,8 @@
 package me.smp.core
 
 import io.lettuce.core.RedisClient
+import me.smp.core.assistance.AssistanceRepository
+import me.smp.core.assistance.AssistanceService
 import me.smp.core.chat.ChatService
 import me.smp.core.chat.staff.StaffChatService
 import me.smp.core.name.NameRepository
@@ -47,4 +49,6 @@ val MODULE = module {
     single { NetworkRepository() }
     single { NetworkService() }
     single { StaffChatService() }
+    single { AssistanceRepository() }
+    single { AssistanceService() }
 }

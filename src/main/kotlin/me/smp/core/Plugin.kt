@@ -1,6 +1,8 @@
 package me.smp.core
 
 
+import me.smp.core.assistance.AssistanceCommands
+import me.smp.core.assistance.AssistanceListener
 import me.smp.core.chat.ChatCommands
 import me.smp.core.chat.ChatListener
 import me.smp.core.chat.ChatState
@@ -53,6 +55,7 @@ class Plugin : JavaPlugin() {
 
         val networkRepository: NetworkRepository = koinApp.koin.get()
         networkRepository.registerListener(StaffChatListener())
+        networkRepository.registerListener(AssistanceListener())
         networkRepository.startListening()
 
         blade.register(PunishmentCommands)
@@ -60,6 +63,7 @@ class Plugin : JavaPlugin() {
         blade.register(ChatCommands)
         blade.register(PrivateMessageCommands)
         blade.register(StaffChatCommands)
+        blade.register(AssistanceCommands)
     }
 
     override fun onDisable() {
