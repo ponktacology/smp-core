@@ -2,6 +2,7 @@ package me.smp.core.rank
 
 import me.smp.core.name.NameService
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.entity.Player
 import org.koin.core.component.KoinComponent
@@ -28,14 +29,12 @@ class RankService : KoinComponent {
     }
 
     fun getDisplayName(player: Player): Component {
-        val rank = getByPlayer(player)
-
-        return Component.text(player.name, rank.color)
+        return getDisplayName(player.uniqueId)
     }
 
     fun getDisplayName(uuid: UUID): Component {
         val rank = getByUUID(uuid)
-        val name = nameService.getByUUID(uuid) ?: error("player not found")
+        val name = nameService.getByUUID(uuid) ?: return Component.text("Anonymous", NamedTextColor.WHITE)
         return Component.text(name, rank.color, *rank.decorations)
     }
 

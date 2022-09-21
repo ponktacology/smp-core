@@ -1,7 +1,9 @@
 package me.smp.core.name
 
 import com.google.gson.JsonParser
-import io.lettuce.core.api.sync.RedisCommands
+import io.lettuce.core.ExperimentalLettuceCoroutinesApi
+import io.lettuce.core.RedisClient
+import io.lettuce.core.api.sync.multi
 import me.smp.core.Config
 import me.smp.core.Console
 import me.smp.core.PlayerMetadata
@@ -22,13 +24,19 @@ private const val PREFIX = "{name-cache}"
 
 class NameRepository : KoinComponent {
 
-    private val redisCommands: RedisCommands<String, String> by inject()
+    private val redisClient: RedisClient by inject()
+    private val redisCommands = redisClient.connect().sync()
 
+    @OptIn(ExperimentalLettuceCoroutinesApi::class)
     fun loadCache(uuid: UUID, name: String) {
         println("Caching $uuid and $name")
         SyncCatcher.verify()
-        redisCommands.setex("$PREFIX${name.uppercase()}", Config.NAME_CACHE_EXPIRY_SECONDS, uuid.toString())
-        redisCommands.setex("$PREFIX$uuid", Config.NAME_CACHE_EXPIRY_SECONDS, name)
+        redisCommands.multi {
+            setex("$PREFIX${name.uppercase()}", Config.NAME_CACHE_EXPIRY_SECONDS, uuid.toString())
+            setex("$PREFIX$uuid", Config.NAME_CACHE_EXPIRY_SECONDS, name)
+            println("Cahed $uuid and $name")
+        }
+
     }
 
     fun getByName(name: String): UUID? {
@@ -68,7 +76,6 @@ class NameRepository : KoinComponent {
             return it.name
         }
     }
-
 
     private fun fetchFromMineTools(param: String): PlayerMetadata? {
         SyncCatcher.verify()

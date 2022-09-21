@@ -5,6 +5,9 @@ import me.smp.core.chat.ChatCommands
 import me.smp.core.chat.ChatListener
 import me.smp.core.chat.ChatState
 import me.smp.core.chat.ChatStateArgumentProvider
+import me.smp.core.chat.staff.StaffChatCommands
+import me.smp.core.chat.staff.StaffChatListener
+import me.smp.core.network.NetworkRepository
 import me.smp.core.pm.PrivateMessageCommands
 import me.smp.core.punishment.PunishmentCommands
 import me.smp.core.punishment.PunishmentListener
@@ -48,10 +51,15 @@ class Plugin : JavaPlugin() {
             it.isOverrideCommands = true
         }.build()
 
+        val networkRepository: NetworkRepository = koinApp.koin.get()
+        networkRepository.registerListener(StaffChatListener())
+        networkRepository.startListening()
+
         blade.register(PunishmentCommands)
         blade.register(RankCommands)
         blade.register(ChatCommands)
         blade.register(PrivateMessageCommands)
+        blade.register(StaffChatCommands)
     }
 
     override fun onDisable() {

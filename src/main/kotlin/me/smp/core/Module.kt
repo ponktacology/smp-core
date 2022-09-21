@@ -2,8 +2,11 @@ package me.smp.core
 
 import io.lettuce.core.RedisClient
 import me.smp.core.chat.ChatService
+import me.smp.core.chat.staff.StaffChatService
 import me.smp.core.name.NameRepository
 import me.smp.core.name.NameService
+import me.smp.core.network.NetworkRepository
+import me.smp.core.network.NetworkService
 import me.smp.core.pm.PrivateMessageRepository
 import me.smp.core.pm.PrivateMessageService
 import me.smp.core.punishment.PunishmentRepository
@@ -29,8 +32,6 @@ val MODULE = module {
     }
     single(null, true) {
         RedisClient.create("redis://localhost:6379")
-            .connect()
-            .sync()
     }
     single { JavaPlugin.getPlugin(Plugin::class.java) }
     single { Bukkit.getServer().logger }
@@ -43,4 +44,7 @@ val MODULE = module {
     single { NameService() }
     single { PrivateMessageRepository() }
     single { PrivateMessageService() }
+    single { NetworkRepository() }
+    single { NetworkService() }
+    single { StaffChatService() }
 }
