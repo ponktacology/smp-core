@@ -25,6 +25,8 @@ CREATE TABLE grants
     remove_reason VARCHAR
 );
 
+CREATE INDEX playerGrants ON grants USING btree (player);
+
 -- Table to store player punishments
 CREATE TABLE punishments
 (
@@ -41,6 +43,8 @@ CREATE TABLE punishments
     remove_reason VARCHAR
 );
 
+CREATE INDEX playerPunishments ON punishments USING btree (player);
+
 -- Table to store pm settings
 CREATE TABLE pm_settings
 (
@@ -49,6 +53,8 @@ CREATE TABLE pm_settings
     enabled BOOLEAN NOT NULL
 );
 
+CREATE INDEX playerPmSettings ON pm_settings USING btree (player);
+
 -- Table to store pm ignored players
 CREATE TABLE pm_ignored
 (
@@ -56,3 +62,5 @@ CREATE TABLE pm_ignored
     player  UUID   NOT NULL,
     ignored UUID   NOT NULL
 );
+
+CREATE INDEX playerPmIgnored ON pm_ignored USING btree (player);

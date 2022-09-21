@@ -1,5 +1,6 @@
 package me.smp.core.chat.staff
 
+import me.smp.core.Config
 import me.smp.core.network.NetworkHandler
 import me.smp.core.network.NetworkListener
 import me.smp.core.rank.RankService
@@ -18,6 +19,7 @@ class StaffChatListener : NetworkListener, KoinComponent {
         val player = packet.player
         val displayName = rankService.getDisplayName(player)
         val component = Component.text("[StaffChat] ", NamedTextColor.AQUA)
+            .append(Component.text("[${Config.SERVER_NAME}] ", NamedTextColor.BLUE))
             .append(displayName)
             .append(Component.text(": ${packet.message}", NamedTextColor.WHITE))
 

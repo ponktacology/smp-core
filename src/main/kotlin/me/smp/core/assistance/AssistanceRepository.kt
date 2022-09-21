@@ -4,6 +4,8 @@ import me.smp.core.Config
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
+
+// Make this persistent
 class AssistanceRepository {
 
     private val reportCache = ConcurrentHashMap<UUID, Long>()

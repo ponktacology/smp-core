@@ -11,9 +11,7 @@ import org.bukkit.event.player.AsyncPlayerPreLoginEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import java.util.logging.Level
 import java.util.logging.Logger
-import kotlin.system.measureTimeMillis
 
 class CacheListener : Listener, KoinComponent {
 
@@ -23,19 +21,18 @@ class CacheListener : Listener, KoinComponent {
     private val nameRepository: NameRepository by inject()
     private val privateMessageRepository: PrivateMessageRepository by inject()
 
-    private val cacheList = listOf<UUIDCache>(rankRepository,
+    private val cacheList = listOf<UUIDCache>(
+        rankRepository,
         punishmentRepository,
-        privateMessageRepository)
+        privateMessageRepository
+    )
 
     @EventHandler(priority = EventPriority.LOW)
     fun onPlayerLogin(event: AsyncPlayerPreLoginEvent) {
-        val duration = measureTimeMillis {
-            cacheList.forEach {
-                it.loadCache(event.uniqueId)
-            }
-            nameRepository.loadCache(event.uniqueId, event.name)
+        cacheList.forEach {
+            it.loadCache(event.uniqueId)
         }
-        logger.log(Level.INFO, "Loaded ${event.name} in $duration ms.")
+        nameRepository.loadCache(event.uniqueId, event.name)
     }
 
     @EventHandler(priority = EventPriority.MONITOR)

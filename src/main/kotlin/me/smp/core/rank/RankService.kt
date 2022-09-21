@@ -29,7 +29,8 @@ class RankService : KoinComponent {
     }
 
     fun getDisplayName(player: Player): Component {
-        return getDisplayName(player.uniqueId)
+        val rank = getByPlayer(player)
+        return Component.text(player.name, rank.color, *rank.decorations)
     }
 
     fun getDisplayName(uuid: UUID): Component {

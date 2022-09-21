@@ -42,6 +42,7 @@ class Plugin : JavaPlugin() {
         server.pluginManager.registerEvents(PunishmentListener(), this)
         server.pluginManager.registerEvents(ChatListener(), this)
         server.pluginManager.registerEvents(CacheListener(), this)
+        server.pluginManager.registerEvents(BenchmarkListener(), this)
 
         blade = Blade.forPlatform(BladeBukkitPlatform(this)).bind {
             it.bind(ChatState::class.java, ChatStateArgumentProvider)
