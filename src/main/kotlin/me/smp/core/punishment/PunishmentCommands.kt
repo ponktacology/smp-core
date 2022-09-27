@@ -7,6 +7,7 @@ import me.vaperion.blade.annotation.argument.*
 import me.vaperion.blade.annotation.command.Async
 import me.vaperion.blade.annotation.command.Command
 import me.vaperion.blade.annotation.command.Permission
+import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -82,6 +83,7 @@ object PunishmentCommands : KoinComponent {
         punishmentService.punish(Punishment {
             this.player = player.uuid
             this.type = type
+            this.address = Bukkit.getPlayer(player.uuid)?.address?.address.toString()
             this.duration = duration
             this.issuer = issuerUUID
             this.addedAt = System.currentTimeMillis()

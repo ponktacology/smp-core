@@ -1,9 +1,7 @@
 package me.smp.core.name
 
 import com.google.gson.JsonParser
-import io.lettuce.core.ExperimentalLettuceCoroutinesApi
 import io.lettuce.core.RedisClient
-import io.lettuce.core.api.sync.multi
 import me.smp.core.Config
 import me.smp.core.Console
 import me.smp.core.PlayerMetadata
@@ -20,22 +18,21 @@ import java.time.Duration
 import java.util.*
 
 private val UUID_CONVERT_REGEX = Regex("(\\w{8})(\\w{4})(\\w{4})(\\w{4})(\\w{12})")
-private const val PREFIX = "{name-cache}"
+private const val NAME_PREFIX = "{name-cache}"
+private const val ADDRESS_PREFIX = "{address_cache}"
 
 class NameRepository : KoinComponent {
 
     private val redisClient: RedisClient by inject()
     private val redisCommands = redisClient.connect().sync()
 
-    @OptIn(ExperimentalLettuceCoroutinesApi::class)
     fun loadCache(uuid: UUID, name: String) {
         println("Caching $uuid and $name")
         SyncCatcher.verify()
-        redisCommands.multi {
-            setex("$PREFIX${name.uppercase()}", Config.NAME_CACHE_EXPIRY_SECONDS, uuid.toString())
-            setex("$PREFIX$uuid", Config.NAME_CACHE_EXPIRY_SECONDS, name)
-            println("Cahed $uuid and $name")
-        }
+        redisCommands.setex("$NAME_PREFIX${name.uppercase()}", Config.NAME_CACHE_EXPIRY_SECONDS, uuid.toString())
+        redisCommands.setex("$NAME_PREFIX$uuid", Config.NAME_CACHE_EXPIRY_SECONDS, name)
+        redisCommands.setex("${ADDRESS_PREFIX}$uuid", Config.ADDRESS_CACHE_EXPIRY_SECONDS, name)
+        println("Cahed $uuid and $name")
 
     }
 
@@ -46,7 +43,7 @@ class NameRepository : KoinComponent {
             return it.uniqueId
         }
 
-        redisCommands.get("$PREFIX${name.uppercase()}")?.let {
+        redisCommands.get("$NAME_PREFIX${name.uppercase()}")?.let {
             println("Got from redis cache")
             return UUID.fromString(it)
         }
@@ -66,7 +63,7 @@ class NameRepository : KoinComponent {
             return it.name
         }
 
-        redisCommands.get("$PREFIX$uuid")?.let {
+        redisCommands.get("$NAME_PREFIX$uuid")?.let {
             println("Got from redis cache")
             return it
         }
@@ -99,5 +96,4 @@ class NameRepository : KoinComponent {
             jsonObject.get("name").asString
         )
     }
-
 }

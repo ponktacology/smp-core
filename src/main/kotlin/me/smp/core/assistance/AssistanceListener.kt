@@ -20,13 +20,11 @@ class AssistanceListener : NetworkListener, KoinComponent {
     fun onPlayerReport(packet: PacketReportPlayer) {
         val player = packet.player
         val issuer = packet.issuer
-        val displayName = rankService.getDisplayName(player)
-        val issuerDisplayName = rankService.getDisplayName(issuer)
         var component = Component.text("[Report] ", NamedTextColor.RED)
             .append(Component.text("[${Config.SERVER_NAME}] ", NamedTextColor.BLUE))
-            .append(issuerDisplayName)
+            .append(rankService.getDisplayName(issuer))
             .append(Component.text(" reported ", NamedTextColor.GRAY))
-            .append(displayName)
+            .append(rankService.getDisplayName(player))
             .append(Component.text(" for: ", NamedTextColor.GRAY))
             .append(Component.text(packet.reason, NamedTextColor.GRAY))
         Bukkit.getPlayer(player)?.let {
@@ -40,10 +38,9 @@ class AssistanceListener : NetworkListener, KoinComponent {
     @NetworkHandler
     fun onPlayerReport(packet: PacketPlayerRequest) {
         val player = packet.player
-        val displayName = rankService.getDisplayName(player)
         var component = Component.text("[Request] ", NamedTextColor.LIGHT_PURPLE)
             .append(Component.text("[${Config.SERVER_NAME}] ", NamedTextColor.BLUE))
-            .append(displayName)
+            .append( rankService.getDisplayName(player))
             .append(Component.text(" requested help: ", NamedTextColor.GRAY))
             .append(Component.text(packet.request, NamedTextColor.GRAY))
         Bukkit.getPlayer(player)?.let {
@@ -54,9 +51,9 @@ class AssistanceListener : NetworkListener, KoinComponent {
         messageStaff(component)
     }
 
-    fun messageStaff(component: Component) {
-        for (staff in Bukkit.getOnlinePlayers().filter { rankService.getByPlayer(it).isStaff() }) {
-            staff.sendMessage(component)
+    private fun messageStaff(component: Component) {
+        Bukkit.getOnlinePlayers().filter { rankService.getByPlayer(it).isStaff() }.forEach {
+            it.sendMessage(component)
         }
     }
 }

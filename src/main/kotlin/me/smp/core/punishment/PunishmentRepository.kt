@@ -1,29 +1,25 @@
 package me.smp.core.punishment
 
-import me.smp.core.PlayerNotOnlineException
+import me.smp.core.PlayerNotFoundInCacheException
 import me.smp.core.SyncCatcher
-import me.smp.core.UUIDCache
 import org.bukkit.entity.Player
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.ktorm.database.Database
-import org.ktorm.dsl.and
-import org.ktorm.dsl.batchUpdate
-import org.ktorm.dsl.eq
-import org.ktorm.dsl.not
+import org.ktorm.dsl.*
 import org.ktorm.entity.*
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
 
-class PunishmentRepository : KoinComponent, UUIDCache {
+class PunishmentRepository : KoinComponent {
 
     private val database: Database by inject()
     private val Database.punishments get() = this.sequenceOf(Punishments)
     private val cache = ConcurrentHashMap<UUID, MutableList<Punishment>>()
 
     fun getByPlayer(player: Player, type: Punishment.Type): Punishment? {
-        val punishments = cache[player.uniqueId] ?: throw PlayerNotOnlineException()
+        val punishments = cache[player.uniqueId] ?: throw PlayerNotFoundInCacheException()
         return punishments.firstOrNull { it.type == type && it.isActive() }
     }
 
@@ -33,17 +29,35 @@ class PunishmentRepository : KoinComponent, UUIDCache {
             return it.firstOrNull { punishment -> punishment.type == type && punishment.isActive() }
         }
 
-        val grants = database.punishments.filter { it.player eq uuid }.toList()
+        val grants =
+            database.punishments.filter { it.player eq uuid }
+                .toList()
 
         return grants.firstOrNull { it.type == type && it.isActive() }
     }
 
-    override fun loadCache(uuid: UUID) {
+    fun getByUUID(uuid: UUID, address: String, type: Punishment.Type): Punishment? {
         SyncCatcher.verify()
-        cache[uuid] = database.punishments.filter { it.player eq uuid }.toCollection(CopyOnWriteArrayList())
+        cache[uuid]?.let {
+            return it.firstOrNull { punishment -> punishment.type == type && punishment.isActive() }
+        }
+
+        val punishments =
+            database.punishments.filter { it.player eq uuid or (it.address.isNotNull() and (it.address eq address)) }
+                .toList()
+
+        return punishments.firstOrNull { it.type == type && it.isActive() }
     }
 
-    override fun flushCache(uuid: UUID) {
+
+    fun loadCache(uuid: UUID, address: String) {
+        SyncCatcher.verify()
+        cache[uuid] =
+            database.punishments.filter { it.player eq uuid or (it.address.isNotNull() and (it.address eq address)) }
+                .toCollection(CopyOnWriteArrayList())
+    }
+
+    fun flushCache(uuid: UUID) {
         cache.remove(uuid)
     }
 
@@ -52,10 +66,23 @@ class PunishmentRepository : KoinComponent, UUIDCache {
     }
 
     fun punish(punishment: Punishment) {
+        cache[punishment.player]?.add(punishment)
+    }
+
+    fun addPunishment(punishment: Punishment) {
         SyncCatcher.verify()
         database.punishments.add(punishment)
-        cache[punishment.player]?.let {
-            it.add(punishment)
+    }
+
+    fun unPunish(uuid: UUID, type: Punishment.Type, issuer: UUID, reason: String) {
+        cache[uuid]?.let {
+            it.filter { punishment -> !punishment.removed && punishment.type == type }
+                .forEach { punishment ->
+                    punishment.removed = true
+                    punishment.removedAt = System.currentTimeMillis()
+                    punishment.remover = issuer
+                    punishment.removeReason = reason
+                }
         }
     }
 
@@ -72,14 +99,7 @@ class PunishmentRepository : KoinComponent, UUIDCache {
                 }
             }
         }
-        cache[uuid]?.let {
-            it.filter { punishment -> !punishment.removed && punishment.type == type }
-                .forEach { punishment ->
-                    punishment.removed = true
-                    punishment.removedAt = System.currentTimeMillis()
-                    punishment.remover = issuer
-                    punishment.removeReason = reason
-                }
-        }
     }
+
+    fun getById(punishmentId: Int) = database.punishments.find { it.id eq punishmentId }
 }

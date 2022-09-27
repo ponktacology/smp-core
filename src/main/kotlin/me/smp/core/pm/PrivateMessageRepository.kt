@@ -1,6 +1,6 @@
 package me.smp.core.pm
 
-import me.smp.core.PlayerNotOnlineException
+import me.smp.core.PlayerNotFoundInCacheException
 import me.smp.core.SyncCatcher
 import me.smp.core.UUIDCache
 import org.bukkit.entity.Player
@@ -24,11 +24,11 @@ class PrivateMessageRepository : KoinComponent, UUIDCache {
     private val replyCache = ConcurrentHashMap<UUID, UUID>()
 
     fun getSettingsByPlayer(player: Player): PrivateMessageSettings {
-        return settingsCache[player.uniqueId] ?: throw PlayerNotOnlineException()
+        return settingsCache[player.uniqueId] ?: throw PlayerNotFoundInCacheException()
     }
 
     fun getIgnoredByPlayer(player: Player): List<IgnoredPlayer> {
-        return ignoredCache[player.uniqueId] ?: throw PlayerNotOnlineException()
+        return ignoredCache[player.uniqueId] ?: throw PlayerNotFoundInCacheException()
     }
 
     fun ignore(player: UUID, ignored: UUID): Int {
@@ -39,21 +39,18 @@ class PrivateMessageRepository : KoinComponent, UUIDCache {
         }
 
         return database.ignored.add(ignoredPlayer).also {
-            ignoredCache[player]?.let {
-                it.add(ignoredPlayer)
-            }
+            ignoredCache[player]?.add(ignoredPlayer)
         }
     }
 
     fun unignore(player: UUID, ignored: UUID): Int {
         SyncCatcher.verify()
-        return database.ignored.removeIf {
-            it.player eq player and (it.ignored eq ignored)
-        }.also {
-            ignoredCache[player]?.let {
-                it.removeIf { record -> record.ignored == ignored }
-            }
+
+        ignoredCache[player]?.let {
+            it.removeIf { record -> record.ignored == ignored }
         }
+
+        return database.ignored.removeIf { it.player eq player and (it.ignored eq ignored) }
     }
 
     fun getReplier(player: Player) = replyCache[player.uniqueId]

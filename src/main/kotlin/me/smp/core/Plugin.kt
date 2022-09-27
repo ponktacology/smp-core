@@ -9,6 +9,8 @@ import me.smp.core.chat.ChatState
 import me.smp.core.chat.ChatStateArgumentProvider
 import me.smp.core.chat.staff.StaffChatCommands
 import me.smp.core.chat.staff.StaffChatListener
+import me.smp.core.cooldown.CooldownRepository
+import me.smp.core.nametag.NameTagListener
 import me.smp.core.network.NetworkRepository
 import me.smp.core.pm.PrivateMessageCommands
 import me.smp.core.punishment.PunishmentCommands
@@ -38,11 +40,15 @@ class Plugin : JavaPlugin() {
             "org.litote.mongo.test.mapping.service", "org.litote.kmongo.pojo.PojoClassMappingTypeService"
         )
 
-        server.pluginManager.registerEvents(RankListener(), this)
-        server.pluginManager.registerEvents(PunishmentListener(), this)
+        val punishmentListener = PunishmentListener()
+        val rankListener = RankListener()
+
+        server.pluginManager.registerEvents(rankListener, this)
+        server.pluginManager.registerEvents(punishmentListener, this)
         server.pluginManager.registerEvents(ChatListener(), this)
         server.pluginManager.registerEvents(CacheListener(), this)
         server.pluginManager.registerEvents(BenchmarkListener(), this)
+        server.pluginManager.registerEvents(NameTagListener(), this)
 
         blade = Blade.forPlatform(BladeBukkitPlatform(this)).bind {
             it.bind(ChatState::class.java, ChatStateArgumentProvider)
@@ -57,6 +63,8 @@ class Plugin : JavaPlugin() {
         val networkRepository: NetworkRepository = koinApp.koin.get()
         networkRepository.registerListener(StaffChatListener())
         networkRepository.registerListener(AssistanceListener())
+        networkRepository.registerListener(punishmentListener)
+        networkRepository.registerListener(rankListener)
         networkRepository.startListening()
 
         blade.register(PunishmentCommands)
@@ -65,11 +73,14 @@ class Plugin : JavaPlugin() {
         blade.register(PrivateMessageCommands)
         blade.register(StaffChatCommands)
         blade.register(AssistanceCommands)
+
     }
 
     override fun onDisable() {
         val punishmentRepository: PunishmentRepository = koinApp.koin.get()
         val rankRepository: RankRepository = koinApp.koin.get()
+        val cooldownRepository: CooldownRepository = koinApp.koin.get()
+        cooldownRepository.flushCache()
         punishmentRepository.flushCache()
         rankRepository.flushCache()
     }

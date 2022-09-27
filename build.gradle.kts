@@ -18,7 +18,7 @@ repositories {
 }
 
 dependencies {
-    implementation("org.purpurmc.purpur:purpur-api:1.17.1-R0.1-SNAPSHOT")
+    compileOnly("org.purpurmc.purpur:purpur-api:1.17.1-R0.1-SNAPSHOT")
     implementation("org.jetbrains.kotlin:kotlin-stdlib:1.7.10")
     implementation("io.insert-koin:koin-core:3.2.1")
     implementation("org.ktorm:ktorm-core:3.5.0")
@@ -26,6 +26,7 @@ dependencies {
     implementation("fr.mrmicky:FastInv:3.0.3")
     implementation("com.github.vaperion.blade:bukkit:3.0.0")
     implementation("io.lettuce:lettuce-core:6.2.0.RELEASE")
+    implementation("com.zaxxer:HikariCP:5.0.1")
     testImplementation(kotlin("test"))
 }
 

@@ -17,10 +17,9 @@ class StaffChatListener : NetworkListener, KoinComponent {
     @NetworkHandler
     fun onStaffChatMessage(packet: PacketStaffChat) {
         val player = packet.player
-        val displayName = rankService.getDisplayName(player)
         val component = Component.text("[StaffChat] ", NamedTextColor.AQUA)
             .append(Component.text("[${Config.SERVER_NAME}] ", NamedTextColor.BLUE))
-            .append(displayName)
+            .append(rankService.getDisplayName(player))
             .append(Component.text(": ${packet.message}", NamedTextColor.WHITE))
 
         for (staff in Bukkit.getOnlinePlayers().filter { rankService.getByPlayer(it).isStaff() }) {

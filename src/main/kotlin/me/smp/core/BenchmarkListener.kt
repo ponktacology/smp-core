@@ -4,6 +4,7 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent
+import org.bukkit.event.player.PlayerJoinEvent
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
@@ -18,7 +19,8 @@ class BenchmarkListener : Listener {
 
 
     @EventHandler(priority = EventPriority.MONITOR)
-    fun onAsyncLogin2(event: AsyncPlayerPreLoginEvent) {
-        println("Loaded player ${event.name} in ${System.currentTimeMillis() - (timings[event.uniqueId] ?: System.currentTimeMillis())}")
+    fun onAsyncLogin2(event: PlayerJoinEvent) {
+        val player = event.player
+        println("Loaded player ${player.name} in ${System.currentTimeMillis() - (timings[player.uniqueId] ?: System.currentTimeMillis())}")
     }
 }

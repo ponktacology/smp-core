@@ -33,6 +33,7 @@ CREATE TABLE punishments
     id            SERIAL  NOT NULL PRIMARY KEY,
     player        UUID    NOT NULL,
     type          VARCHAR NOT NULL,
+    address       VARCHAR,
     added_at      BIGINT  NOT NULL,
     duration      BIGINT  NOT NULL,
     issuer        UUID    NOT NULL,

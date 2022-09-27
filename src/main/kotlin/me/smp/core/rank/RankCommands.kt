@@ -42,18 +42,17 @@ object RankCommands : KoinComponent {
             }
         }
         val issuerUUID = SenderUtil.resolveIssuerUUID(sender)
-        if (rankService.grant(Grant {
-                this.player = player.uuid
-                this.rank = rank
-                this.issuer = issuerUUID
-                this.addedAt = System.currentTimeMillis()
-                this.duration = duration
-                this.reason = reason
-                this.removed = false
-            })) {
-            sender.sendMessage("Successfully added ${rank.name} rank to the ${player.name}.")
-        } else sender.sendMessage("Error occurred.")
 
+        rankService.grant(Grant {
+            this.player = player.uuid
+            this.rank = rank
+            this.issuer = issuerUUID
+            this.addedAt = System.currentTimeMillis()
+            this.duration = duration
+            this.reason = reason
+            this.removed = false
+        })
+        sender.sendMessage("Successfully added ${rank.name} rank to the ${player.name}.")
     }
 
     @Command("rank remove", "removegrant")

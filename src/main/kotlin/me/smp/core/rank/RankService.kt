@@ -1,9 +1,9 @@
 package me.smp.core.rank
 
 import me.smp.core.name.NameService
+import me.smp.core.network.NetworkService
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
-import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.entity.Player
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -13,19 +13,21 @@ class RankService : KoinComponent {
 
     private val rankRepository: RankRepository by inject()
     private val nameService: NameService by inject()
+    private val networkService: NetworkService by inject()
 
     fun getByPlayer(player: Player) = rankRepository.getByPlayer(player)
 
     fun getByUUID(uuid: UUID) = rankRepository.getByUUID(uuid)
 
-    fun grant(grant: Grant): Boolean {
-        require(grant.rank != Rank.DEFAULT) { "can't grant default rank" }
-        return rankRepository.grantRank(grant.player, grant) == 1
+    fun grant(grant: Grant) {
+        rankRepository.addGrant(grant)
+        networkService.publish(PacketGrant(grant.player, grant.rank))
     }
 
     fun removeRanks(uuid: UUID, rank: Rank, issuer: UUID, reason: String) {
         require(rank != Rank.DEFAULT) { "can't remove default rank" }
         rankRepository.removeRank(uuid, rank, issuer, reason)
+        networkService.publish(PacketUngrant(uuid, rank))
     }
 
     fun getDisplayName(player: Player): Component {
@@ -41,9 +43,7 @@ class RankService : KoinComponent {
 
     fun getFullDisplayName(player: Player): Component {
         val rank = getByPlayer(player)
-        val prefix = if (rank == Rank.DEFAULT) Component.empty() else Component.empty()
-            .append(Component.text("${rank.displayName} ", rank.color, TextDecoration.BOLD))
-
+        val prefix = rank.getPrefix()
         return prefix.append(getDisplayName(player))
     }
 }
