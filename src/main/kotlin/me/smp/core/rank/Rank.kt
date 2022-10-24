@@ -32,7 +32,8 @@ enum class Rank(
     VIP("VIP", 11, NamedTextColor.YELLOW),
     DEFAULT("Default", 0, NamedTextColor.GRAY);
 
-    fun getPrefix() = if (this == DEFAULT) Component.empty() else Component.text("${this.displayName} ", this.color, TextDecoration.BOLD)
+    fun getPrefix() = if (this == DEFAULT) Component.empty() else Component.empty()
+        .append(Component.text("${this.displayName} ", this.color, TextDecoration.BOLD))
 
     fun isSuperior(rank: Rank) = power > rank.power
 

@@ -1,11 +1,16 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
+val compileKotlin: KotlinCompile by tasks
+compileKotlin.kotlinOptions.useK2 = true
+
+
 plugins {
     java
     kotlin("jvm") version "1.7.10"
     id("com.github.johnrengelman.shadow") version "7.1.2"
     id("maven-publish")
 }
+
 
 group = "me.smp.core"
 version = "1.0-SNAPSHOT"
@@ -30,10 +35,15 @@ dependencies {
     testImplementation(kotlin("test"))
 }
 
+task<Exec>("copy_to_instance") {
+    dependsOn("build")
+    commandLine("sh", "copy_to_directory.sh")
+}
 
 tasks.build {
     dependsOn("shadowJar")
 }
+
 
 tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "16"

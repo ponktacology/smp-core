@@ -5,13 +5,16 @@ import me.smp.core.name.NameRepository
 import me.smp.core.pm.PrivateMessageRepository
 import me.smp.core.punishment.PunishmentRepository
 import me.smp.core.rank.RankRepository
+import net.kyori.adventure.text.Component
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent
+import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import java.lang.Exception
 
 class CacheListener : Listener, KoinComponent {
 
@@ -28,12 +31,28 @@ class CacheListener : Listener, KoinComponent {
 
     @EventHandler(priority = EventPriority.LOW)
     fun onPlayerLogin(event: AsyncPlayerPreLoginEvent) {
-        cacheList.forEach {
-            it.loadCache(event.uniqueId)
+        try {
+            cacheList.forEach {
+                it.loadCache(event.uniqueId)
+
+            }
+            println("${event.address} ${event.rawAddress}")
+            punishmentRepository.loadCache(event.uniqueId, event.address.toString())
+            nameRepository.loadCache(event.uniqueId, event.name)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, Component.text("Error while loading player data"))
         }
-        println("${event.address} ${event.rawAddress}")
-        punishmentRepository.loadCache(event.uniqueId, event.address.toString())
-        nameRepository.loadCache(event.uniqueId, event.name)
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    fun onPlayerJoin(event: PlayerJoinEvent) {
+        val player = event.player
+        cacheList.forEach {
+            if (!it.verifyCache(player.uniqueId)) {
+                player.kick(Component.text("Error while verifying player data"))
+            }
+        }
     }
 
     @EventHandler(priority = EventPriority.MONITOR)

@@ -22,7 +22,6 @@ private const val NAME_PREFIX = "{name-cache}"
 private const val ADDRESS_PREFIX = "{address_cache}"
 
 class NameRepository : KoinComponent {
-
     private val redisClient: RedisClient by inject()
     private val redisCommands = redisClient.connect().sync()
 
@@ -33,7 +32,6 @@ class NameRepository : KoinComponent {
         redisCommands.setex("$NAME_PREFIX$uuid", Config.NAME_CACHE_EXPIRY_SECONDS, name)
         redisCommands.setex("${ADDRESS_PREFIX}$uuid", Config.ADDRESS_CACHE_EXPIRY_SECONDS, name)
         println("Cahed $uuid and $name")
-
     }
 
     fun getByName(name: String): UUID? {

@@ -46,6 +46,8 @@ class RankRepository : KoinComponent, UUIDCache {
         cache.remove(uuid)
     }
 
+    override fun verifyCache(uuid: UUID) = cache.containsKey(uuid)
+
     fun flushCache() {
         cache.clear()
     }

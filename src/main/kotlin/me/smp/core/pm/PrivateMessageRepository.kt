@@ -73,6 +73,8 @@ class PrivateMessageRepository : KoinComponent, UUIDCache {
         replyCache.remove(uuid)
     }
 
+    override fun verifyCache(uuid: UUID) = settingsCache.containsKey(uuid) && ignoredCache.containsKey(uuid)
+
     private fun findOrCreate(uuid: UUID) = database.settings.find { it.player eq uuid } ?: PrivateMessageSettings {
         this.player = uuid
         this.enabled = true
