@@ -1,7 +1,7 @@
 package me.smp.core.rank
 
 import me.smp.core.Duration
-import me.smp.core.PlayerMetadata
+import me.smp.core.PlayerContainer
 import me.smp.core.SenderUtil
 import me.vaperion.blade.annotation.argument.Name
 import me.vaperion.blade.annotation.argument.Optional
@@ -26,7 +26,7 @@ object RankCommands : KoinComponent {
     @Description("Add rank to the player")
     fun add(
         @Sender sender: CommandSender,
-        @Name("player") player: PlayerMetadata,
+        @Name("player") player: PlayerContainer,
         @Name("rank") rank: Rank,
         @Name("duration") duration: Duration,
         @Text @Optional("Promoted") @Name("reason") reason: String
@@ -61,7 +61,7 @@ object RankCommands : KoinComponent {
     @Description("Remove rank from the player")
     fun remove(
         @Sender sender: CommandSender,
-        @Name("player") player: PlayerMetadata,
+        @Name("player") player: PlayerContainer,
         @Name("rank") rank: Rank,
         @Text @Optional("Demoted") @Name("reason") reason: String
     ) {
@@ -84,7 +84,7 @@ object RankCommands : KoinComponent {
     @Async
     @Permission("core.rank.check")
     @Description("Check player's rank")
-    fun check(@Sender sender: CommandSender, @Name("player") @Optional("me") player: PlayerMetadata) {
+    fun check(@Sender sender: CommandSender, @Name("player") @Optional("me") player: PlayerContainer) {
         sender.sendMessage("${player.name}'s rank is ${rankService.getByUUID(player.uuid).name}.")
     }
 }

@@ -3,6 +3,7 @@ package me.smp.core.punishment
 
 import io.papermc.paper.event.player.AsyncChatEvent
 import me.smp.core.Config
+import me.smp.core.TimeFormatter
 import me.smp.core.TaskDispatcher
 import me.smp.core.network.NetworkHandler
 import me.smp.core.network.NetworkListener
@@ -37,7 +38,7 @@ class PunishmentListener : KoinComponent, Listener, NetworkListener {
         }
     }
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     fun onPlayerChatMessage(event: AsyncChatEvent) {
         punishmentService.getByPlayer(event.player, Punishment.Type.MUTE)?.let {
             event.player.sendMessage("You can't use chat while muted!")
@@ -51,16 +52,24 @@ class PunishmentListener : KoinComponent, Listener, NetworkListener {
         if (punishment.type != Punishment.Type.MUTE) {
             Bukkit.getPlayer(punishment.player)?.let {
                 TaskDispatcher.dispatch {
-                    it.kick(
-                        Component.text(
-                            "You have been ${punishment.type.addFormat}!",
-                            NamedTextColor.RED,
-                            TextDecoration.ITALIC
-                        )
-                            .append(Component.newline())
-                            .append(Component.newline())
-                            .append(Component.text("Reason: ${punishment.reason}", NamedTextColor.RED))
+                    val permanent = punishment.duration.isPermanent()
+                    val component = Component.text(
+                        "You have been${if (permanent) " permanently " else " "}${punishment.type.addFormat}!",
+                        NamedTextColor.RED,
+                        TextDecoration.ITALIC
                     )
+                        .append(Component.newline())
+                        .append(Component.newline())
+                        .append(Component.text("Reason: ${punishment.reason}", NamedTextColor.RED))
+
+                    if (!permanent) {
+                        component.append(
+                            Component.newline()
+                                .append(Component.text("Expires: ${TimeFormatter.formatDate(punishment.duration + punishment.addedAt)}"))
+                        )
+                    }
+
+                    it.kick(component)
                 }
             }
         }

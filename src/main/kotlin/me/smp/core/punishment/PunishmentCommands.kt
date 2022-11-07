@@ -1,7 +1,7 @@
 package me.smp.core.punishment
 
 import me.smp.core.Duration
-import me.smp.core.PlayerMetadata
+import me.smp.core.PlayerContainer
 import me.smp.core.SenderUtil
 import me.vaperion.blade.annotation.argument.*
 import me.vaperion.blade.annotation.command.Async
@@ -21,7 +21,7 @@ object PunishmentCommands : KoinComponent {
     @Async
     fun ban(
         @Sender sender: CommandSender,
-        @Name("player") player: PlayerMetadata,
+        @Name("player") player: PlayerContainer,
         @Name("duration") duration: Duration,
         @Name("reason") @Text @Optional("Didn't respect server rules.") reason: String,
         @Flag('s') silent: Boolean
@@ -32,7 +32,7 @@ object PunishmentCommands : KoinComponent {
     @Async
     fun unban(
         @Sender sender: CommandSender,
-        @Name("player") player: PlayerMetadata,
+        @Name("player") player: PlayerContainer,
         @Name("reason") @Text @Optional("Didn't respect server rules.") reason: String,
         @Flag('s') silent: Boolean
     ) = removePunishment(sender, player, Punishment.Type.BAN, reason, silent)
@@ -42,7 +42,7 @@ object PunishmentCommands : KoinComponent {
     @Async
     fun mute(
         @Sender sender: CommandSender,
-        @Name("player") player: PlayerMetadata,
+        @Name("player") player: PlayerContainer,
         @Name("duration") duration: Duration,
         @Name("reason") @Text @Optional("Spam.") reason: String,
         @Flag('s') silent: Boolean
@@ -53,7 +53,7 @@ object PunishmentCommands : KoinComponent {
     @Async
     fun unmute(
         @Sender sender: CommandSender,
-        @Name("player") player: PlayerMetadata,
+        @Name("player") player: PlayerContainer,
         @Name("reason") @Text @Optional("Unmuted.") reason: String,
         @Flag('s') silent: Boolean
     ) = removePunishment(sender, player, Punishment.Type.MUTE, reason, silent)
@@ -63,13 +63,13 @@ object PunishmentCommands : KoinComponent {
     @Async
     fun kick(
         @Sender sender: CommandSender,
-        @Name("player") player: PlayerMetadata,
+        @Name("player") player: PlayerContainer,
         @Name("reason") @Text @Optional("Didn't respect server rules.") reason: String,
         @Flag('s') silent: Boolean
     ) = addPunishment(sender, player, Punishment.Type.KICK, Duration(0), reason, silent)
 
     private fun addPunishment(
-        sender: CommandSender, player: PlayerMetadata,
+        sender: CommandSender, player: PlayerContainer,
         type: Punishment.Type, duration: Duration, reason: String,
         silent: Boolean
     ) {
@@ -93,7 +93,7 @@ object PunishmentCommands : KoinComponent {
     }
 
     private fun removePunishment(
-        sender: CommandSender, player: PlayerMetadata,
+        sender: CommandSender, player: PlayerContainer,
         type: Punishment.Type, reason: String,
         silent: Boolean
     ) {

@@ -9,6 +9,7 @@ import me.smp.core.chat.ChatState
 import me.smp.core.chat.ChatStateArgumentProvider
 import me.smp.core.chat.staff.StaffChatCommands
 import me.smp.core.chat.staff.StaffChatListener
+import me.smp.core.cooldown.CooldownListener
 import me.smp.core.cooldown.CooldownRepository
 import me.smp.core.cooldown.Cooldowns
 import me.smp.core.invsee.InvSeeCommands
@@ -51,10 +52,11 @@ class Plugin : JavaPlugin() {
         server.pluginManager.registerEvents(CacheListener(), this)
         server.pluginManager.registerEvents(BenchmarkListener(), this)
         server.pluginManager.registerEvents(NameTagListener(), this)
+        server.pluginManager.registerEvents(CooldownListener(), this)
 
         blade = Blade.forPlatform(BladeBukkitPlatform(this)).bind {
             it.bind(ChatState::class.java, ChatStateArgumentProvider)
-            it.bind(PlayerMetadata::class.java, PlayerMetadataArgumentProvider)
+            it.bind(PlayerContainer::class.java, PlayerContainerArgumentProvider)
             it.bind(Rank::class.java, RankArgumentProvider)
             it.bind(Duration::class.java, DurationArgumentProvider)
         }.config {

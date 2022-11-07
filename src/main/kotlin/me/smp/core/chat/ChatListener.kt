@@ -5,6 +5,7 @@ import me.smp.core.rank.RankService
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.event.EventHandler
+import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -14,7 +15,7 @@ class ChatListener : Listener, KoinComponent {
     private val rankService: RankService by inject()
     private val chatService: ChatService by inject()
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     fun onPlayerChat(event: AsyncChatEvent) {
         val player = event.player
         val rank = rankService.getByPlayer(player)

@@ -4,7 +4,7 @@ import com.google.gson.JsonParser
 import io.lettuce.core.RedisClient
 import me.smp.core.Config
 import me.smp.core.Console
-import me.smp.core.PlayerMetadata
+import me.smp.core.PlayerContainer
 import me.smp.core.SyncCatcher
 import org.bukkit.Bukkit
 import org.koin.core.component.KoinComponent
@@ -72,7 +72,7 @@ class NameRepository : KoinComponent {
         }
     }
 
-    private fun fetchFromMineTools(param: String): PlayerMetadata? {
+    private fun fetchFromMineTools(param: String): PlayerContainer? {
         SyncCatcher.verify()
         val request = HttpRequest.newBuilder()
             .GET()
@@ -84,7 +84,7 @@ class NameRepository : KoinComponent {
         if (response.statusCode() != 200) return null
         val jsonObject = JsonParser.parseString(response.body()).asJsonObject
         if (jsonObject.get("status").asString != "OK") return null
-        return PlayerMetadata(
+        return PlayerContainer(
             UUID.fromString(
                 jsonObject.get("id").asString.replace(
                     UUID_CONVERT_REGEX,

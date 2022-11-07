@@ -1,7 +1,7 @@
 package me.smp.core.pm
 
 import me.smp.core.ComponentHelper
-import me.smp.core.PlayerMetadata
+import me.smp.core.PlayerContainer
 import me.vaperion.blade.annotation.argument.Name
 import me.vaperion.blade.annotation.argument.Sender
 import me.vaperion.blade.annotation.argument.Text
@@ -35,7 +35,7 @@ object PrivateMessageCommands : KoinComponent {
     @Command("ignore")
     @Description("Ignore a player")
     @Async
-    fun ignore(@Sender sender: Player, @Name("player") player: PlayerMetadata) {
+    fun ignore(@Sender sender: Player, @Name("player") player: PlayerContainer) {
         if (privateMessageService.isIgnoring(sender, player.uuid)) {
             sender.sendMessage("You are already ignoring this player.")
             return
@@ -48,7 +48,7 @@ object PrivateMessageCommands : KoinComponent {
     @Command("unignore")
     @Description("Unignore a player")
     @Async
-    fun unignore(@Sender sender: Player, @Name("player") player: PlayerMetadata) {
+    fun unignore(@Sender sender: Player, @Name("player") player: PlayerContainer) {
         if (!privateMessageService.isIgnoring(sender, player.uuid)) {
             sender.sendMessage("You are not ignoring this player.")
             return

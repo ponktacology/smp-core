@@ -6,20 +6,29 @@ import me.vaperion.blade.argument.ArgumentProvider
 import me.vaperion.blade.context.Context
 import me.vaperion.blade.exception.BladeExitMessage
 import org.bukkit.Bukkit
+import org.bukkit.entity.Player
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
-object PlayerMetadataArgumentProvider : ArgumentProvider<PlayerMetadata>, KoinComponent {
+object PlayerContainerArgumentProvider : ArgumentProvider<PlayerContainer>, KoinComponent {
 
     private val nameService: NameService by inject()
 
-    override fun provide(ctx: Context, arg: Argument): PlayerMetadata? {
+    override fun provide(ctx: Context, arg: Argument): PlayerContainer? {
         val name = arg.string
         if (name.isNullOrEmpty()) return null
 
-        //TODO: Fetch from db
+        if (name.equals("me")) {
+            if (ctx.sender().sender !is Player) {
+                throw BladeExitMessage("Console must specify player.")
+            }
+
+            val player = ctx.sender().parseAs(Player::class.java)!!
+            return PlayerContainer(player.uniqueId, player.name)
+        }
+
         nameService.getByName(name)?.let {
-            return PlayerMetadata(it, name)
+            return PlayerContainer(it, name)
         }
 
         throw BladeExitMessage("Player not found.")
