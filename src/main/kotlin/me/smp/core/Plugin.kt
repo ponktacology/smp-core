@@ -10,6 +10,8 @@ import me.smp.core.chat.ChatStateArgumentProvider
 import me.smp.core.chat.staff.StaffChatCommands
 import me.smp.core.chat.staff.StaffChatListener
 import me.smp.core.cooldown.CooldownRepository
+import me.smp.core.cooldown.Cooldowns
+import me.smp.core.invsee.InvSeeCommands
 import me.smp.core.nametag.NameTagListener
 import me.smp.core.network.NetworkRepository
 import me.smp.core.pm.PrivateMessageCommands
@@ -67,12 +69,16 @@ class Plugin : JavaPlugin() {
         networkRepository.registerListener(rankListener)
         networkRepository.startListening()
 
+        val cooldownRepository: CooldownRepository = koinApp.koin.get()
+        Cooldowns.values().forEach { cooldownRepository.registerPersistentCooldown(it) }
+
         blade.register(PunishmentCommands)
         blade.register(RankCommands)
         blade.register(ChatCommands)
         blade.register(PrivateMessageCommands)
         blade.register(StaffChatCommands)
         blade.register(AssistanceCommands)
+        blade.register(InvSeeCommands)
 
     }
 

@@ -26,7 +26,8 @@ class CacheListener : Listener, KoinComponent {
 
     private val cacheList = listOf<UUIDCache>(
         rankRepository,
-        privateMessageRepository
+        privateMessageRepository,
+        cooldownRepository
     )
 
     @EventHandler(priority = EventPriority.LOW)
@@ -41,7 +42,10 @@ class CacheListener : Listener, KoinComponent {
             nameRepository.loadCache(event.uniqueId, event.name)
         } catch (e: Exception) {
             e.printStackTrace()
-            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, Component.text("Error while loading player data"))
+            event.disallow(
+                AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
+                Component.text("Error while loading player data")
+            )
         }
     }
 
@@ -67,7 +71,6 @@ class CacheListener : Listener, KoinComponent {
     fun onPlayerQuit(event: PlayerQuitEvent) {
         cacheList.forEach { it.flushCache(event.player.uniqueId) }
         punishmentRepository.flushCache(event.player.uniqueId)
-        cooldownRepository.flushCache(event.player.uniqueId)
     }
 
 }

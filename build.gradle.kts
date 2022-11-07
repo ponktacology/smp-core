@@ -20,6 +20,7 @@ repositories {
     mavenLocal()
     maven("https://repo.purpurmc.org/snapshots")
     maven("https://jitpack.io")
+    maven("https://repo.mattstudios.me/artifactory/public/")
 }
 
 dependencies {
@@ -32,6 +33,7 @@ dependencies {
     implementation("com.github.vaperion.blade:bukkit:3.0.0")
     implementation("io.lettuce:lettuce-core:6.2.0.RELEASE")
     implementation("com.zaxxer:HikariCP:5.0.1")
+    implementation("dev.triumphteam:triumph-gui:3.1.2")
     testImplementation(kotlin("test"))
 }
 
