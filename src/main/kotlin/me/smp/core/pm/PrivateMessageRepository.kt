@@ -81,5 +81,4 @@ class PrivateMessageRepository : KoinComponent, UUIDCache {
     }.also {
         database.settings.add(it)
     }
-
 }

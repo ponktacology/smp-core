@@ -8,7 +8,9 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.ktorm.database.Database
 import org.ktorm.dsl.eq
-import org.ktorm.entity.*
+import org.ktorm.entity.filter
+import org.ktorm.entity.forEach
+import org.ktorm.entity.sequenceOf
 import org.ktorm.support.postgresql.insertOrUpdate
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
@@ -48,7 +50,6 @@ class CooldownRepository : UUIDCache, KoinComponent {
             val cooldownType = cooldowns[cooldown.id] ?: return@forEach
             setCooldown(uuid, cooldownType, cooldown.resetAt)
         }
-
     }
 
     private fun setCooldown(uuid: UUID, type: CooldownType, startedAt: Long) {

@@ -13,7 +13,7 @@ class ChatService {
     fun updateState(state: ChatState) {
         chatSettings.state = state
 
-        when(state) {
+        when (state) {
             ChatState.DISABLED -> Bukkit.broadcast(Component.text("Chat is now disabled.", NamedTextColor.RED))
             ChatState.DONATOR_ONLY -> Bukkit.broadcast(Component.text("Chat is now enabled only for donators.", NamedTextColor.RED))
             else -> {}

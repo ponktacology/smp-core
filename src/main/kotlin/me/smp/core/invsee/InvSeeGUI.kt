@@ -23,6 +23,4 @@ class InvSeeGUI(player: Player) : Gui(5, "${player.name}'s inventory", emptySet(
             player.inventory.setContents(this.inventory.contents.map { it ?: ItemStack(Material.AIR) }.toTypedArray())
         }
     }
-
-
 }

@@ -40,7 +40,7 @@ class AssistanceListener : NetworkListener, KoinComponent {
         val player = packet.player
         var component = Component.text("[Request] ", NamedTextColor.LIGHT_PURPLE)
             .append(Component.text("[${Config.SERVER_NAME}] ", NamedTextColor.BLUE))
-            .append( rankService.getDisplayName(player))
+            .append(rankService.getDisplayName(player))
             .append(Component.text(" requested help: ", NamedTextColor.GRAY))
             .append(Component.text(packet.request, NamedTextColor.GRAY))
         Bukkit.getPlayer(player)?.let {

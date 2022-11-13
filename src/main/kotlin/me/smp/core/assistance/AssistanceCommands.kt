@@ -20,7 +20,12 @@ object AssistanceCommands : KoinComponent {
     @Command("request")
     @Description("Request a help from staff")
     @Async
-    fun request(@Sender sender: Player, @Text @Name("message") message: String) {
+    fun request(
+        @Sender sender: Player,
+        @Text
+        @Name("message")
+        message: String
+    ) {
         if (cooldownService.isOnCooldown(sender, Cooldowns.ASSISTANCE_REQUEST)) {
             sender.sendMessage("Wait a bit before requesting help from staff again.")
             return
@@ -29,11 +34,16 @@ object AssistanceCommands : KoinComponent {
         assistanceService.request(sender, message)
     }
 
-
     @Command("report")
     @Description("Request a help from staff")
     @Async
-    fun report(@Sender sender: Player, @Name("player") player: Player, @Text @Name("reason") reason: String) {
+    fun report(
+        @Sender sender: Player,
+        @Name("player") player: Player,
+        @Name("reason")
+        @Text
+        reason: String
+    ) {
         if (cooldownService.isOnCooldown(sender, Cooldowns.ASSISTANCE_REPORT)) {
             sender.sendMessage("Wait a bit before reporting a player again.")
             return

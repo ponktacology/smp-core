@@ -18,11 +18,13 @@ class RankListener : Listener, KoinComponent, NetworkListener {
 
     @EventHandler(ignoreCancelled = true)
     fun onPlayerChatMessage(event: AsyncChatEvent) {
-        event.renderer(ChatRenderer.viewerUnaware { _, _, message ->
-            Component.empty()
-                .append(rankService.getFullDisplayName(event.player))
-                .append(Component.text(": ", NamedTextColor.WHITE).append(message))
-        })
+        event.renderer(
+            ChatRenderer.viewerUnaware { _, _, message ->
+                Component.empty()
+                    .append(rankService.getFullDisplayName(event.player))
+                    .append(Component.text(": ", NamedTextColor.WHITE).append(message))
+            }
+        )
     }
 
     @NetworkHandler

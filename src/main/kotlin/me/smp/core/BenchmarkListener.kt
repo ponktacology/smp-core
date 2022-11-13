@@ -17,7 +17,6 @@ class BenchmarkListener : Listener {
         timings[event.uniqueId] = System.currentTimeMillis()
     }
 
-
     @EventHandler(priority = EventPriority.MONITOR)
     fun onAsyncLogin2(event: PlayerJoinEvent) {
         val player = event.player

@@ -1,4 +1,3 @@
 package me.smp.core.network
 
-interface NetworkListener {
-}
+interface NetworkListener

@@ -1,7 +1,5 @@
 package me.smp.core
 
-import me.smp.core.Duration
-
 interface Expiring {
 
     var startedAt: Long
@@ -14,5 +12,4 @@ interface Expiring {
     fun reset() {
         startedAt = System.currentTimeMillis()
     }
-
 }

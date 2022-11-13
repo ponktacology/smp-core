@@ -5,7 +5,6 @@ import me.smp.core.duration
 import org.ktorm.entity.Entity
 import org.ktorm.schema.*
 
-
 object Punishments : Table<Punishment>("punishments") {
     val id = int("id").primaryKey().bindTo { it.id }
     val player = uuid("player").bindTo { it.player }
@@ -36,4 +35,3 @@ interface Punishment : Entity<Punishment>, Manageable {
         KICK("kicked", "")
     }
 }
-

@@ -1,6 +1,5 @@
 package me.smp.core.nametag
 
-
 import me.smp.core.rank.Rank
 import me.smp.core.rank.RankService
 import net.kyori.adventure.text.format.NamedTextColor
@@ -9,7 +8,6 @@ import org.bukkit.entity.Player
 import org.bukkit.scoreboard.DisplaySlot
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-
 
 object NameTags : KoinComponent {
 
@@ -52,7 +50,7 @@ object NameTags : KoinComponent {
         player.scoreboard.getObjective(DisplaySlot.BELOW_NAME)?.unregister()
         teamNames.forEach {
             player.scoreboard.getTeam(it)?.removeEntry(other.name)
-            println("Removed ${other.name} from ${player.name} ${it}")
+            println("Removed ${other.name} from ${player.name} $it")
         }
     }
 

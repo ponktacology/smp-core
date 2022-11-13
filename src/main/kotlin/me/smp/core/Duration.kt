@@ -17,5 +17,4 @@ class Duration(private var millis: Long) {
     }
 
     fun toMillis() = millis
-
 }

@@ -5,6 +5,7 @@ import me.smp.core.name.NameRepository
 import me.smp.core.pm.PrivateMessageRepository
 import me.smp.core.punishment.PunishmentRepository
 import me.smp.core.rank.RankRepository
+import me.smp.core.scoreboard.ScoreboardRepository
 import net.kyori.adventure.text.Component
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -14,7 +15,6 @@ import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import java.lang.Exception
 
 class CacheListener : Listener, KoinComponent {
 
@@ -23,6 +23,7 @@ class CacheListener : Listener, KoinComponent {
     private val nameRepository: NameRepository by inject()
     private val privateMessageRepository: PrivateMessageRepository by inject()
     private val cooldownRepository: CooldownRepository by inject()
+    private val scoreboardRepository: ScoreboardRepository by inject()
 
     private val cacheList = listOf<UUIDCache>(
         rankRepository,
@@ -35,7 +36,6 @@ class CacheListener : Listener, KoinComponent {
         try {
             cacheList.forEach {
                 it.loadCache(event.uniqueId)
-
             }
             println("${event.address} ${event.rawAddress}")
             punishmentRepository.loadCache(event.uniqueId, event.address.toString())
@@ -69,8 +69,9 @@ class CacheListener : Listener, KoinComponent {
 
     @EventHandler
     fun onPlayerQuit(event: PlayerQuitEvent) {
-        cacheList.forEach { it.flushCache(event.player.uniqueId) }
-        punishmentRepository.flushCache(event.player.uniqueId)
+        val uuid = event.player.uniqueId
+        cacheList.forEach { it.flushCache(uuid) }
+        punishmentRepository.flushCache(uuid)
+        scoreboardRepository.flushCache(uuid)
     }
-
 }

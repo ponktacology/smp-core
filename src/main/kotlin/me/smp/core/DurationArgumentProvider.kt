@@ -5,7 +5,6 @@ import me.vaperion.blade.argument.ArgumentProvider
 import me.vaperion.blade.context.Context
 import me.vaperion.blade.exception.BladeExitMessage
 
-
 object DurationArgumentProvider : ArgumentProvider<Duration> {
 
     override fun provide(ctx: Context, arg: Argument): Duration? {
@@ -19,4 +18,3 @@ object DurationArgumentProvider : ArgumentProvider<Duration> {
         }
     }
 }
-

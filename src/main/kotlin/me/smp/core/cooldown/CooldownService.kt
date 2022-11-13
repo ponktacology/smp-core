@@ -10,5 +10,5 @@ class CooldownService : KoinComponent {
 
     fun isOnCooldown(player: Player, type: CooldownType) = cooldownRepository.isOnCooldown(player.uniqueId, type)
 
-    fun reset(player: Player, type: CooldownType)  = cooldownRepository.reset(player.uniqueId, type)
+    fun reset(player: Player, type: CooldownType) = cooldownRepository.reset(player.uniqueId, type)
 }

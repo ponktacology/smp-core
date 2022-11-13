@@ -7,7 +7,6 @@ import org.ktorm.schema.int
 import org.ktorm.schema.uuid
 import java.util.*
 
-
 object PrivateMessagesSettings : Table<PrivateMessageSettings>("pm_settings") {
     val id = int("id").primaryKey().bindTo { it.id }
     val player = uuid("player").bindTo { it.player }

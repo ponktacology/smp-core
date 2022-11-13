@@ -49,7 +49,6 @@ class PunishmentRepository : KoinComponent {
         return punishments.firstOrNull { it.type == type && it.isActive() }
     }
 
-
     fun loadCache(uuid: UUID, address: String) {
         SyncCatcher.verify()
         cache[uuid] =

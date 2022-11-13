@@ -6,7 +6,10 @@ import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextDecoration
 
 enum class Rank(
-    val displayName: String, val power: Int, val color: TextColor, vararg val decorations: TextDecoration
+    val displayName: String,
+    val power: Int,
+    val color: TextColor,
+    vararg val decorations: TextDecoration
 ) {
 
     CONSOLE("Console", 9999, NamedTextColor.DARK_RED, TextDecoration.ITALIC),

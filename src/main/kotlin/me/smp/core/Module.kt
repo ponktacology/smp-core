@@ -18,6 +18,8 @@ import me.smp.core.punishment.PunishmentRepository
 import me.smp.core.punishment.PunishmentService
 import me.smp.core.rank.RankRepository
 import me.smp.core.rank.RankService
+import me.smp.core.scoreboard.ScoreboardRepository
+import me.smp.core.scoreboard.ScoreboardService
 import org.bukkit.Bukkit
 import org.bukkit.plugin.java.JavaPlugin
 import org.koin.dsl.module
@@ -25,7 +27,6 @@ import org.ktorm.database.Database
 import org.ktorm.logging.ConsoleLogger
 import org.ktorm.logging.LogLevel
 import org.ktorm.support.postgresql.PostgreSqlDialect
-
 
 val MODULE = module {
     val config = HikariConfig().apply {
@@ -62,4 +63,6 @@ val MODULE = module {
     single { AssistanceService() }
     single { CooldownRepository() }
     single { CooldownService() }
+    single { ScoreboardRepository() }
+    single { ScoreboardService() }
 }

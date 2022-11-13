@@ -26,7 +26,7 @@ class PrivateMessageService : KoinComponent {
     }
 
     fun message(sender: Player, receiver: Player, message: String) {
-        if(!sender.hasPermission("pm.bypassignore")) {
+        if (!sender.hasPermission("pm.bypassignore")) {
             if (hasDisabledPrivateMessages(sender)) {
                 sender.sendMessage("Your private messages are currently disabled. Enable them by using /togglepm.")
                 return

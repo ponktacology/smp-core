@@ -21,15 +21,16 @@ object PrivateMessageCommands : KoinComponent {
     fun msg(
         @Sender sender: Player,
         @Name("player") player: Player,
-        @Name("message") @Text message: String
+        @Name("message") @Text
+        message: String
     ) = privateMessageService.message(sender, player, message)
-
 
     @Command("reply", "r")
     @Description("Reply to a previously messaged player")
     fun reply(
         @Sender sender: Player,
-        @Name("message") @Text message: String
+        @Name("message") @Text
+        message: String
     ) = privateMessageService.reply(sender, message)
 
     @Command("ignore")
@@ -62,5 +63,4 @@ object PrivateMessageCommands : KoinComponent {
     @Description("Toggle private messages")
     @Async
     fun togglepm(@Sender sender: Player) = privateMessageService.togglePrivateMessages(sender)
-
 }

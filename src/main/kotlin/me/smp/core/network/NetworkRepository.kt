@@ -23,7 +23,7 @@ class NetworkRepository : KoinComponent {
     fun startListening() {
         redisPubSub.addListener(object : RedisPubSubAdapter<String, String>() {
             override fun subscribed(channel: String?, count: Long) {
-              logger.log(Level.INFO, "[NETWORK] Subscribed to $channel")
+                logger.log(Level.INFO, "[NETWORK] Subscribed to $channel")
             }
 
             override fun message(channel: String, message: String) {

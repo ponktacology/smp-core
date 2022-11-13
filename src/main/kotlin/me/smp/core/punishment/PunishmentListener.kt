@@ -1,10 +1,9 @@
 package me.smp.core.punishment
 
-
 import io.papermc.paper.event.player.AsyncChatEvent
 import me.smp.core.Config
-import me.smp.core.TimeFormatter
 import me.smp.core.TaskDispatcher
+import me.smp.core.TimeFormatter
 import me.smp.core.network.NetworkHandler
 import me.smp.core.network.NetworkListener
 import me.smp.core.rank.RankService
@@ -138,5 +137,4 @@ class PunishmentListener : KoinComponent, Listener, NetworkListener {
             }
         } else Bukkit.broadcast(component)
     }
-
 }

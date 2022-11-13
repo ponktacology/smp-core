@@ -1,6 +1,5 @@
 package me.smp.core
 
-
 import me.smp.core.assistance.AssistanceCommands
 import me.smp.core.assistance.AssistanceListener
 import me.smp.core.chat.ChatCommands
@@ -20,6 +19,7 @@ import me.smp.core.punishment.PunishmentCommands
 import me.smp.core.punishment.PunishmentListener
 import me.smp.core.punishment.PunishmentRepository
 import me.smp.core.rank.*
+import me.smp.core.scoreboard.ScoreboardService
 import me.vaperion.blade.Blade
 import me.vaperion.blade.bukkit.BladeBukkitPlatform
 import org.bukkit.plugin.java.JavaPlugin
@@ -40,7 +40,8 @@ class Plugin : JavaPlugin() {
         logger.log(Level.INFO, "siema eniu")
 
         System.setProperty(
-            "org.litote.mongo.test.mapping.service", "org.litote.kmongo.pojo.PojoClassMappingTypeService"
+            "org.litote.mongo.test.mapping.service",
+            "org.litote.kmongo.pojo.PojoClassMappingTypeService"
         )
 
         val punishmentListener = PunishmentListener()
@@ -74,6 +75,9 @@ class Plugin : JavaPlugin() {
         val cooldownRepository: CooldownRepository = koinApp.koin.get()
         Cooldowns.values().forEach { cooldownRepository.registerPersistentCooldown(it) }
 
+        val scoreboardService: ScoreboardService = koinApp.koin.get()
+        scoreboardService.start()
+
         blade.register(PunishmentCommands)
         blade.register(RankCommands)
         blade.register(ChatCommands)
@@ -81,7 +85,6 @@ class Plugin : JavaPlugin() {
         blade.register(StaffChatCommands)
         blade.register(AssistanceCommands)
         blade.register(InvSeeCommands)
-
     }
 
     override fun onDisable() {

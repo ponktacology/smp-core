@@ -3,14 +3,12 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 val compileKotlin: KotlinCompile by tasks
 compileKotlin.kotlinOptions.useK2 = true
 
-
 plugins {
     java
     kotlin("jvm") version "1.7.10"
     id("com.github.johnrengelman.shadow") version "7.1.2"
     id("maven-publish")
 }
-
 
 group = "me.smp.core"
 version = "1.0-SNAPSHOT"
@@ -34,6 +32,7 @@ dependencies {
     implementation("io.lettuce:lettuce-core:6.2.0.RELEASE")
     implementation("com.zaxxer:HikariCP:5.0.1")
     implementation("dev.triumphteam:triumph-gui:3.1.2")
+    implementation("fr.mrmicky:fastboard:1.2.1")
     testImplementation(kotlin("test"))
 }
 
@@ -45,7 +44,6 @@ task<Exec>("copy_to_instance") {
 tasks.build {
     dependsOn("shadowJar")
 }
-
 
 tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "16"

@@ -17,7 +17,8 @@ class CooldownListener : KoinComponent, Listener {
         val player = event.player
 
         if (!player.hasPermission("chat.cooldown.bypass") &&
-            cooldownService.isOnCooldown(player, Cooldowns.CHAT)) {
+            cooldownService.isOnCooldown(player, Cooldowns.CHAT)
+        ) {
             player.sendMessage("${ChatColor.RED}Wait before using chat again.")
             event.isCancelled = true
             return
@@ -31,7 +32,8 @@ class CooldownListener : KoinComponent, Listener {
         val player = event.player
 
         if (!player.hasPermission("command.cooldown.bypass") &&
-            cooldownService.isOnCooldown(player, Cooldowns.COMMAND)) {
+            cooldownService.isOnCooldown(player, Cooldowns.COMMAND)
+        ) {
             player.sendMessage("${ChatColor.RED}Wait before using commands again.")
             event.isCancelled = true
             return

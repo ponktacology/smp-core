@@ -83,7 +83,7 @@ class RankRepository : KoinComponent, UUIDCache {
     fun unGrant(uuid: UUID, rank: Rank) {
         cache[uuid]?.let {
             if (it == rank) {
-                loadCache(uuid) //Resolve rank again
+                loadCache(uuid) // Resolve rank again
             }
         }
     }
@@ -92,15 +92,17 @@ class RankRepository : KoinComponent, UUIDCache {
         database.useTransaction {
             val grants = database.grants.filter { it.player eq uuid }.toList()
             return if (grants.isEmpty()) {
-                database.grants.add(Grant {
-                    this.player = uuid
-                    this.rank = Rank.DEFAULT
-                    this.addedAt = System.currentTimeMillis()
-                    this.issuer = Console.UUID
-                    this.reason = "Default Rank"
-                    this.duration = Duration.PERMANENT
-                    this.removed = false
-                })
+                database.grants.add(
+                    Grant {
+                        this.player = uuid
+                        this.rank = Rank.DEFAULT
+                        this.addedAt = System.currentTimeMillis()
+                        this.issuer = Console.UUID
+                        this.reason = "Default Rank"
+                        this.duration = Duration.PERMANENT
+                        this.removed = false
+                    }
+                )
                 Rank.DEFAULT
             } else grants.filter { it.isActive() }.maxBy { it.rank.power }.rank
         }

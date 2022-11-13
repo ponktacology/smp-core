@@ -1,8 +1,11 @@
 package me.smp.core.cooldown
 
 import org.ktorm.entity.Entity
-import org.ktorm.schema.*
-import java.util.UUID
+import org.ktorm.schema.Table
+import org.ktorm.schema.long
+import org.ktorm.schema.uuid
+import org.ktorm.schema.varchar
+import java.util.*
 
 object PlayerCooldowns : Table<PlayerCooldown>("cooldowns") {
     val id = varchar("id").primaryKey().bindTo { it.id }

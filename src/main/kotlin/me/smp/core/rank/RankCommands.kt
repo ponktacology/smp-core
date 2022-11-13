@@ -29,7 +29,8 @@ object RankCommands : KoinComponent {
         @Name("player") player: PlayerContainer,
         @Name("rank") rank: Rank,
         @Name("duration") duration: Duration,
-        @Text @Optional("Promoted") @Name("reason") reason: String
+        @Text @Optional("Promoted") @Name("reason")
+        reason: String
     ) {
         if (rank == Rank.DEFAULT) {
             sender.sendMessage("You can't grant a default rank.")
@@ -43,15 +44,17 @@ object RankCommands : KoinComponent {
         }
         val issuerUUID = SenderUtil.resolveIssuerUUID(sender)
 
-        rankService.grant(Grant {
-            this.player = player.uuid
-            this.rank = rank
-            this.issuer = issuerUUID
-            this.addedAt = System.currentTimeMillis()
-            this.duration = duration
-            this.reason = reason
-            this.removed = false
-        })
+        rankService.grant(
+            Grant {
+                this.player = player.uuid
+                this.rank = rank
+                this.issuer = issuerUUID
+                this.addedAt = System.currentTimeMillis()
+                this.duration = duration
+                this.reason = reason
+                this.removed = false
+            }
+        )
         sender.sendMessage("Successfully added ${rank.name} rank to the ${player.name}.")
     }
 
@@ -63,7 +66,8 @@ object RankCommands : KoinComponent {
         @Sender sender: CommandSender,
         @Name("player") player: PlayerContainer,
         @Name("rank") rank: Rank,
-        @Text @Optional("Demoted") @Name("reason") reason: String
+        @Text @Optional("Demoted") @Name("reason")
+        reason: String
     ) {
         if (rank == Rank.DEFAULT) {
             sender.sendMessage("You can't remove default rank from a player.")
@@ -84,7 +88,11 @@ object RankCommands : KoinComponent {
     @Async
     @Permission("core.rank.check")
     @Description("Check player's rank")
-    fun check(@Sender sender: CommandSender, @Name("player") @Optional("me") player: PlayerContainer) {
+    fun check(
+        @Sender sender: CommandSender,
+        @Name("player") @Optional("me")
+        player: PlayerContainer
+    ) {
         sender.sendMessage("${player.name}'s rank is ${rankService.getByUUID(player.uuid).name}.")
     }
 }

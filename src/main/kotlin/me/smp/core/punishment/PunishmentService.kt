@@ -23,7 +23,7 @@ class PunishmentService : KoinComponent {
         networkService.publish(PacketPunishment(punishment.id, silent))
     }
 
-    //FIXME: Code duplication
+    // FIXME: Code duplication
     fun removePunishments(uuid: UUID, type: Punishment.Type, issuer: UUID, reason: String, silent: Boolean) {
         punishmentRepository.removePunishments(uuid, type, issuer, reason)
         networkService.publish(PacketPardon(uuid, type, issuer, reason, silent))

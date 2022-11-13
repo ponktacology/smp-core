@@ -12,6 +12,8 @@ import org.bukkit.command.CommandSender
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
+private const val s = "This player is already punished."
+
 object PunishmentCommands : KoinComponent {
 
     private val punishmentService: PunishmentService by inject()
@@ -23,7 +25,8 @@ object PunishmentCommands : KoinComponent {
         @Sender sender: CommandSender,
         @Name("player") player: PlayerContainer,
         @Name("duration") duration: Duration,
-        @Name("reason") @Text @Optional("Didn't respect server rules.") reason: String,
+        @Name("reason") @Text @Optional("Didn't respect server rules.")
+        reason: String,
         @Flag('s') silent: Boolean
     ) = addPunishment(sender, player, Punishment.Type.BAN, duration, reason, silent)
 
@@ -33,7 +36,8 @@ object PunishmentCommands : KoinComponent {
     fun unban(
         @Sender sender: CommandSender,
         @Name("player") player: PlayerContainer,
-        @Name("reason") @Text @Optional("Didn't respect server rules.") reason: String,
+        @Name("reason") @Text @Optional("Didn't respect server rules.")
+        reason: String,
         @Flag('s') silent: Boolean
     ) = removePunishment(sender, player, Punishment.Type.BAN, reason, silent)
 
@@ -44,7 +48,8 @@ object PunishmentCommands : KoinComponent {
         @Sender sender: CommandSender,
         @Name("player") player: PlayerContainer,
         @Name("duration") duration: Duration,
-        @Name("reason") @Text @Optional("Spam.") reason: String,
+        @Name("reason") @Text @Optional("Spam.")
+        reason: String,
         @Flag('s') silent: Boolean
     ) = addPunishment(sender, player, Punishment.Type.MUTE, duration, reason, silent)
 
@@ -54,7 +59,8 @@ object PunishmentCommands : KoinComponent {
     fun unmute(
         @Sender sender: CommandSender,
         @Name("player") player: PlayerContainer,
-        @Name("reason") @Text @Optional("Unmuted.") reason: String,
+        @Name("reason") @Text @Optional("Unmuted.")
+        reason: String,
         @Flag('s') silent: Boolean
     ) = removePunishment(sender, player, Punishment.Type.MUTE, reason, silent)
 
@@ -64,13 +70,17 @@ object PunishmentCommands : KoinComponent {
     fun kick(
         @Sender sender: CommandSender,
         @Name("player") player: PlayerContainer,
-        @Name("reason") @Text @Optional("Didn't respect server rules.") reason: String,
+        @Name("reason") @Text @Optional("Didn't respect server rules.")
+        reason: String,
         @Flag('s') silent: Boolean
     ) = addPunishment(sender, player, Punishment.Type.KICK, Duration(0), reason, silent)
 
     private fun addPunishment(
-        sender: CommandSender, player: PlayerContainer,
-        type: Punishment.Type, duration: Duration, reason: String,
+        sender: CommandSender,
+        player: PlayerContainer,
+        type: Punishment.Type,
+        duration: Duration,
+        reason: String,
         silent: Boolean
     ) {
         val issuerUUID = SenderUtil.resolveIssuerUUID(sender)
@@ -80,21 +90,26 @@ object PunishmentCommands : KoinComponent {
             return
         }
 
-        punishmentService.punish(Punishment {
-            this.player = player.uuid
-            this.type = type
-            this.address = Bukkit.getPlayer(player.uuid)?.address?.address.toString()
-            this.duration = duration
-            this.issuer = issuerUUID
-            this.addedAt = System.currentTimeMillis()
-            this.reason = reason
-            this.removed = false
-        }, silent)
+        punishmentService.punish(
+            Punishment {
+                this.player = player.uuid
+                this.type = type
+                this.address = Bukkit.getPlayer(player.uuid)?.address?.address.toString()
+                this.duration = duration
+                this.issuer = issuerUUID
+                this.addedAt = System.currentTimeMillis()
+                this.reason = reason
+                this.removed = false
+            },
+            silent
+        )
     }
 
     private fun removePunishment(
-        sender: CommandSender, player: PlayerContainer,
-        type: Punishment.Type, reason: String,
+        sender: CommandSender,
+        player: PlayerContainer,
+        type: Punishment.Type,
+        reason: String,
         silent: Boolean
     ) {
         val issuerUUID = SenderUtil.resolveIssuerUUID(sender)
