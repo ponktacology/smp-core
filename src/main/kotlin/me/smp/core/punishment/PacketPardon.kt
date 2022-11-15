@@ -1,5 +1,6 @@
 package me.smp.core.punishment
 
+import me.smp.shared.punishment.Punishment
 import java.util.*
 
 class PacketPardon(

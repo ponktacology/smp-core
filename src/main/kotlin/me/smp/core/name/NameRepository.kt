@@ -1,37 +1,33 @@
 package me.smp.core.name
 
 import com.google.gson.JsonParser
-import io.lettuce.core.RedisClient
 import me.smp.core.Config
 import me.smp.core.Console
 import me.smp.core.PlayerContainer
 import me.smp.core.SyncCatcher
+import me.smp.shared.SimpleHttp
+import me.smp.shared.network.NetworkService
 import org.bukkit.Bukkit
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import java.net.URI
-import java.net.http.HttpClient
-import java.net.http.HttpRequest
-import java.net.http.HttpResponse
-import java.net.http.HttpResponse.BodyHandlers
-import java.time.Duration
 import java.util.*
 
 private val UUID_CONVERT_REGEX = Regex("(\\w{8})(\\w{4})(\\w{4})(\\w{4})(\\w{12})")
 private const val NAME_PREFIX = "{name-cache}"
 private const val ADDRESS_PREFIX = "{address_cache}"
+private const val MINE_TOOLS_URL = "https://api.minetools.eu/uuid/"
 
 class NameRepository : KoinComponent {
-    private val redisClient: RedisClient by inject()
-    private val redisCommands = redisClient.connect().sync()
+
+    private val networkService: NetworkService by inject()
 
     fun loadCache(uuid: UUID, name: String) {
-        println("Caching $uuid and $name")
         SyncCatcher.verify()
-        redisCommands.setex("$NAME_PREFIX${name.uppercase()}", Config.NAME_CACHE_EXPIRY_SECONDS, uuid.toString())
-        redisCommands.setex("$NAME_PREFIX$uuid", Config.NAME_CACHE_EXPIRY_SECONDS, name)
-        redisCommands.setex("${ADDRESS_PREFIX}$uuid", Config.ADDRESS_CACHE_EXPIRY_SECONDS, name)
-        println("Cahed $uuid and $name")
+        println("Caching $uuid and $name")
+        networkService.setExpiring("$NAME_PREFIX${name.uppercase()}", uuid.toString(), Config.NAME_CACHE_EXPIRY_SECONDS)
+        networkService.setExpiring("$NAME_PREFIX$uuid", name, Config.NAME_CACHE_EXPIRY_SECONDS)
+        networkService.setExpiring("${ADDRESS_PREFIX}$uuid", name, Config.ADDRESS_CACHE_EXPIRY_SECONDS)
+        println("Cached $uuid and $name")
     }
 
     fun getByName(name: String): UUID? {
@@ -41,7 +37,7 @@ class NameRepository : KoinComponent {
             return it.uniqueId
         }
 
-        redisCommands.get("$NAME_PREFIX${name.uppercase()}")?.let {
+        networkService.get("$NAME_PREFIX${name.uppercase()}")?.let {
             println("Got from redis cache")
             return UUID.fromString(it)
         }
@@ -61,7 +57,7 @@ class NameRepository : KoinComponent {
             return it.name
         }
 
-        redisCommands.get("$NAME_PREFIX$uuid")?.let {
+        networkService.get("$NAME_PREFIX$uuid")?.let {
             println("Got from redis cache")
             return it
         }
@@ -74,13 +70,7 @@ class NameRepository : KoinComponent {
 
     private fun fetchFromMineTools(param: String): PlayerContainer? {
         SyncCatcher.verify()
-        val request = HttpRequest.newBuilder()
-            .GET()
-            .uri(URI.create("https://api.minetools.eu/uuid/$param"))
-            .timeout(Duration.ofSeconds(5))
-            .build()
-        val response: HttpResponse<String> =
-            HttpClient.newHttpClient().send(request, BodyHandlers.ofString())
+        val response = SimpleHttp.get("$MINE_TOOLS_URL$param")
         if (response.statusCode() != 200) return null
         val jsonObject = JsonParser.parseString(response.body()).asJsonObject
         if (jsonObject.get("status").asString != "OK") return null

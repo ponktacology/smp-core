@@ -13,13 +13,14 @@ import me.smp.core.cooldown.CooldownRepository
 import me.smp.core.cooldown.Cooldowns
 import me.smp.core.invsee.InvSeeCommands
 import me.smp.core.nametag.NameTagListener
-import me.smp.core.network.NetworkRepository
 import me.smp.core.pm.PrivateMessageCommands
 import me.smp.core.punishment.PunishmentCommands
 import me.smp.core.punishment.PunishmentListener
 import me.smp.core.punishment.PunishmentRepository
 import me.smp.core.rank.*
 import me.smp.core.scoreboard.ScoreboardService
+import me.smp.shared.Duration
+import me.smp.shared.network.NetworkRepository
 import me.vaperion.blade.Blade
 import me.vaperion.blade.bukkit.BladeBukkitPlatform
 import org.bukkit.plugin.java.JavaPlugin

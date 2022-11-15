@@ -1,9 +1,9 @@
 package me.smp.core.cooldown
 
 import me.smp.core.Cooldown
-import me.smp.core.Duration
 import me.smp.core.TaskDispatcher
 import me.smp.core.UUIDCache
+import me.smp.shared.Duration
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.ktorm.database.Database

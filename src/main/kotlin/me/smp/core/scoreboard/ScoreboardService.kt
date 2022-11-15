@@ -23,6 +23,7 @@ class ScoreboardService : KoinComponent {
         val provider = provider ?: return
         val board = scoreboardRepository.getOrCreate(player)
         val lines = provider.scoreboard(player)
+        board.updateTitle(provider.title(player))
         board.updateLines(lines)
     }
 

@@ -2,6 +2,8 @@ package me.smp.core.punishment
 
 import me.smp.core.PlayerNotFoundInCacheException
 import me.smp.core.SyncCatcher
+import me.smp.shared.punishment.Punishment
+import me.smp.shared.punishment.Punishments
 import org.bukkit.entity.Player
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -29,11 +31,11 @@ class PunishmentRepository : KoinComponent {
             return it.firstOrNull { punishment -> punishment.type == type && punishment.isActive() }
         }
 
-        val grants =
+        val punishments =
             database.punishments.filter { it.player eq uuid }
                 .toList()
 
-        return grants.firstOrNull { it.type == type && it.isActive() }
+        return punishments.firstOrNull { it.type == type && it.isActive() }
     }
 
     fun getByUUID(uuid: UUID, address: String, type: Punishment.Type): Punishment? {

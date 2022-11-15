@@ -1,8 +1,9 @@
 package me.smp.core.punishment
 
-import me.smp.core.Duration
 import me.smp.core.PlayerContainer
 import me.smp.core.SenderUtil
+import me.smp.shared.Duration
+import me.smp.shared.punishment.Punishment
 import me.vaperion.blade.annotation.argument.*
 import me.vaperion.blade.annotation.command.Async
 import me.vaperion.blade.annotation.command.Command

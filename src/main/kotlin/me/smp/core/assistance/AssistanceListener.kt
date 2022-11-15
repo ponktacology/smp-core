@@ -1,8 +1,8 @@
 package me.smp.core.assistance
 
 import me.smp.core.Config
-import me.smp.core.network.NetworkHandler
-import me.smp.core.network.NetworkListener
+import me.smp.shared.network.NetworkHandler
+import me.smp.shared.network.NetworkListener
 import me.smp.core.rank.RankService
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.event.ClickEvent

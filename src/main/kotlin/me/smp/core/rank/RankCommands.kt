@@ -1,8 +1,8 @@
 package me.smp.core.rank
 
-import me.smp.core.Duration
 import me.smp.core.PlayerContainer
 import me.smp.core.SenderUtil
+import me.smp.shared.Duration
 import me.vaperion.blade.annotation.argument.Name
 import me.vaperion.blade.annotation.argument.Optional
 import me.vaperion.blade.annotation.argument.Sender

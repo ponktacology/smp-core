@@ -1,5 +1,6 @@
 package me.smp.core
 
+import me.smp.shared.Duration
 import me.vaperion.blade.argument.Argument
 import me.vaperion.blade.argument.ArgumentProvider
 import me.vaperion.blade.context.Context

@@ -1,5 +1,7 @@
 package me.smp.core
 
+import me.smp.shared.Duration
+
 interface Expiring {
 
     var startedAt: Long

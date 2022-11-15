@@ -1,7 +1,7 @@
 package me.smp.core.rank
 
-import me.smp.core.Manageable
-import me.smp.core.duration
+import me.smp.shared.Manageable
+import me.smp.shared.duration
 import org.ktorm.entity.Entity
 import org.ktorm.schema.*
 

@@ -10,7 +10,7 @@ plugins {
     id("maven-publish")
 }
 
-group = "me.smp.core"
+group = "me.smp"
 version = "1.0-SNAPSHOT"
 
 repositories {
@@ -23,15 +23,16 @@ repositories {
 
 dependencies {
     compileOnly("org.purpurmc.purpur:purpur-api:1.17.1-R0.1-SNAPSHOT")
+    implementation("me.smp:shared:1.0-SNAPSHOT")
     implementation("org.jetbrains.kotlin:kotlin-stdlib:1.7.10")
     implementation("io.insert-koin:koin-core:3.2.1")
     implementation("org.ktorm:ktorm-core:3.5.0")
     implementation("org.ktorm:ktorm-support-postgresql:3.5.0")
-    implementation("fr.mrmicky:FastInv:3.0.3")
-    implementation("com.github.vaperion.blade:bukkit:3.0.0")
-    implementation("io.lettuce:lettuce-core:6.2.0.RELEASE")
     implementation("com.zaxxer:HikariCP:5.0.1")
+    implementation("com.github.vaperion.blade:bukkit:3.0.0")
+    implementation("fr.mrmicky:FastInv:3.0.3")
     implementation("dev.triumphteam:triumph-gui:3.1.2")
+
     implementation("fr.mrmicky:fastboard:1.2.1")
     testImplementation(kotlin("test"))
 }
@@ -52,7 +53,7 @@ tasks.withType<KotlinCompile> {
 publishing {
     publications {
         create<MavenPublication>("maven") {
-            groupId = "me.smp.core"
+            groupId = "me.smp"
             artifactId = "core"
             version = "1.0-SNAPSHOT"
 

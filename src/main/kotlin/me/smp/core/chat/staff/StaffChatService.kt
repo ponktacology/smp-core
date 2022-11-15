@@ -1,6 +1,6 @@
 package me.smp.core.chat.staff
 
-import me.smp.core.network.NetworkService
+import me.smp.shared.network.NetworkService
 import org.bukkit.entity.Player
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject

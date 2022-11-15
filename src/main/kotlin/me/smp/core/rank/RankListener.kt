@@ -2,8 +2,8 @@ package me.smp.core.rank
 
 import io.papermc.paper.chat.ChatRenderer
 import io.papermc.paper.event.player.AsyncChatEvent
-import me.smp.core.network.NetworkHandler
-import me.smp.core.network.NetworkListener
+import me.smp.shared.network.NetworkHandler
+import me.smp.shared.network.NetworkListener
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.event.EventHandler
