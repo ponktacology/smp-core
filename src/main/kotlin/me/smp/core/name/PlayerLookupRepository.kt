@@ -17,20 +17,24 @@ private const val NAME_PREFIX = "{name-cache}"
 private const val ADDRESS_PREFIX = "{address_cache}"
 private const val MINE_TOOLS_URL = "https://api.minetools.eu/uuid/"
 
-class NameRepository : KoinComponent {
+class PlayerLookupRepository : KoinComponent {
 
     private val networkService: NetworkService by inject()
 
-    fun loadCache(uuid: UUID, name: String) {
+    fun loadCache(uuid: UUID, name: String, address: String? = null) {
         SyncCatcher.verify()
-        println("Caching $uuid and $name")
+        println("Caching $uuid and $name${if (address != null) " and $address" else ""}")
         networkService.setExpiring("$NAME_PREFIX${name.uppercase()}", uuid.toString(), Config.NAME_CACHE_EXPIRY_SECONDS)
         networkService.setExpiring("$NAME_PREFIX$uuid", name, Config.NAME_CACHE_EXPIRY_SECONDS)
-        networkService.setExpiring("${ADDRESS_PREFIX}$uuid", name, Config.ADDRESS_CACHE_EXPIRY_SECONDS)
+
+        address?.let {
+            networkService.setExpiring("${ADDRESS_PREFIX}$uuid", it, Config.ADDRESS_CACHE_EXPIRY_SECONDS)
+        }
+
         println("Cached $uuid and $name")
     }
 
-    fun getByName(name: String): UUID? {
+    fun getUUIDByName(name: String): UUID? {
         SyncCatcher.verify()
         Bukkit.getPlayer(name)?.let {
             println("Got from online player")
@@ -48,7 +52,7 @@ class NameRepository : KoinComponent {
         }
     }
 
-    fun getByUUID(uuid: UUID): String? {
+    fun getNameByUUID(uuid: UUID): String? {
         SyncCatcher.verify()
 
         if (uuid == Console.UUID) return Console.DISPLAY_NAME
@@ -66,6 +70,24 @@ class NameRepository : KoinComponent {
             loadCache(it.uuid, it.name)
             return it.name
         }
+    }
+
+    fun getAddressByName(name: String): String? {
+        val uuid = getUUIDByName(name) ?: return null
+
+        return getAddressByUUID(uuid)
+    }
+
+    fun getAddressByUUID(uuid: UUID): String? {
+        SyncCatcher.verify()
+
+        if (uuid == Console.UUID) error("can't fetch address of a console")
+
+        Bukkit.getPlayer(uuid)?.let {
+            return it.address.hostName
+        }
+
+        return networkService.get("$ADDRESS_PREFIX$uuid")
     }
 
     private fun fetchFromMineTools(param: String): PlayerContainer? {

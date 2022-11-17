@@ -11,6 +11,9 @@ import me.smp.core.chat.staff.StaffChatListener
 import me.smp.core.cooldown.CooldownListener
 import me.smp.core.cooldown.CooldownRepository
 import me.smp.core.cooldown.Cooldowns
+import me.smp.core.freeze.FreezeCommands
+import me.smp.core.freeze.FreezeListener
+import me.smp.core.freeze.FreezeRepository
 import me.smp.core.invsee.InvSeeCommands
 import me.smp.core.nametag.NameTagListener
 import me.smp.core.pm.PrivateMessageCommands
@@ -47,6 +50,7 @@ class Plugin : JavaPlugin() {
 
         val punishmentListener = PunishmentListener()
         val rankListener = RankListener()
+        val freezeListener = FreezeListener()
 
         server.pluginManager.registerEvents(rankListener, this)
         server.pluginManager.registerEvents(punishmentListener, this)
@@ -55,6 +59,7 @@ class Plugin : JavaPlugin() {
         server.pluginManager.registerEvents(BenchmarkListener(), this)
         server.pluginManager.registerEvents(NameTagListener(), this)
         server.pluginManager.registerEvents(CooldownListener(), this)
+        server.pluginManager.registerEvents(freezeListener, this)
 
         blade = Blade.forPlatform(BladeBukkitPlatform(this)).bind {
             it.bind(ChatState::class.java, ChatStateArgumentProvider)
@@ -71,6 +76,7 @@ class Plugin : JavaPlugin() {
         networkRepository.registerListener(AssistanceListener())
         networkRepository.registerListener(punishmentListener)
         networkRepository.registerListener(rankListener)
+        networkRepository.registerListener(freezeListener)
         networkRepository.startListening()
 
         val cooldownRepository: CooldownRepository = koinApp.koin.get()
@@ -86,14 +92,17 @@ class Plugin : JavaPlugin() {
         blade.register(StaffChatCommands)
         blade.register(AssistanceCommands)
         blade.register(InvSeeCommands)
+        blade.register(FreezeCommands)
     }
 
     override fun onDisable() {
         val punishmentRepository: PunishmentRepository = koinApp.koin.get()
         val rankRepository: RankRepository = koinApp.koin.get()
         val cooldownRepository: CooldownRepository = koinApp.koin.get()
+        val freezeRepository: FreezeRepository = koinApp.koin.get()
         cooldownRepository.flushCache()
         punishmentRepository.flushCache()
         rankRepository.flushCache()
+        freezeRepository.flushCache()
     }
 }

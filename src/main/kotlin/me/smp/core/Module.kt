@@ -5,8 +5,10 @@ import me.smp.core.chat.ChatService
 import me.smp.core.chat.staff.StaffChatService
 import me.smp.core.cooldown.CooldownRepository
 import me.smp.core.cooldown.CooldownService
-import me.smp.core.name.NameRepository
-import me.smp.core.name.NameService
+import me.smp.core.freeze.FreezeRepository
+import me.smp.core.freeze.FreezeService
+import me.smp.core.name.PlayerLookupRepository
+import me.smp.core.name.PlayerLookupService
 import me.smp.core.pm.PrivateMessageRepository
 import me.smp.core.pm.PrivateMessageService
 import me.smp.core.punishment.PunishmentRepository
@@ -36,8 +38,8 @@ val MODULE = module {
     single { RankService() }
     single { PunishmentRepository() }
     single { PunishmentService() }
-    single { NameRepository() }
-    single { NameService() }
+    single { PlayerLookupRepository() }
+    single { PlayerLookupService() }
     single { PrivateMessageRepository() }
     single { PrivateMessageService() }
     single { NetworkRepository() }
@@ -48,4 +50,6 @@ val MODULE = module {
     single { CooldownService() }
     single { ScoreboardRepository() }
     single { ScoreboardService() }
+    single { FreezeService() }
+    single { FreezeRepository() }
 }

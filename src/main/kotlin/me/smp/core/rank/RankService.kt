@@ -1,6 +1,6 @@
 package me.smp.core.rank
 
-import me.smp.core.name.NameService
+import me.smp.core.name.PlayerLookupService
 import me.smp.shared.network.NetworkService
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
@@ -12,7 +12,7 @@ import java.util.*
 class RankService : KoinComponent {
 
     private val rankRepository: RankRepository by inject()
-    private val nameService: NameService by inject()
+    private val playerLookupService: PlayerLookupService by inject()
     private val networkService: NetworkService by inject()
 
     fun getByPlayer(player: Player) = rankRepository.getByPlayer(player)
@@ -37,7 +37,7 @@ class RankService : KoinComponent {
 
     fun getDisplayName(uuid: UUID): Component {
         val rank = getByUUID(uuid)
-        val name = nameService.getByUUID(uuid) ?: return Component.text("Anonymous", NamedTextColor.WHITE)
+        val name = playerLookupService.getNameByUUID(uuid) ?: return Component.text("Anonymous", NamedTextColor.WHITE)
         return Component.text(name, rank.color, *rank.decorations)
     }
 

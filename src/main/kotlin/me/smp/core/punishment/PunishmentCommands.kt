@@ -1,7 +1,8 @@
 package me.smp.core.punishment
 
 import me.smp.core.PlayerContainer
-import me.smp.core.SenderUtil
+import me.smp.core.name.PlayerLookupService
+import me.smp.core.util.SenderUtil
 import me.smp.shared.Duration
 import me.smp.shared.punishment.Punishment
 import me.vaperion.blade.annotation.argument.*
@@ -18,6 +19,7 @@ private const val s = "This player is already punished."
 object PunishmentCommands : KoinComponent {
 
     private val punishmentService: PunishmentService by inject()
+    private val playerLookupService: PlayerLookupService by inject()
 
     @Command("ban")
     @Permission("core.ban")
@@ -91,11 +93,13 @@ object PunishmentCommands : KoinComponent {
             return
         }
 
+        val address =
+            Bukkit.getPlayer(player.uuid)?.address?.hostName ?: playerLookupService.getAddressByUUID(player.uuid)
         punishmentService.punish(
             Punishment {
                 this.player = player.uuid
                 this.type = type
-                this.address = Bukkit.getPlayer(player.uuid)?.address?.address.toString()
+                this.address = address
                 this.duration = duration
                 this.issuer = issuerUUID
                 this.addedAt = System.currentTimeMillis()

@@ -1,9 +1,10 @@
 package me.smp.core.assistance
 
 import me.smp.core.Config
+import me.smp.core.rank.RankService
+import me.smp.core.util.StaffUtil
 import me.smp.shared.network.NetworkHandler
 import me.smp.shared.network.NetworkListener
-import me.smp.core.rank.RankService
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.event.HoverEvent
@@ -32,7 +33,7 @@ class AssistanceListener : NetworkListener, KoinComponent {
                 .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/tp ${it.name}"))
                 .hoverEvent(HoverEvent.showText(Component.text("Click to teleport to ${it.name}")))
         }
-        messageStaff(component)
+        StaffUtil.messageStaff(component)
     }
 
     @NetworkHandler
@@ -48,12 +49,6 @@ class AssistanceListener : NetworkListener, KoinComponent {
                 .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/tp ${it.name}"))
                 .hoverEvent(HoverEvent.showText(Component.text("Click to teleport to ${it.name}")))
         }
-        messageStaff(component)
-    }
-
-    private fun messageStaff(component: Component) {
-        Bukkit.getOnlinePlayers().filter { rankService.getByPlayer(it).isStaff() }.forEach {
-            it.sendMessage(component)
-        }
+        StaffUtil.messageStaff(component)
     }
 }

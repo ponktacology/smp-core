@@ -1,6 +1,6 @@
 package me.smp.core
 
-import me.smp.core.name.NameService
+import me.smp.core.name.PlayerLookupService
 import me.vaperion.blade.argument.Argument
 import me.vaperion.blade.argument.ArgumentProvider
 import me.vaperion.blade.context.Context
@@ -12,7 +12,7 @@ import org.koin.core.component.inject
 
 object PlayerContainerArgumentProvider : ArgumentProvider<PlayerContainer>, KoinComponent {
 
-    private val nameService: NameService by inject()
+    private val playerLookupService: PlayerLookupService by inject()
 
     override fun provide(ctx: Context, arg: Argument): PlayerContainer? {
         val name = arg.string
@@ -27,7 +27,7 @@ object PlayerContainerArgumentProvider : ArgumentProvider<PlayerContainer>, Koin
             return PlayerContainer(player.uniqueId, player.name)
         }
 
-        nameService.getByName(name)?.let {
+        playerLookupService.getUUIDByName(name)?.let {
             return PlayerContainer(it, name)
         }
 

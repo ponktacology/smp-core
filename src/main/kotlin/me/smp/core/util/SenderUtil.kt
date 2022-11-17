@@ -1,5 +1,6 @@
-package me.smp.core
+package me.smp.core.util
 
+import me.smp.core.Console
 import me.vaperion.blade.exception.BladeExitMessage
 import org.bukkit.command.CommandSender
 import org.bukkit.command.ConsoleCommandSender
