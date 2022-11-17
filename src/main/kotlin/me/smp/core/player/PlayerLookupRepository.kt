@@ -1,9 +1,8 @@
-package me.smp.core.name
+package me.smp.core.player
 
 import com.google.gson.JsonParser
 import me.smp.core.Config
 import me.smp.core.Console
-import me.smp.core.PlayerContainer
 import me.smp.core.SyncCatcher
 import me.smp.shared.SimpleHttp
 import me.smp.shared.network.NetworkService
@@ -28,6 +27,7 @@ class PlayerLookupRepository : KoinComponent {
         networkService.setExpiring("$NAME_PREFIX$uuid", name, Config.NAME_CACHE_EXPIRY_SECONDS)
 
         address?.let {
+            print("key: ${ADDRESS_PREFIX}$uuid")
             networkService.setExpiring("${ADDRESS_PREFIX}$uuid", it, Config.ADDRESS_CACHE_EXPIRY_SECONDS)
         }
 

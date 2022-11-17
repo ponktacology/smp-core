@@ -1,8 +1,8 @@
 package me.smp.core.pm
 
-import me.smp.core.PlayerNotFoundInCacheException
 import me.smp.core.SyncCatcher
 import me.smp.core.UUIDCache
+import me.smp.core.player.PlayerNotFoundInCacheException
 import org.bukkit.entity.Player
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject

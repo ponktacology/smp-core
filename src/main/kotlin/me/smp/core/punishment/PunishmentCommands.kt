@@ -1,7 +1,7 @@
 package me.smp.core.punishment
 
-import me.smp.core.PlayerContainer
-import me.smp.core.name.PlayerLookupService
+import me.smp.core.player.PlayerContainer
+import me.smp.core.player.PlayerLookupService
 import me.smp.core.util.SenderUtil
 import me.smp.shared.Duration
 import me.smp.shared.punishment.Punishment

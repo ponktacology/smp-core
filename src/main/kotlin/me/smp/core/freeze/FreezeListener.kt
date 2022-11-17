@@ -1,7 +1,7 @@
 package me.smp.core.freeze
 
 import me.smp.core.Config
-import me.smp.core.name.PlayerLookupService
+import me.smp.core.player.PlayerLookupService
 import me.smp.core.rank.RankService
 import me.smp.core.util.StaffUtil
 import me.smp.shared.network.NetworkHandler

@@ -1,7 +1,7 @@
 package me.smp.core.pm
 
 import me.smp.core.ComponentHelper
-import me.smp.core.PlayerContainer
+import me.smp.core.player.PlayerContainer
 import me.vaperion.blade.annotation.argument.Name
 import me.vaperion.blade.annotation.argument.Sender
 import me.vaperion.blade.annotation.argument.Text

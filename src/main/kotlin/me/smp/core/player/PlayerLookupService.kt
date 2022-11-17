@@ -1,4 +1,4 @@
-package me.smp.core.name
+package me.smp.core.player
 
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject

@@ -1,6 +1,5 @@
-package me.smp.core
+package me.smp.core.player
 
-import me.smp.core.name.PlayerLookupService
 import me.vaperion.blade.argument.Argument
 import me.vaperion.blade.argument.ArgumentProvider
 import me.vaperion.blade.context.Context

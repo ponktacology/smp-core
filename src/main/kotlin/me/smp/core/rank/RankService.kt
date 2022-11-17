@@ -1,6 +1,6 @@
 package me.smp.core.rank
 
-import me.smp.core.name.PlayerLookupService
+import me.smp.core.player.PlayerLookupService
 import me.smp.shared.network.NetworkService
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor

@@ -1,5 +1,6 @@
-package me.smp.core
+package me.smp.core.player
 
+import me.smp.core.TaskDispatcher
 import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player

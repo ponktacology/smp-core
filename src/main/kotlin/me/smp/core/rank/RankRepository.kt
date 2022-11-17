@@ -1,9 +1,9 @@
 package me.smp.core.rank
 
 import me.smp.core.Console
-import me.smp.core.PlayerNotFoundInCacheException
 import me.smp.core.SyncCatcher
 import me.smp.core.UUIDCache
+import me.smp.core.player.PlayerNotFoundInCacheException
 import me.smp.shared.Duration
 import org.bukkit.entity.Player
 import org.koin.core.component.KoinComponent

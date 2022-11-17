@@ -16,6 +16,8 @@ import me.smp.core.freeze.FreezeListener
 import me.smp.core.freeze.FreezeRepository
 import me.smp.core.invsee.InvSeeCommands
 import me.smp.core.nametag.NameTagListener
+import me.smp.core.player.PlayerContainer
+import me.smp.core.player.PlayerContainerArgumentProvider
 import me.smp.core.pm.PrivateMessageCommands
 import me.smp.core.punishment.PunishmentCommands
 import me.smp.core.punishment.PunishmentListener

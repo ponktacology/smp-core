@@ -2,7 +2,7 @@ package me.smp.core
 
 import me.smp.core.cooldown.CooldownRepository
 import me.smp.core.freeze.FreezeRepository
-import me.smp.core.name.PlayerLookupRepository
+import me.smp.core.player.PlayerLookupRepository
 import me.smp.core.pm.PrivateMessageRepository
 import me.smp.core.punishment.PunishmentRepository
 import me.smp.core.rank.RankRepository

@@ -7,8 +7,8 @@ import me.smp.core.cooldown.CooldownRepository
 import me.smp.core.cooldown.CooldownService
 import me.smp.core.freeze.FreezeRepository
 import me.smp.core.freeze.FreezeService
-import me.smp.core.name.PlayerLookupRepository
-import me.smp.core.name.PlayerLookupService
+import me.smp.core.player.PlayerLookupRepository
+import me.smp.core.player.PlayerLookupService
 import me.smp.core.pm.PrivateMessageRepository
 import me.smp.core.pm.PrivateMessageService
 import me.smp.core.punishment.PunishmentRepository

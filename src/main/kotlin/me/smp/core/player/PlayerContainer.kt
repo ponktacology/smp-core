@@ -1,4 +1,4 @@
-package me.smp.core
+package me.smp.core.player
 
 import java.util.UUID
 
