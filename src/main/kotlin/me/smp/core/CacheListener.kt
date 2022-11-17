@@ -39,9 +39,10 @@ class CacheListener : Listener, KoinComponent {
             cacheList.forEach {
                 it.loadCache(event.uniqueId)
             }
-            println("${event.address} ${event.rawAddress}")
-            punishmentRepository.loadCache(event.uniqueId, event.address.toString())
-            playerLookupRepository.loadCache(event.uniqueId, event.name, event.address.hostName)
+            val address = event.address.hostName
+            println(address)
+            punishmentRepository.loadCache(event.uniqueId, address)
+            playerLookupRepository.loadCache(event.uniqueId, event.name, address)
         } catch (e: Exception) {
             e.printStackTrace()
             event.disallow(

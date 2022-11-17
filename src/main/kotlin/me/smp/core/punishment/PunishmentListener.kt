@@ -41,7 +41,7 @@ class PunishmentListener : KoinComponent, Listener, NetworkListener {
             Bukkit.getPlayer(punishment.player)?.let {
                 TaskDispatcher.dispatch {
                     val permanent = punishment.duration.isPermanent()
-                    var component = Component.newline().append(Component.newline())
+                    var component = Component.empty()
                         .append(
                             Component.text(
                                 "You have been${if (permanent) " permanently " else " "}${punishment.type.addFormat}!",
@@ -64,6 +64,12 @@ class PunishmentListener : KoinComponent, Listener, NetworkListener {
                                 )
                         )
                     }
+                    component =
+                        component.append(
+                            Component.newline()
+                                .append(Component.newline())
+                                .append(Component.text("You can appeal at discord dc.traphouse.gg", NamedTextColor.RED))
+                        )
 
                     it.kick(component)
                 }
