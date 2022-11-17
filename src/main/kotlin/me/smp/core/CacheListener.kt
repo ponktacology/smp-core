@@ -1,7 +1,8 @@
 package me.smp.core
 
 import me.smp.core.cooldown.CooldownRepository
-import me.smp.core.name.NameRepository
+import me.smp.core.freeze.FreezeRepository
+import me.smp.core.name.PlayerLookupRepository
 import me.smp.core.pm.PrivateMessageRepository
 import me.smp.core.punishment.PunishmentRepository
 import me.smp.core.rank.RankRepository
@@ -20,10 +21,11 @@ class CacheListener : Listener, KoinComponent {
 
     private val rankRepository: RankRepository by inject()
     private val punishmentRepository: PunishmentRepository by inject()
-    private val nameRepository: NameRepository by inject()
+    private val playerLookupRepository: PlayerLookupRepository by inject()
     private val privateMessageRepository: PrivateMessageRepository by inject()
     private val cooldownRepository: CooldownRepository by inject()
     private val scoreboardRepository: ScoreboardRepository by inject()
+    private val freezeRepository: FreezeRepository by inject()
 
     private val cacheList = listOf<UUIDCache>(
         rankRepository,
@@ -39,7 +41,7 @@ class CacheListener : Listener, KoinComponent {
             }
             println("${event.address} ${event.rawAddress}")
             punishmentRepository.loadCache(event.uniqueId, event.address.toString())
-            nameRepository.loadCache(event.uniqueId, event.name)
+            playerLookupRepository.loadCache(event.uniqueId, event.name, event.address.hostName)
         } catch (e: Exception) {
             e.printStackTrace()
             event.disallow(
@@ -67,11 +69,12 @@ class CacheListener : Listener, KoinComponent {
         }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR)
     fun onPlayerQuit(event: PlayerQuitEvent) {
         val uuid = event.player.uniqueId
         cacheList.forEach { it.flushCache(uuid) }
         punishmentRepository.flushCache(uuid)
         scoreboardRepository.flushCache(uuid)
+        freezeRepository.flushCache(uuid)
     }
 }
