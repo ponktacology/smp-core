@@ -4,6 +4,7 @@ import io.papermc.paper.event.player.AsyncChatEvent
 import me.smp.core.Config
 import me.smp.core.TaskDispatcher
 import me.smp.core.rank.RankService
+import me.smp.core.util.StaffUtil
 import me.smp.shared.TimeFormatter
 import me.smp.shared.network.NetworkHandler
 import me.smp.shared.network.NetworkListener
@@ -41,7 +42,7 @@ class PunishmentListener : KoinComponent, Listener, NetworkListener {
             Bukkit.getPlayer(punishment.player)?.let {
                 TaskDispatcher.dispatch {
                     val permanent = punishment.duration.isPermanent()
-                    var component = Component.empty()
+                    var component = Component.newline()
                         .append(
                             Component.text(
                                 "You have been${if (permanent) " permanently " else " "}${punishment.type.addFormat}!",
@@ -53,23 +54,30 @@ class PunishmentListener : KoinComponent, Listener, NetworkListener {
                         .append(Component.newline())
                         .append(Component.text("Reason: ${punishment.reason}", NamedTextColor.RED))
 
-                    if (!permanent) {
-                        component = component.append(
-                            Component.newline()
-                                .append(
-                                    Component.text(
-                                        "Expires at: ${TimeFormatter.formatDate(punishment.duration + punishment.addedAt)}",
-                                        NamedTextColor.RED
+                    if (punishment.type != Punishment.Type.KICK) {
+                        if (!permanent) {
+                            component = component.append(
+                                Component.newline()
+                                    .append(
+                                        Component.text(
+                                            "Expires at: ${TimeFormatter.formatDate(punishment.duration + punishment.addedAt)}",
+                                            NamedTextColor.RED
+                                        )
                                     )
-                                )
-                        )
+                            )
+                        }
+                        component =
+                            component.append(
+                                Component.newline()
+                                    .append(Component.newline())
+                                    .append(
+                                        Component.text(
+                                            "You can appeal at discord dc.traphouse.gg",
+                                            NamedTextColor.RED
+                                        )
+                                    )
+                            )
                     }
-                    component =
-                        component.append(
-                            Component.newline()
-                                .append(Component.newline())
-                                .append(Component.text("You can appeal at discord dc.traphouse.gg", NamedTextColor.RED))
-                        )
 
                     it.kick(component)
                 }
@@ -132,12 +140,7 @@ class PunishmentListener : KoinComponent, Listener, NetworkListener {
                 .append(Component.text("[${Config.SERVER_NAME}] ", NamedTextColor.BLUE))
                 .append(component)
 
-            Bukkit.getOnlinePlayers().forEach {
-                val rank = rankService.getByPlayer(it)
-                if (rank.isStaff()) {
-                    it.sendMessage(component)
-                }
-            }
+            StaffUtil.messageStaff(component)
         } else Bukkit.broadcast(component)
     }
 }
