@@ -45,7 +45,7 @@ object NameTags : KoinComponent {
         player.scoreboard = scoreboard
     }
 
-    private fun reset(player: Player, other: Player) {
+    fun reset(player: Player, other: Player) {
         if (other == player) return
         player.scoreboard.getObjective(DisplaySlot.BELOW_NAME)?.unregister()
         teamNames.forEach {

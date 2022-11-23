@@ -19,4 +19,7 @@ object TaskDispatcher : KoinComponent {
     fun runRepeatingAsync(runnable: Runnable, ticks: Long) {
         Bukkit.getServer().scheduler.runTaskTimerAsynchronously(plugin, runnable, 0L, ticks)
     }
+
+    fun runRepeating(runnable: Runnable, ticks: Long) =
+        Bukkit.getServer().scheduler.runTaskTimer(plugin, runnable, 0L, ticks)
 }
