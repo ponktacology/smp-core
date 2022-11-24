@@ -2,8 +2,11 @@ package me.smp.core.chat
 
 import io.papermc.paper.event.player.AsyncChatEvent
 import me.smp.core.rank.RankService
+import me.smp.core.util.StaffUtil
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.format.NamedTextColor
+import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
@@ -14,31 +17,59 @@ class ChatListener : Listener, KoinComponent {
 
     private val rankService: RankService by inject()
     private val chatService: ChatService by inject()
+    private val chatFilter: ChatFilter by inject()
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     fun onPlayerChat(event: AsyncChatEvent) {
         val player = event.player
         val rank = rankService.getByPlayer(player)
-        val cancelled = when (chatService.chatState()) {
+
+        if (rank.isStaff()) return
+        if (when (chatService.chatState()) {
             ChatState.DISABLED -> {
-                if (!rank.isStaff()) {
-                    player.sendMessage(Component.text("Chat is currently disabled.", NamedTextColor.RED))
-                    true
-                } else false
+                player.sendMessage(Component.text("Chat is currently disabled.", NamedTextColor.RED))
+                true
             }
+
             ChatState.DONATOR_ONLY -> {
-                if (!(rank.isStaff() || rank.isDonator())) {
+                if (!rank.isDonator()) {
                     player.sendMessage(
-                        Component.text(
-                            "Chat is currently only available to donators.",
-                            NamedTextColor.RED
+                            Component.text(
+                                    "Chat is currently only available to donators.",
+                                    NamedTextColor.RED
+                                )
                         )
-                    )
                     true
-                } else false
+                }
+                false
             }
+
             else -> false
         }
-        event.isCancelled = cancelled
+        ) {
+            event.isCancelled = true
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
+    fun onChatEvent(event: AsyncChatEvent) {
+        val player = event.player
+        val rank = rankService.getByPlayer(player)
+        val text = (event.message() as TextComponent).content()
+        println(text)
+        println(chatFilter.isFiltered(text))
+
+        if (!rank.isStaff() && chatFilter.isFiltered(text)) {
+            event.viewers().removeIf { it is Player && it != player }
+            StaffUtil.messageStaff(
+                Component
+                    .empty()
+                    .append(Component.text("[Filtered] ", NamedTextColor.RED))
+                    .append(
+                        event.renderer()
+                            .render(event.player, event.player.displayName(), event.message(), event.player)
+                    )
+            )
+        }
     }
 }

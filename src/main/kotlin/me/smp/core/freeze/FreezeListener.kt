@@ -3,6 +3,7 @@ package me.smp.core.freeze
 import me.smp.core.Config
 import me.smp.core.player.PlayerLookupService
 import me.smp.core.rank.RankService
+import me.smp.core.util.LocationUtil
 import me.smp.core.util.StaffUtil
 import me.smp.shared.network.NetworkHandler
 import me.smp.shared.network.NetworkListener
@@ -11,8 +12,13 @@ import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.event.HoverEvent
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Bukkit
+import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
+import org.bukkit.event.entity.EntityDamageEvent
+import org.bukkit.event.inventory.InventoryClickEvent
+import org.bukkit.event.player.PlayerDropItemEvent
+import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -69,5 +75,37 @@ class FreezeListener : Listener, NetworkListener, KoinComponent {
         if (freezeService.isFrozen(player)) {
             freezeService.loggedOutWhileFrozen(player)
         }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    fun onPlayerMove(event: PlayerMoveEvent) {
+        if (!LocationUtil.hasChanged(event.from, event.to)) return
+        val player = event.player
+        if (freezeService.isFrozen(player)) {
+            event.isCancelled = true
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    fun onPlayerMove(event: PlayerDropItemEvent) {
+        val player = event.player
+        if (freezeService.isFrozen(player)) {
+            event.isCancelled = true
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    fun onPlayerMove(event: InventoryClickEvent) {
+        val player = event.whoClicked as Player
+        if (freezeService.isFrozen(player)) {
+            event.isCancelled = true
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    fun onPlayerMove(event: EntityDamageEvent) {
+        val player = event.entity
+        if (player !is Player || !freezeService.isFrozen(player)) return
+        event.isCancelled = true
     }
 }

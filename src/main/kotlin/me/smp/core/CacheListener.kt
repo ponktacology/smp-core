@@ -55,6 +55,7 @@ class CacheListener : Listener, KoinComponent {
     @EventHandler(priority = EventPriority.LOWEST)
     fun onPlayerJoin(event: PlayerJoinEvent) {
         val player = event.player
+        event.joinMessage(Component.empty())
         cacheList.forEach {
             if (!it.verifyCache(player.uniqueId)) {
                 player.kick(Component.text("Error while verifying player data"))
@@ -67,12 +68,15 @@ class CacheListener : Listener, KoinComponent {
         if (event.loginResult != AsyncPlayerPreLoginEvent.Result.ALLOWED) {
             cacheList.forEach { it.flushCache(event.uniqueId) }
             punishmentRepository.flushCache(event.uniqueId)
+            scoreboardRepository.flushCache(event.uniqueId)
+            freezeRepository.flushCache(event.uniqueId)
         }
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     fun onPlayerQuit(event: PlayerQuitEvent) {
         val uuid = event.player.uniqueId
+        event.quitMessage(Component.empty())
         cacheList.forEach { it.flushCache(uuid) }
         punishmentRepository.flushCache(uuid)
         scoreboardRepository.flushCache(uuid)

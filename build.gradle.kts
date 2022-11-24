@@ -19,6 +19,7 @@ repositories {
     maven("https://repo.purpurmc.org/snapshots")
     maven("https://jitpack.io")
     maven("https://repo.mattstudios.me/artifactory/public/")
+    maven("https://repo.dmulloy2.net/repository/public/")
 }
 
 dependencies {
@@ -32,7 +33,7 @@ dependencies {
     implementation("com.github.vaperion.blade:bukkit:3.0.0")
     implementation("fr.mrmicky:FastInv:3.0.3")
     implementation("dev.triumphteam:triumph-gui:3.1.2")
-
+    compileOnly("com.comphenix.protocol:ProtocolLib:4.7.0")
     implementation("fr.mrmicky:fastboard:1.2.1")
     testImplementation(kotlin("test"))
 }

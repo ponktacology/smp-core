@@ -85,6 +85,7 @@ class RankRepository : KoinComponent, UUIDCache {
     }
 
     fun unGrant(uuid: UUID, rank: Rank) {
+        SyncCatcher.verify()
         cache[uuid]?.let {
             if (it == rank) {
                 loadCache(uuid) // Resolve rank again

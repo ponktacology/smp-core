@@ -69,6 +69,13 @@ CREATE INDEX playerPmIgnored ON pm_ignored USING btree (player);
 CREATE TABLE cooldowns
 (
     id       VARCHAR NOT NULL PRIMARY KEY,
-    player   UUID   NOT NULL,
-    reset_at BIGINT NOT NULL
+    player   UUID    NOT NULL,
+    reset_at BIGINT  NOT NULL
+);
+
+CREATE TABLE vanish_settings
+(
+    id      SERIAL NOT NULL PRIMARY KEY,
+    player  UUID    NOT NULL,
+    enabled BOOLEAN NOT NULL
 );

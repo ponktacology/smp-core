@@ -15,7 +15,7 @@ import me.smp.core.freeze.FreezeCommands
 import me.smp.core.freeze.FreezeListener
 import me.smp.core.freeze.FreezeRepository
 import me.smp.core.invsee.InvSeeCommands
-import me.smp.core.nametag.NameTagListener
+import me.smp.core.nametag.FrozenNametagHandler
 import me.smp.core.player.PlayerContainer
 import me.smp.core.player.PlayerContainerArgumentProvider
 import me.smp.core.pm.PrivateMessageCommands
@@ -24,6 +24,10 @@ import me.smp.core.punishment.PunishmentListener
 import me.smp.core.punishment.PunishmentRepository
 import me.smp.core.rank.*
 import me.smp.core.scoreboard.ScoreboardService
+import me.smp.core.vanish.VanishCommands
+import me.smp.core.vanish.VanishListener
+import me.smp.core.vanish.VanishRepository
+import me.smp.core.vanish.VanishTask
 import me.smp.shared.Duration
 import me.smp.shared.network.NetworkRepository
 import me.vaperion.blade.Blade
@@ -50,6 +54,7 @@ class Plugin : JavaPlugin() {
             "org.litote.kmongo.pojo.PojoClassMappingTypeService"
         )
 
+        TaskDispatcher.runRepeatingAsync(VanishTask(), 20L)
         val punishmentListener = PunishmentListener()
         val rankListener = RankListener()
         val freezeListener = FreezeListener()
@@ -59,9 +64,9 @@ class Plugin : JavaPlugin() {
         server.pluginManager.registerEvents(ChatListener(), this)
         server.pluginManager.registerEvents(CacheListener(), this)
         server.pluginManager.registerEvents(BenchmarkListener(), this)
-        server.pluginManager.registerEvents(NameTagListener(), this)
         server.pluginManager.registerEvents(CooldownListener(), this)
         server.pluginManager.registerEvents(freezeListener, this)
+        server.pluginManager.registerEvents(VanishListener(), this)
 
         blade = Blade.forPlatform(BladeBukkitPlatform(this)).bind {
             it.bind(ChatState::class.java, ChatStateArgumentProvider)
@@ -95,6 +100,10 @@ class Plugin : JavaPlugin() {
         blade.register(AssistanceCommands)
         blade.register(InvSeeCommands)
         blade.register(FreezeCommands)
+        blade.register(VanishCommands)
+
+        FrozenNametagHandler.init(this)
+        FrozenNametagHandler.registerProvider(RankNameTagProvider())
     }
 
     override fun onDisable() {
@@ -102,9 +111,11 @@ class Plugin : JavaPlugin() {
         val rankRepository: RankRepository = koinApp.koin.get()
         val cooldownRepository: CooldownRepository = koinApp.koin.get()
         val freezeRepository: FreezeRepository = koinApp.koin.get()
+        val vanishRepository: VanishRepository = koinApp.koin.get()
         cooldownRepository.flushCache()
         punishmentRepository.flushCache()
         rankRepository.flushCache()
         freezeRepository.flushCache()
+        vanishRepository.flushCache()
     }
 }

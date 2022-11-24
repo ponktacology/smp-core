@@ -1,6 +1,7 @@
 package me.smp.core
 
 import me.smp.core.assistance.AssistanceService
+import me.smp.core.chat.ChatFilter
 import me.smp.core.chat.ChatService
 import me.smp.core.chat.staff.StaffChatService
 import me.smp.core.cooldown.CooldownRepository
@@ -17,6 +18,8 @@ import me.smp.core.rank.RankRepository
 import me.smp.core.rank.RankService
 import me.smp.core.scoreboard.ScoreboardRepository
 import me.smp.core.scoreboard.ScoreboardService
+import me.smp.core.vanish.VanishRepository
+import me.smp.core.vanish.VanishService
 import me.smp.shared.ConnectionProvider
 import me.smp.shared.network.NetworkRepository
 import me.smp.shared.network.NetworkService
@@ -32,6 +35,7 @@ val MODULE = module {
         ConnectionProvider.network("redis://localhost:6379")
     }
     single { JavaPlugin.getPlugin(Plugin::class.java) }
+    single { JavaPlugin.getPlugin(Plugin::class.java).config }
     single { Bukkit.getServer().logger }
     single { ChatService() }
     single { RankRepository() }
@@ -52,4 +56,7 @@ val MODULE = module {
     single { ScoreboardService() }
     single { FreezeService() }
     single { FreezeRepository() }
+    single { ChatFilter() }
+    single { VanishRepository() }
+    single { VanishService() }
 }
