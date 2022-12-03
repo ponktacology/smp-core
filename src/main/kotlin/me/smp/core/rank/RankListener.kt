@@ -7,7 +7,9 @@ import me.smp.shared.network.NetworkListener
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.event.EventHandler
+import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
+import org.bukkit.event.player.PlayerJoinEvent
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
@@ -25,6 +27,11 @@ class RankListener : Listener, KoinComponent, NetworkListener {
                     .append(Component.text(": ", NamedTextColor.WHITE).append(message))
             }
         )
+    }
+
+    @EventHandler(priority = EventPriority.LOW)
+    fun onPlayerJoin(event: PlayerJoinEvent) {
+        rankRepository.recalculatePermissions(event.player)
     }
 
     @NetworkHandler

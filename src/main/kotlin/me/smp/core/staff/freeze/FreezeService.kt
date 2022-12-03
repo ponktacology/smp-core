@@ -1,4 +1,4 @@
-package me.smp.core.freeze
+package me.smp.core.staff.freeze
 
 import me.smp.core.TaskDispatcher
 import me.smp.shared.network.NetworkService

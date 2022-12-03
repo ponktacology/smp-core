@@ -1,4 +1,4 @@
-package me.smp.core.chat.staff
+package me.smp.core.staff.chat
 
 import me.smp.shared.network.NetworkService
 import org.bukkit.entity.Player

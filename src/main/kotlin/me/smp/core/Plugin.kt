@@ -1,40 +1,42 @@
 package me.smp.core
 
-import me.smp.core.assistance.AssistanceCommands
-import me.smp.core.assistance.AssistanceListener
 import me.smp.core.chat.ChatCommands
 import me.smp.core.chat.ChatListener
 import me.smp.core.chat.ChatState
 import me.smp.core.chat.ChatStateArgumentProvider
-import me.smp.core.chat.staff.StaffChatCommands
-import me.smp.core.chat.staff.StaffChatListener
 import me.smp.core.cooldown.CooldownListener
 import me.smp.core.cooldown.CooldownRepository
 import me.smp.core.cooldown.Cooldowns
-import me.smp.core.freeze.FreezeCommands
-import me.smp.core.freeze.FreezeListener
-import me.smp.core.freeze.FreezeRepository
 import me.smp.core.invsee.InvSeeCommands
 import me.smp.core.nametag.FrozenNametagHandler
 import me.smp.core.player.PlayerContainer
 import me.smp.core.player.PlayerContainerArgumentProvider
 import me.smp.core.pm.PrivateMessageCommands
+import me.smp.core.protection.ProtectionCommands
+import me.smp.core.protection.WorldArgumentProvider
 import me.smp.core.punishment.PunishmentCommands
 import me.smp.core.punishment.PunishmentListener
 import me.smp.core.punishment.PunishmentRepository
 import me.smp.core.rank.*
 import me.smp.core.scoreboard.ScoreboardService
-import me.smp.core.vanish.VanishCommands
-import me.smp.core.vanish.VanishListener
-import me.smp.core.vanish.VanishRepository
-import me.smp.core.vanish.VanishTask
+import me.smp.core.staff.StaffCommands
+import me.smp.core.staff.StaffSettingsListener
+import me.smp.core.staff.StaffSettingsRepository
+import me.smp.core.staff.VanishDisplayTask
+import me.smp.core.staff.assistance.AssistanceCommands
+import me.smp.core.staff.assistance.AssistanceListener
+import me.smp.core.staff.chat.StaffChatCommands
+import me.smp.core.staff.chat.StaffChatListener
+import me.smp.core.staff.freeze.FreezeCommands
+import me.smp.core.staff.freeze.FreezeListener
+import me.smp.core.staff.freeze.FreezeRepository
 import me.smp.shared.Duration
 import me.smp.shared.network.NetworkRepository
 import me.vaperion.blade.Blade
 import me.vaperion.blade.bukkit.BladeBukkitPlatform
+import org.bukkit.World
 import org.bukkit.plugin.java.JavaPlugin
 import org.koin.core.context.startKoin
-import java.util.logging.Level
 
 class Plugin : JavaPlugin() {
 
@@ -47,14 +49,6 @@ class Plugin : JavaPlugin() {
     }
 
     override fun onEnable() {
-        logger.log(Level.INFO, "siema eniu")
-
-        System.setProperty(
-            "org.litote.mongo.test.mapping.service",
-            "org.litote.kmongo.pojo.PojoClassMappingTypeService"
-        )
-
-        TaskDispatcher.runRepeatingAsync(VanishTask(), 20L)
         val punishmentListener = PunishmentListener()
         val rankListener = RankListener()
         val freezeListener = FreezeListener()
@@ -66,13 +60,14 @@ class Plugin : JavaPlugin() {
         server.pluginManager.registerEvents(BenchmarkListener(), this)
         server.pluginManager.registerEvents(CooldownListener(), this)
         server.pluginManager.registerEvents(freezeListener, this)
-        server.pluginManager.registerEvents(VanishListener(), this)
+        server.pluginManager.registerEvents(StaffSettingsListener(), this)
 
         blade = Blade.forPlatform(BladeBukkitPlatform(this)).bind {
             it.bind(ChatState::class.java, ChatStateArgumentProvider)
             it.bind(PlayerContainer::class.java, PlayerContainerArgumentProvider)
             it.bind(Rank::class.java, RankArgumentProvider)
             it.bind(Duration::class.java, DurationArgumentProvider)
+            it.bind(World::class.java, WorldArgumentProvider)
         }.config {
             it.fallbackPrefix = "core"
             it.isOverrideCommands = true
@@ -100,10 +95,13 @@ class Plugin : JavaPlugin() {
         blade.register(AssistanceCommands)
         blade.register(InvSeeCommands)
         blade.register(FreezeCommands)
-        blade.register(VanishCommands)
+        blade.register(StaffCommands)
+        blade.register(ProtectionCommands)
 
         FrozenNametagHandler.init(this)
         FrozenNametagHandler.registerProvider(RankNameTagProvider())
+
+        TaskDispatcher.runRepeatingAsync(VanishDisplayTask(), 20L)
     }
 
     override fun onDisable() {
@@ -111,11 +109,11 @@ class Plugin : JavaPlugin() {
         val rankRepository: RankRepository = koinApp.koin.get()
         val cooldownRepository: CooldownRepository = koinApp.koin.get()
         val freezeRepository: FreezeRepository = koinApp.koin.get()
-        val vanishRepository: VanishRepository = koinApp.koin.get()
+        val staffSettingsRepository: StaffSettingsRepository = koinApp.koin.get()
         cooldownRepository.flushCache()
         punishmentRepository.flushCache()
         rankRepository.flushCache()
         freezeRepository.flushCache()
-        vanishRepository.flushCache()
+        staffSettingsRepository.flushCache()
     }
 }

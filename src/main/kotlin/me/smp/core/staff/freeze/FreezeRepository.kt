@@ -1,4 +1,4 @@
-package me.smp.core.freeze
+package me.smp.core.staff.freeze
 
 import org.bukkit.entity.Player
 import java.util.*

@@ -73,9 +73,11 @@ CREATE TABLE cooldowns
     reset_at BIGINT  NOT NULL
 );
 
-CREATE TABLE vanish_settings
+CREATE TABLE staff_settings
 (
-    id      SERIAL NOT NULL PRIMARY KEY,
-    player  UUID    NOT NULL,
-    enabled BOOLEAN NOT NULL
+    id     SERIAL  NOT NULL PRIMARY KEY,
+    player UUID    NOT NULL,
+    vanish BOOLEAN NOT NULL,
+    god    BOOLEAN NOT NULL,
+    fly    BOOLEAN NOT NULL
 );

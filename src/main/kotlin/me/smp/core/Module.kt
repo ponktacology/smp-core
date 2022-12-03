@@ -1,25 +1,26 @@
 package me.smp.core
 
-import me.smp.core.assistance.AssistanceService
 import me.smp.core.chat.ChatFilter
 import me.smp.core.chat.ChatService
-import me.smp.core.chat.staff.StaffChatService
 import me.smp.core.cooldown.CooldownRepository
 import me.smp.core.cooldown.CooldownService
-import me.smp.core.freeze.FreezeRepository
-import me.smp.core.freeze.FreezeService
 import me.smp.core.player.PlayerLookupRepository
 import me.smp.core.player.PlayerLookupService
 import me.smp.core.pm.PrivateMessageRepository
 import me.smp.core.pm.PrivateMessageService
+import me.smp.core.protection.ProtectionService
 import me.smp.core.punishment.PunishmentRepository
 import me.smp.core.punishment.PunishmentService
 import me.smp.core.rank.RankRepository
 import me.smp.core.rank.RankService
 import me.smp.core.scoreboard.ScoreboardRepository
 import me.smp.core.scoreboard.ScoreboardService
-import me.smp.core.vanish.VanishRepository
-import me.smp.core.vanish.VanishService
+import me.smp.core.staff.StaffService
+import me.smp.core.staff.StaffSettingsRepository
+import me.smp.core.staff.assistance.AssistanceService
+import me.smp.core.staff.chat.StaffChatService
+import me.smp.core.staff.freeze.FreezeRepository
+import me.smp.core.staff.freeze.FreezeService
 import me.smp.shared.ConnectionProvider
 import me.smp.shared.network.NetworkRepository
 import me.smp.shared.network.NetworkService
@@ -57,6 +58,7 @@ val MODULE = module {
     single { FreezeService() }
     single { FreezeRepository() }
     single { ChatFilter() }
-    single { VanishRepository() }
-    single { VanishService() }
+    single { StaffSettingsRepository() }
+    single { StaffService() }
+    single { ProtectionService() }
 }

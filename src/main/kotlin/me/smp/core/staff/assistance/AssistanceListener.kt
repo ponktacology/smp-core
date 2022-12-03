@@ -1,4 +1,4 @@
-package me.smp.core.assistance
+package me.smp.core.staff.assistance
 
 import me.smp.core.Config
 import me.smp.core.rank.RankService

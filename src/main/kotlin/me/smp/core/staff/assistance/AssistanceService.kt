@@ -1,4 +1,4 @@
-package me.smp.core.assistance
+package me.smp.core.staff.assistance
 
 import me.smp.shared.network.NetworkService
 import org.bukkit.entity.Player

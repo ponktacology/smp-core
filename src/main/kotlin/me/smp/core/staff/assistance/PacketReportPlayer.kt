@@ -1,4 +1,4 @@
-package me.smp.core.assistance
+package me.smp.core.staff.assistance
 
 import java.util.*
 

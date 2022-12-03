@@ -9,39 +9,63 @@ import org.bukkit.ChatColor
 enum class Rank(
     val displayName: String,
     val power: Int,
+    val _permissions: Set<String>,
+    val inheritance: Set<Rank>,
     val color: TextColor,
     val nameTagColor: ChatColor,
     vararg val decorations: TextDecoration
 ) {
 
-    CONSOLE("Console", 9999, NamedTextColor.DARK_RED, ChatColor.DARK_RED, TextDecoration.ITALIC),
+    CONSOLE(
+        "CONSOLE",
+        9999,
+        emptySet<String>(),
+        emptySet<Rank>(),
+        NamedTextColor.DARK_RED,
+        ChatColor.DARK_RED,
+        TextDecoration.ITALIC
+    ),
     HEAD_ADMIN(
-        "Head-Admin",
+        "HEAD-ADMIN",
         999,
+        emptySet<String>(),
+        emptySet<Rank>(),
         NamedTextColor.RED,
         ChatColor.RED,
         TextDecoration.ITALIC
     ),
-    ADMIN("Admin", 990, NamedTextColor.RED, ChatColor.RED),
-    MODERATOR("Mod", 980, NamedTextColor.GREEN, ChatColor.GREEN),
-    HELPER(
-        "Helper",
+    ADMIN("ADMIN", 990, emptySet<String>(), emptySet<Rank>(), NamedTextColor.RED, ChatColor.RED),
+    MODERATOR("MOD", 980, setOf("core.vanish"), emptySet<Rank>(), NamedTextColor.GREEN, ChatColor.GREEN),
+    TRAINEE(
+        "TRAINEE",
         970,
+        emptySet<String>(),
+        emptySet<Rank>(),
         NamedTextColor.BLUE,
         ChatColor.BLUE,
         TextDecoration.ITALIC
     ), // kingpin, pimp, trapper, dealer
-    MEDIA("Media", 23, NamedTextColor.LIGHT_PURPLE, ChatColor.LIGHT_PURPLE),
-    KINGPIN("Kingpin", 13, NamedTextColor.GOLD, ChatColor.BLUE),
+    MEDIA("MEDIA", 23, emptySet<String>(), emptySet<Rank>(), NamedTextColor.LIGHT_PURPLE, ChatColor.LIGHT_PURPLE),
+    KINGPIN("KINGPIN", 13, emptySet<String>(), emptySet<Rank>(), NamedTextColor.GOLD, ChatColor.BLUE),
     PIMP(
-        "Pimp",
+        "PIMP",
         12,
+        emptySet<String>(),
+        emptySet<Rank>(),
         NamedTextColor.GOLD,
         ChatColor.GOLD
     ),
-    TRAPPER("Trapper", 11, NamedTextColor.RED, ChatColor.RED),
-    DEALER("Dealer", 10, NamedTextColor.GREEN, ChatColor.GREEN),
-    DEFAULT("Default", 0, NamedTextColor.GRAY, ChatColor.WHITE);
+    TRAPPER("TRAPPER", 11, emptySet<String>(), emptySet<Rank>(), NamedTextColor.RED, ChatColor.RED),
+    DEALER("DEALER", 10, emptySet<String>(), emptySet<Rank>(), NamedTextColor.GREEN, ChatColor.GREEN),
+    DEFAULT("DEFAULT", 0, emptySet<String>(), emptySet<Rank>(), NamedTextColor.GRAY, ChatColor.WHITE);
+
+    val permissions: Set<String>
+        get() {
+            val allPermissions = mutableSetOf<String>()
+            allPermissions.addAll(_permissions)
+            inheritance.forEach { allPermissions.addAll(it.permissions) }
+            return allPermissions
+        }
 
     fun getPrefix() = if (this == DEFAULT) Component.empty() else Component.empty()
         .append(Component.text("${this.displayName} ", this.color, TextDecoration.BOLD))
@@ -54,7 +78,7 @@ enum class Rank(
     }
 
     fun isDonator() = when (this) {
-        KINGPIN, PIMP, DEALER, TRAPPER, TRAPPER -> true
+        KINGPIN, PIMP, DEALER, TRAPPER -> true
         else -> false
     }
 }

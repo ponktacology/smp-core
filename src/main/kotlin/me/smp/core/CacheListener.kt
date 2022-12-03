@@ -1,12 +1,13 @@
 package me.smp.core
 
 import me.smp.core.cooldown.CooldownRepository
-import me.smp.core.freeze.FreezeRepository
 import me.smp.core.player.PlayerLookupRepository
 import me.smp.core.pm.PrivateMessageRepository
 import me.smp.core.punishment.PunishmentRepository
 import me.smp.core.rank.RankRepository
 import me.smp.core.scoreboard.ScoreboardRepository
+import me.smp.core.staff.StaffSettingsRepository
+import me.smp.core.staff.freeze.FreezeRepository
 import net.kyori.adventure.text.Component
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -26,11 +27,13 @@ class CacheListener : Listener, KoinComponent {
     private val cooldownRepository: CooldownRepository by inject()
     private val scoreboardRepository: ScoreboardRepository by inject()
     private val freezeRepository: FreezeRepository by inject()
+    private val staffSettingsRepository: StaffSettingsRepository by inject()
 
     private val cacheList = listOf<UUIDCache>(
         rankRepository,
         privateMessageRepository,
-        cooldownRepository
+        cooldownRepository,
+        staffSettingsRepository
     )
 
     @EventHandler(priority = EventPriority.LOW)

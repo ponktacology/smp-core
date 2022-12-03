@@ -1,4 +1,4 @@
-package me.smp.core.freeze
+package me.smp.core.staff.freeze
 
 import me.smp.core.Config
 import me.smp.core.player.PlayerLookupService

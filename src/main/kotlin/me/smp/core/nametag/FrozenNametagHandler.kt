@@ -53,7 +53,7 @@ object FrozenNametagHandler {
     fun reloadPlayer(toRefresh: Player?, refreshFor: Player?) {
         val update = NametagUpdate(toRefresh!!, refreshFor!!)
         if (isAsync) {
-            pendingUpdates.put(update, true)
+            pendingUpdates[update] = true
         } else {
             applyUpdate(update)
         }
@@ -61,6 +61,7 @@ object FrozenNametagHandler {
 
     internal fun applyUpdate(nametagUpdate: NametagUpdate) {
         val toRefreshPlayer = Bukkit.getServer().getPlayerExact(nametagUpdate.toRefresh) ?: return
+        if (!toRefreshPlayer.isOnline || Bukkit.isStopping()) return
         if (nametagUpdate.refreshFor == null) {
             for (refreshFor in Bukkit.getServer().onlinePlayers) {
                 reloadPlayerInternal(toRefreshPlayer, refreshFor)

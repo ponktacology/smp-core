@@ -1,4 +1,4 @@
-package me.smp.core.assistance
+package me.smp.core.staff.assistance
 
 import me.smp.core.cooldown.CooldownService
 import me.smp.core.cooldown.Cooldowns
@@ -17,7 +17,7 @@ object AssistanceCommands : KoinComponent {
     private val assistanceService: AssistanceService by inject()
     private val cooldownService: CooldownService by inject()
 
-    @Command("request")
+    @Command("request", "helpop")
     @Description("Request a help from staff")
     @Async
     fun request(
