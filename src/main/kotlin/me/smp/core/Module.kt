@@ -30,7 +30,7 @@ import org.koin.dsl.module
 
 val MODULE = module {
     single(null, true) {
-        ConnectionProvider.database("jdbc:postgresql://localhost:54320/smp", "smp", "1234")
+        ConnectionProvider.database("localhost", 54320, "smp", "smp", "1234")
     }
     single(null, true) {
         ConnectionProvider.network("redis://localhost:6379")

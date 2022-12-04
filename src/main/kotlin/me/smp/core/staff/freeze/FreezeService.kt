@@ -16,7 +16,7 @@ class FreezeService : KoinComponent {
 
     fun freeze(issuer: UUID, player: Player) {
         freezeRepository.freeze(player)
-        FreezeMenu().open(player)
+        FreezeGUI().open(player)
         TaskDispatcher.dispatchAsync { networkService.publish(PacketFreeze(issuer, player.uniqueId)) }
     }
 

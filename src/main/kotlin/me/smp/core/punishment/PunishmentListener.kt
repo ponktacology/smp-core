@@ -30,7 +30,7 @@ class PunishmentListener : KoinComponent, Listener, NetworkListener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     fun onPlayerChatMessage(event: AsyncChatEvent) {
         punishmentService.getByPlayer(event.player, Punishment.Type.MUTE)?.let {
-            event.player.sendMessage("You can't use chat while muted!")
+            event.player.sendMessage(Component.text("You can't use chat while muted!", NamedTextColor.RED))
             event.isCancelled = true
         }
     }

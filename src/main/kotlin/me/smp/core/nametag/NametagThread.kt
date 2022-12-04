@@ -1,6 +1,6 @@
 package me.smp.core.nametag
 
-import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.ConcurrentLinkedQueue
 
 internal class NametagThread : Thread("qLib - Nametag Thread") {
     init {
@@ -9,7 +9,8 @@ internal class NametagThread : Thread("qLib - Nametag Thread") {
 
     override fun run() {
         while (true) {
-            for (pendingUpdate in pendingUpdates.keys) {
+            while (pendingUpdates.peek() != null) {
+                val pendingUpdate = pendingUpdates.poll()
                 try {
                     FrozenNametagHandler.applyUpdate(pendingUpdate)
                 } catch (e: Exception) {
@@ -26,6 +27,6 @@ internal class NametagThread : Thread("qLib - Nametag Thread") {
 
     companion object {
         @JvmStatic
-        val pendingUpdates: MutableMap<NametagUpdate, Boolean> = ConcurrentHashMap()
+        val pendingUpdates = ConcurrentLinkedQueue<NametagUpdate>()
     }
 }

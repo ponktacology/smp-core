@@ -17,8 +17,6 @@ object FrozenNametagHandler {
     private val registeredTeams = Collections.synchronizedList(Lists.newArrayList<NametagInfo>())
     private var teamCreateIndex = 1
     private val providers: MutableList<NametagProvider> = ArrayList()
-    var isNametagRestrictionEnabled = false
-    var nametagRestrictBypass = ""
     var isInitiated = false
         private set
     var isAsync = true
@@ -34,10 +32,10 @@ object FrozenNametagHandler {
         providers.sortWith { a: NametagProvider, b: NametagProvider -> Ints.compare(b.weight, a.weight) }
     }
 
-    fun reloadPlayer(toRefresh: Player?) {
-        val update = NametagUpdate(toRefresh!!)
+    fun reloadPlayer(toRefresh: Player) {
+        val update = NametagUpdate(toRefresh)
         if (isAsync) {
-            pendingUpdates[update] = true
+            pendingUpdates.offer(update)
         } else {
             applyUpdate(update)
         }
@@ -50,10 +48,10 @@ object FrozenNametagHandler {
         }
     }
 
-    fun reloadPlayer(toRefresh: Player?, refreshFor: Player?) {
-        val update = NametagUpdate(toRefresh!!, refreshFor!!)
+    fun reloadPlayer(toRefresh: Player, refreshFor: Player) {
+        val update = NametagUpdate(toRefresh, refreshFor)
         if (isAsync) {
-            pendingUpdates[update] = true
+            pendingUpdates.offer(update)
         } else {
             applyUpdate(update)
         }
