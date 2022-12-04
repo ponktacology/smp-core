@@ -24,6 +24,11 @@ class ItemBuilder(private val itemStack: ItemStack) {
         return this
     }
 
+    fun lore(components: List<Component>): ItemBuilder {
+        updateMeta { it.lore(components.toMutableList()) }
+        return this
+    }
+
     fun addLore(component: Component): ItemBuilder {
         updateMeta {
             val lore = it.lore() ?: mutableListOf()
