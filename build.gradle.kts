@@ -31,7 +31,6 @@ dependencies {
     implementation("org.ktorm:ktorm-support-postgresql:3.5.0")
     implementation("com.zaxxer:HikariCP:5.0.1")
     implementation("com.github.vaperion.blade:bukkit:3.0.0")
-    implementation("fr.mrmicky:FastInv:3.0.3")
     implementation("dev.triumphteam:triumph-gui:3.1.2")
     compileOnly("com.comphenix.protocol:ProtocolLib:4.7.0")
     implementation("fr.mrmicky:fastboard:1.2.1")

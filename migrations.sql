@@ -73,6 +73,8 @@ CREATE TABLE cooldowns
     reset_at BIGINT  NOT NULL
 );
 
+CREATE INDEX playerCooldowns ON pm_ignored USING btree (id, player);
+
 CREATE TABLE staff_settings
 (
     id     SERIAL  NOT NULL PRIMARY KEY,
@@ -81,3 +83,5 @@ CREATE TABLE staff_settings
     god    BOOLEAN NOT NULL,
     fly    BOOLEAN NOT NULL
 );
+
+CREATE INDEX staffSettings ON staff_settings USING btree (player);

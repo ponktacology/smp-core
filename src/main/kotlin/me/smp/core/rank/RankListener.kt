@@ -36,11 +36,11 @@ class RankListener : Listener, KoinComponent, NetworkListener {
 
     @NetworkHandler
     fun onGrant(packet: PacketGrant) {
-        rankRepository.grantRank(packet.player, packet.rank)
+        rankRepository.grant(packet.player, packet.grantId)
     }
 
     @NetworkHandler
     fun onUngrant(packet: PacketUngrant) {
-        rankRepository.unGrant(packet.player, packet.rank)
+        rankRepository.unGrant(packet.player, packet.rank, packet.issuer, packet.reason)
     }
 }

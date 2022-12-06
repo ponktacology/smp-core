@@ -23,13 +23,13 @@ class RankService : KoinComponent {
 
     fun grant(grant: Grant) {
         rankRepository.addGrant(grant)
-        networkService.publish(PacketGrant(grant.player, grant.rank))
+        networkService.publish(PacketGrant(grant.player, grant.id))
     }
 
     fun removeRanks(uuid: UUID, rank: Rank, issuer: UUID, reason: String) {
         require(rank != Rank.DEFAULT) { "can't remove default rank" }
         rankRepository.removeRank(uuid, rank, issuer, reason)
-        networkService.publish(PacketUngrant(uuid, rank))
+        networkService.publish(PacketUngrant(uuid, rank, issuer, reason))
     }
 
     fun getDisplayName(player: Player): Component {

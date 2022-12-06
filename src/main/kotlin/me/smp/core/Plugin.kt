@@ -8,7 +8,9 @@ import me.smp.core.cooldown.CooldownListener
 import me.smp.core.cooldown.CooldownRepository
 import me.smp.core.cooldown.Cooldowns
 import me.smp.core.invsee.InvSeeCommands
+import me.smp.core.nametag.CoreNameTagProvider
 import me.smp.core.nametag.FrozenNametagHandler
+import me.smp.core.player.PlayerCommands
 import me.smp.core.player.PlayerContainer
 import me.smp.core.player.PlayerContainerArgumentProvider
 import me.smp.core.pm.PrivateMessageCommands
@@ -34,6 +36,9 @@ import me.smp.shared.Duration
 import me.smp.shared.network.NetworkRepository
 import me.vaperion.blade.Blade
 import me.vaperion.blade.bukkit.BladeBukkitPlatform
+import me.vaperion.blade.platform.TabCompleter
+import org.bukkit.Bukkit
+import org.bukkit.GameRule
 import org.bukkit.World
 import org.bukkit.plugin.java.JavaPlugin
 import org.koin.core.context.startKoin
@@ -61,6 +66,7 @@ class Plugin : JavaPlugin() {
         server.pluginManager.registerEvents(CooldownListener(), this)
         server.pluginManager.registerEvents(freezeListener, this)
         server.pluginManager.registerEvents(StaffSettingsListener(), this)
+        server.pluginManager.registerEvents(VersionNoticeListener(), this)
 
         blade = Blade.forPlatform(BladeBukkitPlatform(this)).bind {
             it.bind(ChatState::class.java, ChatStateArgumentProvider)
@@ -71,6 +77,7 @@ class Plugin : JavaPlugin() {
         }.config {
             it.fallbackPrefix = "core"
             it.isOverrideCommands = true
+            it.tabCompleter = TabCompleter.Default()
         }.build()
 
         val networkRepository: NetworkRepository = koinApp.koin.get()
@@ -97,11 +104,16 @@ class Plugin : JavaPlugin() {
         blade.register(FreezeCommands)
         blade.register(StaffCommands)
         blade.register(ProtectionCommands)
+        blade.register(PlayerCommands)
 
         FrozenNametagHandler.init(this)
-        FrozenNametagHandler.registerProvider(RankNameTagProvider())
+        FrozenNametagHandler.registerProvider(CoreNameTagProvider())
 
         TaskDispatcher.runRepeatingAsync(VanishDisplayTask(), 20L)
+
+        Bukkit.getWorlds().forEach {
+            it.setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, false)
+        }
     }
 
     override fun onDisable() {

@@ -42,7 +42,6 @@ class PlayerLookupRepository : KoinComponent {
         }
 
         networkService.get("$NAME_PREFIX${name.uppercase()}")?.let {
-            println("Got from redis cache")
             return UUID.fromString(it)
         }
 
@@ -62,8 +61,7 @@ class PlayerLookupRepository : KoinComponent {
         }
 
         networkService.get("$NAME_PREFIX$uuid")?.let {
-            println("Got from redis cache")
-            return it
+           return it
         }
 
         return fetchFromMineTools(uuid.toString().replace("-", ""))?.let {

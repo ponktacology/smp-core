@@ -42,7 +42,7 @@ class CacheListener : Listener, KoinComponent {
             cacheList.forEach {
                 it.loadCache(event.uniqueId)
             }
-            val address = event.address.hostName
+            val address = event.address.toString().replace("/", "")
             println(address)
             punishmentRepository.loadCache(event.uniqueId, address)
             playerLookupRepository.loadCache(event.uniqueId, event.name, address)
@@ -62,6 +62,7 @@ class CacheListener : Listener, KoinComponent {
         cacheList.forEach {
             if (!it.verifyCache(player.uniqueId)) {
                 player.kick(Component.text("Error while verifying player data"))
+                return
             }
         }
     }

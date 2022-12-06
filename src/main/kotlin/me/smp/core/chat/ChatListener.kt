@@ -56,8 +56,6 @@ class ChatListener : Listener, KoinComponent {
         val player = event.player
         val rank = rankService.getByPlayer(player)
         val text = (event.message() as TextComponent).content()
-        println(text)
-        println(chatFilter.isFiltered(text))
 
         if (!rank.isStaff() && chatFilter.isFiltered(text)) {
             event.viewers().removeIf { it is Player && it != player }

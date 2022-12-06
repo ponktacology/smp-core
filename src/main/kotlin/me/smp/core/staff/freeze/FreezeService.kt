@@ -1,6 +1,7 @@
 package me.smp.core.staff.freeze
 
 import me.smp.core.TaskDispatcher
+import me.smp.core.nametag.FrozenNametagHandler
 import me.smp.shared.network.NetworkService
 import org.bukkit.entity.Player
 import org.koin.core.component.KoinComponent
@@ -17,11 +18,13 @@ class FreezeService : KoinComponent {
     fun freeze(issuer: UUID, player: Player) {
         freezeRepository.freeze(player)
         FreezeGUI().open(player)
+        FrozenNametagHandler.reloadPlayer(player)
         TaskDispatcher.dispatchAsync { networkService.publish(PacketFreeze(issuer, player.uniqueId)) }
     }
 
     fun unFreeze(player: Player) {
         freezeRepository.unFreeze(player)
+        FrozenNametagHandler.reloadPlayer(player)
         player.closeInventory()
     }
 

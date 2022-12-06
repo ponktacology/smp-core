@@ -4,6 +4,7 @@ import me.smp.core.Console
 import me.smp.core.SyncCatcher
 import me.smp.core.TaskDispatcher
 import me.smp.core.UUIDCache
+import me.smp.core.nametag.FrozenNametagHandler
 import me.smp.core.player.PlayerNotFoundInCacheException
 import me.smp.shared.Duration
 import org.bukkit.Bukkit
@@ -17,23 +18,22 @@ import org.ktorm.dsl.and
 import org.ktorm.dsl.batchUpdate
 import org.ktorm.dsl.eq
 import org.ktorm.dsl.not
-import org.ktorm.entity.add
-import org.ktorm.entity.filter
-import org.ktorm.entity.sequenceOf
-import org.ktorm.entity.toList
+import org.ktorm.entity.*
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.CopyOnWriteArrayList
 
 class RankRepository : KoinComponent, UUIDCache {
 
     private val plugin: JavaPlugin by inject()
     private val database: Database by inject()
     private val Database.grants get() = this.sequenceOf(Grants)
-    private val cache = ConcurrentHashMap<UUID, Rank>()
+    private val cache = ConcurrentHashMap<UUID, MutableList<Grant>>()
     private val permissionAttachments = ConcurrentHashMap<UUID, PermissionAttachment>()
 
     fun getByPlayer(player: Player): Rank {
-        return cache[player.uniqueId] ?: throw PlayerNotFoundInCacheException()
+        val grants = cache[player.uniqueId] ?: throw PlayerNotFoundInCacheException()
+        return resolveRank(grants)
     }
 
     fun getByUUID(uuid: UUID): Rank {
@@ -41,15 +41,15 @@ class RankRepository : KoinComponent, UUIDCache {
         if (uuid == Console.UUID) return Rank.CONSOLE
 
         cache[uuid]?.let {
-            return it
+            return resolveRank(it)
         }
 
-        return findOrCreate(uuid)
+        return resolveRank(findOrCreateGrants(uuid))
     }
 
     override fun loadCache(uuid: UUID) {
         SyncCatcher.verify()
-        cache[uuid] = findOrCreate(uuid)
+        cache[uuid] = findOrCreateGrants(uuid)
     }
 
     override fun flushCache(uuid: UUID) {
@@ -65,13 +65,15 @@ class RankRepository : KoinComponent, UUIDCache {
         permissionAttachments.clear()
     }
 
-    fun grantRank(uuid: UUID, rank: Rank) {
+    fun grant(uuid: UUID, grantId: Int) {
+        val grant =
+            database.grants.find { it.player eq uuid and (it.id eq grantId) }
+                ?: error("trying to grant non-existing grant")
         cache[uuid]?.let {
-            if (it.power < rank.power) {
-                cache[uuid] = rank
-                Bukkit.getPlayer(uuid)?.let { player ->
-                    TaskDispatcher.dispatch { recalculatePermissions(player) }
-                }
+            it.add(grant)
+            Bukkit.getPlayer(uuid)?.let { player ->
+                FrozenNametagHandler.reloadPlayer(player)
+                TaskDispatcher.dispatch { recalculatePermissions(player) }
             }
         }
     }
@@ -96,45 +98,58 @@ class RankRepository : KoinComponent, UUIDCache {
         }
     }
 
-    fun unGrant(uuid: UUID, rank: Rank) {
+    fun unGrant(uuid: UUID, rank: Rank, issuer: UUID, reason: String) {
         SyncCatcher.verify()
-        cache[uuid]?.let {
-            if (it == rank) {
-                loadCache(uuid) // Resolve rank again
-                Bukkit.getPlayer(uuid)?.let { player ->
-                    TaskDispatcher.dispatch { recalculatePermissions(player) }
+        cache[uuid]?.let { grants ->
+            grants.filter { it.rank == rank && it.isActive() }
+                .forEach {
+                    it.removed = true
+                    it.issuer = issuer
+                    it.removedAt = System.currentTimeMillis()
+                    it.remover = issuer
+                    it.removeReason = reason
                 }
+            Bukkit.getPlayer(uuid)?.let { player ->
+                FrozenNametagHandler.reloadPlayer(player)
+                TaskDispatcher.dispatch { recalculatePermissions(player) }
             }
         }
     }
 
-    private fun findOrCreate(uuid: UUID): Rank {
+    private fun findOrCreateGrants(uuid: UUID): MutableList<Grant> {
         database.useTransaction {
-            val grants = database.grants.filter { it.player eq uuid }.toList()
+            val grants = CopyOnWriteArrayList(database.grants.filter { it.player eq uuid }.toList())
             return if (grants.isEmpty()) {
-                database.grants.add(
-                    Grant {
-                        this.player = uuid
-                        this.rank = Rank.DEFAULT
-                        this.addedAt = System.currentTimeMillis()
-                        this.issuer = Console.UUID
-                        this.reason = "Default Rank"
-                        this.duration = Duration.PERMANENT
-                        this.removed = false
-                    }
-                )
-                Rank.DEFAULT
-            } else grants.filter { it.isActive() }.maxBy { it.rank.power }.rank
+                val grant = Grant {
+                    this.player = uuid
+                    this.rank = Rank.DEFAULT
+                    this.addedAt = System.currentTimeMillis()
+                    this.issuer = Console.UUID
+                    this.reason = "Default Rank"
+                    this.duration = Duration.PERMANENT
+                    this.removed = false
+                }
+                database.grants.add(grant)
+                grants.add(grant)
+                return grants
+            } else return grants
         }
     }
 
+    private fun resolveRank(grants: List<Grant>): Rank {
+        return grants.filter { it.isActive() }.maxByOrNull { it.rank.power }?.rank ?: Rank.DEFAULT
+    }
+
     fun recalculatePermissions(player: Player) {
-        val rank = cache[player.uniqueId] ?: throw PlayerNotFoundInCacheException()
+        val grants = cache[player.uniqueId] ?: throw PlayerNotFoundInCacheException()
         val attachment = permissionAttachments.computeIfAbsent(player.uniqueId) { player.addAttachment(plugin) }
         attachment.permissions.forEach { (t, _) -> attachment.unsetPermission(t) }
-        rank.permissions.forEach {
-            val value = !it.startsWith("-")
-            attachment.setPermission(if (value) it else it.replaceFirst("-", "").trim(), value)
+        grants.filter { it.isActive() }.forEach { grant ->
+            val rank = grant.rank
+            rank.permissions.forEach {
+                val value = !it.startsWith("-")
+                attachment.setPermission(if (value) it else it.replaceFirst("-", "").trim(), value)
+            }
         }
         player.recalculatePermissions()
     }

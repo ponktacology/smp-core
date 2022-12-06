@@ -94,7 +94,8 @@ object PunishmentCommands : KoinComponent {
         }
 
         val address =
-            Bukkit.getPlayer(player.uuid)?.address?.hostName ?: playerLookupService.getAddressByUUID(player.uuid)
+            Bukkit.getPlayer(player.uuid)?.address?.address?.toString()?.replace("/", "")
+                ?: playerLookupService.getAddressByUUID(player.uuid)
         punishmentService.punish(
             Punishment {
                 this.player = player.uuid

@@ -1,7 +1,9 @@
 package me.smp.core.staff
 
 import me.smp.core.TaskDispatcher
+import me.smp.core.nametag.FrozenNametagHandler
 import me.smp.core.rank.RankService
+import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
 import org.bukkit.entity.Player
@@ -40,12 +42,10 @@ class StaffService : KoinComponent {
 
     fun updateFly(player: Player, state: Boolean) {
         val staffSettings = getByPlayer(player)
-
         if (staffSettings.fly != state) {
             staffSettings.fly = state
             staffSettings.flushChanges()
         }
-
         TaskDispatcher.dispatch { updateFlyInternal(player, state) }
     }
 
@@ -53,6 +53,7 @@ class StaffService : KoinComponent {
         val isStaff = rankService.getByPlayer(player).isStaff()
 
         player.isCollidable = !state
+        player.sendActionBar(Component.empty())
 
         Bukkit.getOnlinePlayers().forEach {
             if (!rankService.getByPlayer(it).isStaff()) {
@@ -72,12 +73,11 @@ class StaffService : KoinComponent {
 
     fun updateVanish(player: Player, state: Boolean) {
         val staffSettings = getByPlayer(player)
-
         if (staffSettings.vanish != state) {
             staffSettings.vanish = state
             staffSettings.flushChanges()
         }
-
+        FrozenNametagHandler.reloadPlayer(player)
         TaskDispatcher.dispatch { updateVanishInternal(player, state) }
     }
 
