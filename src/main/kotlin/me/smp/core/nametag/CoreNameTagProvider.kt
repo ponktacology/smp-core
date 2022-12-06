@@ -18,9 +18,10 @@ class CoreNameTagProvider : NametagProvider("Rank", 0), KoinComponent {
 
     override fun fetchNametag(player: Player, other: Player): NametagInfo {
         val rank = rankService.getByPlayer(player)
+        val otherRank = rankService.getByPlayer(other)
         val staffSettings = staffService.getByOnlinePlayer(player)
-        val suffix = if (staffSettings.vanish) {
-            Component.text(" HIDDEN", NamedTextColor.AQUA, TextDecoration.BOLD)
+        val suffix = if (staffSettings.vanish && otherRank.isStaff()) {
+            Component.text(" HIDDEN", NamedTextColor.GREEN, TextDecoration.BOLD)
         } else if (freezeService.isFrozen(player)) {
             Component.text(" FROZEN", NamedTextColor.DARK_RED, TextDecoration.BOLD)
         } else Component.empty()

@@ -4,11 +4,8 @@ import net.kyori.adventure.text.Component
 import org.bukkit.ChatColor
 
 class NametagInfo(val name: String, val prefix: Component, val suffix: Component, val color: ChatColor) {
-    val teamAddPacket: ScoreboardTeamPacketMod
 
-    init {
-        teamAddPacket = ScoreboardTeamPacketMod(name, prefix, suffix, color, ArrayList(), 0)
-    }
+    val teamAddPacket: ScoreboardTeamPacketMod = ScoreboardTeamPacketMod(name, prefix, suffix, color, ArrayList(), 0)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

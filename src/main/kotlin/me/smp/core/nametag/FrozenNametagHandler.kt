@@ -2,7 +2,6 @@ package me.smp.core.nametag
 
 import com.google.common.collect.Lists
 import com.google.common.primitives.Ints
-import me.smp.core.TaskDispatcher.dispatchAsync
 import me.smp.core.nametag.NametagThread.Companion.pendingUpdates
 import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
@@ -68,7 +67,7 @@ object FrozenNametagHandler {
             val refreshForPlayer = Bukkit
                 .getServer()
                 .getPlayerExact(nametagUpdate.refreshFor!!)
-            if (refreshForPlayer != null) {
+            if (refreshForPlayer != null && refreshForPlayer.isOnline) {
                 reloadPlayerInternal(toRefreshPlayer, refreshForPlayer)
             }
         }
@@ -86,14 +85,12 @@ object FrozenNametagHandler {
             teamInfoMap = teamMap[refreshFor.name]!!
         }
         val finalProvided: NametagInfo = provided
-        dispatchAsync {
-            ScoreboardTeamPacketMod(
-                finalProvided.name,
-                listOf(toRefresh.name),
-                3
-            )
-                .sendToPlayer(refreshFor)
-        }
+        ScoreboardTeamPacketMod(
+            finalProvided.name,
+            listOf(toRefresh.name),
+            3
+        )
+            .sendToPlayer(refreshFor)
         teamInfoMap[toRefresh.name] = provided
         teamMap[refreshFor.name] = teamInfoMap
     }
