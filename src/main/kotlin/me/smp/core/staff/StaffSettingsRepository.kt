@@ -22,22 +22,6 @@ class StaffSettingsRepository : UUIDCache, KoinComponent {
 
     fun getByOnlinePlayer(player: Player) = cache[player.uniqueId] ?: throw PlayerNotFoundInCacheException()
 
-    fun getByPlayer(player: Player): StaffSettings {
-        SyncCatcher.verify()
-        return cache.computeIfAbsent(player.uniqueId) {
-            synchronized(player) {
-                StaffSettings {
-                    this.player = player.uniqueId
-                    this.vanish = false
-                    this.god = false
-                    this.fly = false
-                }.also {
-                    database.staffSettings.add(it)
-                }
-            }
-        }
-    }
-
     override fun loadCache(uuid: UUID) {
         SyncCatcher.verify()
         cache[uuid] = database.staffSettings.find { it.player eq uuid } ?: StaffSettings {

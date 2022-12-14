@@ -17,7 +17,7 @@ object StaffCommands : KoinComponent {
     @Permission("core.vanish")
     @Async
     fun vanish(@Sender sender: Player) {
-        val staffSettings = staffService.getByPlayer(sender)
+        val staffSettings = staffService.getByOnlinePlayer(sender)
         staffService.updateVanish(sender, !staffSettings.vanish)
         sender.sendMessage(ComponentHelper.createBoolean("You are", "hidden.", staffSettings.vanish))
     }
@@ -26,7 +26,7 @@ object StaffCommands : KoinComponent {
     @Permission("core.god")
     @Async
     fun god(@Sender sender: Player) {
-        val staffSettings = staffService.getByPlayer(sender)
+        val staffSettings = staffService.getByOnlinePlayer(sender)
         staffService.updateGod(sender, !staffSettings.god)
         sender.sendMessage(ComponentHelper.createBoolean("You are", "invincible.", staffSettings.god))
     }
@@ -35,7 +35,7 @@ object StaffCommands : KoinComponent {
     @Permission("core.fly")
     @Async
     fun fly(@Sender sender: Player) {
-        val staffSettings = staffService.getByPlayer(sender)
+        val staffSettings = staffService.getByOnlinePlayer(sender)
         staffService.updateFly(sender, !staffSettings.fly)
         sender.sendMessage(ComponentHelper.createBoolean("You are", "flying.", staffSettings.fly))
     }
