@@ -70,11 +70,13 @@ class PunishmentRepository : KoinComponent {
         cache[punishment.player]?.add(punishment)
     }
 
+    @Synchronized
     fun addPunishment(punishment: Punishment) {
         SyncCatcher.verify()
         database.punishments.add(punishment)
     }
 
+    @Synchronized
     fun unPunish(uuid: UUID, type: Punishment.Type, issuer: UUID, reason: String) {
         cache[uuid]?.let {
             it.filter { punishment -> !punishment.removed && punishment.type == type }
@@ -87,6 +89,7 @@ class PunishmentRepository : KoinComponent {
         }
     }
 
+    @Synchronized
     fun removePunishments(uuid: UUID, type: Punishment.Type, issuer: UUID, reason: String) {
         SyncCatcher.verify()
         database.batchUpdate(Punishments) {
@@ -102,5 +105,8 @@ class PunishmentRepository : KoinComponent {
         }
     }
 
-    fun getById(punishmentId: Int) = database.punishments.find { it.id eq punishmentId }
+    fun getById(punishmentId: Int): Punishment? {
+        SyncCatcher.verify()
+        return database.punishments.find { it.id eq punishmentId }
+    }
 }

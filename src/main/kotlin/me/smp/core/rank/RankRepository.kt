@@ -21,7 +21,6 @@ import org.ktorm.dsl.not
 import org.ktorm.entity.*
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.CopyOnWriteArrayList
 
 class RankRepository : KoinComponent, UUIDCache {
 
@@ -44,12 +43,12 @@ class RankRepository : KoinComponent, UUIDCache {
             return resolveRank(it)
         }
 
-        return resolveRank(findOrCreateGrants(uuid))
+        return resolveRank(findOrCreate(uuid))
     }
 
     override fun loadCache(uuid: UUID) {
         SyncCatcher.verify()
-        cache[uuid] = findOrCreateGrants(uuid)
+        cache[uuid] = findOrCreate(uuid)
     }
 
     override fun flushCache(uuid: UUID) {
@@ -65,6 +64,7 @@ class RankRepository : KoinComponent, UUIDCache {
         permissionAttachments.clear()
     }
 
+    @Synchronized
     fun grant(uuid: UUID, grantId: Int) {
         val grant =
             database.grants.find { it.player eq uuid and (it.id eq grantId) }
@@ -78,11 +78,13 @@ class RankRepository : KoinComponent, UUIDCache {
         }
     }
 
+    @Synchronized
     fun addGrant(grant: Grant) {
         SyncCatcher.verify()
         database.grants.add(grant)
     }
 
+    @Synchronized
     fun removeRank(uuid: UUID, rank: Rank, issuer: UUID, reason: String) {
         SyncCatcher.verify()
         database.batchUpdate(Grants) {
@@ -98,6 +100,7 @@ class RankRepository : KoinComponent, UUIDCache {
         }
     }
 
+    @Synchronized
     fun unGrant(uuid: UUID, rank: Rank, issuer: UUID, reason: String) {
         SyncCatcher.verify()
         cache[uuid]?.let { grants ->
@@ -116,9 +119,9 @@ class RankRepository : KoinComponent, UUIDCache {
         }
     }
 
-    private fun findOrCreateGrants(uuid: UUID): MutableList<Grant> {
+    private fun findOrCreate(uuid: UUID): MutableList<Grant> {
         database.useTransaction {
-            val grants = CopyOnWriteArrayList(database.grants.filter { it.player eq uuid }.toList())
+            val grants = database.grants.filter { it.player eq uuid }.toMutableList()
             return if (grants.isEmpty()) {
                 val grant = Grant {
                     this.player = uuid

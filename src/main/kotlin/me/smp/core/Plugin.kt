@@ -109,7 +109,7 @@ class Plugin : JavaPlugin() {
         FrozenNametagHandler.init(this)
         FrozenNametagHandler.registerProvider(CoreNameTagProvider())
 
-        TaskDispatcher.runRepeatingAsync(VanishDisplayTask(), 20L)
+        TaskDispatcher.runRepeatingAsync(VanishDisplayTask(), 10L)
 
         Bukkit.getWorlds().forEach {
             it.setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, false)

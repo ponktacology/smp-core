@@ -8,6 +8,8 @@ import me.vaperion.blade.annotation.argument.Text
 import me.vaperion.blade.annotation.command.Async
 import me.vaperion.blade.annotation.command.Command
 import me.vaperion.blade.annotation.command.Description
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.entity.Player
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -18,7 +20,7 @@ object AssistanceCommands : KoinComponent {
     private val cooldownService: CooldownService by inject()
 
     @Command("request", "helpop")
-    @Description("Request a help from staff")
+    @Description("Request help from staff")
     @Async
     fun request(
         @Sender sender: Player,
@@ -27,7 +29,7 @@ object AssistanceCommands : KoinComponent {
         message: String
     ) {
         if (cooldownService.isOnCooldown(sender, Cooldowns.ASSISTANCE_REQUEST)) {
-            sender.sendMessage("Wait a bit before requesting help from staff again.")
+            sender.sendMessage(Component.text("Wait a bit before requesting help from staff again.", NamedTextColor.RED))
             return
         }
         cooldownService.reset(sender, Cooldowns.ASSISTANCE_REQUEST)
@@ -35,7 +37,7 @@ object AssistanceCommands : KoinComponent {
     }
 
     @Command("report")
-    @Description("Request a help from staff")
+    @Description("Report a player")
     @Async
     fun report(
         @Sender sender: Player,
@@ -45,7 +47,7 @@ object AssistanceCommands : KoinComponent {
         reason: String
     ) {
         if (cooldownService.isOnCooldown(sender, Cooldowns.ASSISTANCE_REPORT)) {
-            sender.sendMessage("Wait a bit before reporting a player again.")
+            sender.sendMessage(Component.text("Wait a bit before reporting a player again.", NamedTextColor.RED))
             return
         }
         cooldownService.reset(sender, Cooldowns.ASSISTANCE_REPORT)

@@ -12,7 +12,6 @@ import org.ktorm.dsl.eq
 import org.ktorm.entity.*
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.CopyOnWriteArrayList
 
 class PrivateMessageRepository : KoinComponent, UUIDCache {
 
@@ -33,24 +32,29 @@ class PrivateMessageRepository : KoinComponent, UUIDCache {
 
     fun ignore(player: UUID, ignored: UUID): Int {
         SyncCatcher.verify()
-        val ignoredPlayer = IgnoredPlayer {
-            this.player = player
-            this.ignored = ignored
-        }
 
-        return database.ignored.add(ignoredPlayer).also {
+        synchronized(player) {
+            val ignoredPlayer = IgnoredPlayer {
+                this.player = player
+                this.ignored = ignored
+            }
+
             ignoredCache[player]?.add(ignoredPlayer)
+
+            return database.ignored.add(ignoredPlayer)
         }
     }
 
     fun unignore(player: UUID, ignored: UUID): Int {
         SyncCatcher.verify()
 
-        ignoredCache[player]?.let {
-            it.removeIf { record -> record.ignored == ignored }
-        }
+        synchronized(player) {
+            ignoredCache[player]?.let {
+                it.removeIf { record -> record.ignored == ignored }
+            }
 
-        return database.ignored.removeIf { it.player eq player and (it.ignored eq ignored) }
+            return database.ignored.removeIf { it.player eq player and (it.ignored eq ignored) }
+        }
     }
 
     fun getReplier(player: Player) = replyCache[player.uniqueId]
@@ -64,7 +68,7 @@ class PrivateMessageRepository : KoinComponent, UUIDCache {
         settingsCache[uuid] = findOrCreate(uuid)
         ignoredCache[uuid] = database.ignored
             .filter { it.player eq uuid }
-            .toCollection(CopyOnWriteArrayList())
+            .toMutableList()
     }
 
     override fun flushCache(uuid: UUID) {
@@ -75,10 +79,14 @@ class PrivateMessageRepository : KoinComponent, UUIDCache {
 
     override fun verifyCache(uuid: UUID) = settingsCache.containsKey(uuid) && ignoredCache.containsKey(uuid)
 
-    private fun findOrCreate(uuid: UUID) = database.settings.find { it.player eq uuid } ?: PrivateMessageSettings {
-        this.player = uuid
-        this.enabled = true
-    }.also {
-        database.settings.add(it)
+    private fun findOrCreate(uuid: UUID): PrivateMessageSettings {
+        synchronized(uuid) {
+            return database.settings.find { it.player eq uuid } ?: PrivateMessageSettings {
+                this.player = uuid
+                this.enabled = true
+            }.also {
+                database.settings.add(it)
+            }
+        }
     }
 }

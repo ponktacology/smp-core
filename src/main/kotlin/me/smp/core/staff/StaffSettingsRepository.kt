@@ -25,14 +25,15 @@ class StaffSettingsRepository : UUIDCache, KoinComponent {
     fun getByPlayer(player: Player): StaffSettings {
         SyncCatcher.verify()
         return cache.computeIfAbsent(player.uniqueId) {
-            StaffSettings {
-                this.player = player.uniqueId
-                this.vanish = false
-                this.god = false
-                this.fly = false
-            }.also {
-                println("ADDED NEW FOR ${player.name}")
-                database.staffSettings.add(it)
+            synchronized(player) {
+                StaffSettings {
+                    this.player = player.uniqueId
+                    this.vanish = false
+                    this.god = false
+                    this.fly = false
+                }.also {
+                    database.staffSettings.add(it)
+                }
             }
         }
     }

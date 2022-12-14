@@ -15,8 +15,6 @@ class RankService : KoinComponent {
     private val playerLookupService: PlayerLookupService by inject()
     private val networkService: NetworkService by inject()
 
-    fun applyPermissions(player: Player) = rankRepository.recalculatePermissions(player)
-
     fun getByPlayer(player: Player) = rankRepository.getByPlayer(player)
 
     fun getByUUID(uuid: UUID) = rankRepository.getByUUID(uuid)

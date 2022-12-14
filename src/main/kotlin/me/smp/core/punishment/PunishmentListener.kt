@@ -27,7 +27,7 @@ class PunishmentListener : KoinComponent, Listener, NetworkListener {
     private val punishmentRepository: PunishmentRepository by inject()
     private val rankService: RankService by inject()
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
     fun onPlayerChatMessage(event: AsyncChatEvent) {
         punishmentService.getByPlayer(event.player, Punishment.Type.MUTE)?.let {
             event.player.sendMessage(Component.text("You can't use chat while muted!", NamedTextColor.RED))

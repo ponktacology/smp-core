@@ -31,16 +31,16 @@ class CooldownRepository : UUIDCache, KoinComponent {
     }
 
     fun reset(uuid: UUID, type: CooldownType) {
-        if (!isOnCooldown(uuid, type)) return
+        synchronized(uuid) {
+            setCooldown(uuid, type, System.currentTimeMillis())
 
-        setCooldown(uuid, type, System.currentTimeMillis())
-
-        TaskDispatcher.dispatchAsync {
-            database.insertOrUpdate(PlayerCooldowns) {
-                set(it.id, type.id)
-                set(it.player, uuid)
-                set(it.resetAt, System.currentTimeMillis())
-                onConflict { doNothing() }
+            TaskDispatcher.dispatchAsync {
+                database.insertOrUpdate(PlayerCooldowns) {
+                    set(it.id, type.id)
+                    set(it.player, uuid)
+                    set(it.resetAt, System.currentTimeMillis())
+                    onConflict { doNothing() }
+                }
             }
         }
     }
@@ -56,7 +56,7 @@ class CooldownRepository : UUIDCache, KoinComponent {
         cache.computeIfAbsent(uuid) { ConcurrentHashMap() }
             .computeIfAbsent(type.id) {
                 Cooldown(Duration(type.duration), startedAt)
-            }
+            }.startedAt = startedAt
     }
 
     override fun flushCache(uuid: UUID) {
