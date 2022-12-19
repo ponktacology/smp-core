@@ -11,6 +11,7 @@ import org.ktorm.dsl.eq
 import org.ktorm.entity.add
 import org.ktorm.entity.find
 import org.ktorm.entity.sequenceOf
+import org.ktorm.entity.update
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
@@ -42,5 +43,9 @@ class StaffSettingsRepository : UUIDCache, KoinComponent {
 
     fun flushCache() {
         cache.clear()
+    }
+
+    fun updateSettings(settings: StaffSettings) {
+        database.staffSettings.update(settings)
     }
 }

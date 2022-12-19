@@ -17,17 +17,13 @@ class StaffService : KoinComponent {
     private val staffSettingsRepository: StaffSettingsRepository by inject()
     private val rankService: RankService by inject()
 
-    fun getByPlayer(player: Player) = staffSettingsRepository.getByPlayer(player)
-
     fun getByOnlinePlayer(player: Player) = staffSettingsRepository.getByOnlinePlayer(player)
 
-    fun updateGod(player: Player, state: Boolean) {
-        val staffSettings = getByPlayer(player)
-
-        if (staffSettings.god != state) {
-            staffSettings.god = state
-            staffSettings.flushChanges()
-        }
+    fun toggleGod(player: Player): Boolean {
+        val staffSettings = getByOnlinePlayer(player)
+        staffSettings.god = !staffSettings.god
+        TaskDispatcher.dispatchAsync { staffSettingsRepository.updateSettings(staffSettings) }
+        return staffSettings.god
     }
 
     private fun updateFlyInternal(player: Player, state: Boolean) {
@@ -40,13 +36,12 @@ class StaffService : KoinComponent {
         }
     }
 
-    fun updateFly(player: Player, state: Boolean) {
-        val staffSettings = getByPlayer(player)
-        if (staffSettings.fly != state) {
-            staffSettings.fly = state
-            staffSettings.flushChanges()
-        }
-        TaskDispatcher.dispatch { updateFlyInternal(player, state) }
+    fun toggleFly(player: Player): Boolean {
+        val staffSettings = getByOnlinePlayer(player)
+        staffSettings.fly = !staffSettings.fly
+        updateFlyInternal(player, staffSettings.fly)
+        TaskDispatcher.dispatchAsync { staffSettingsRepository.updateSettings(staffSettings) }
+        return staffSettings.fly
     }
 
     private fun updateVanishInternal(player: Player, state: Boolean) {
@@ -71,15 +66,15 @@ class StaffService : KoinComponent {
         }
     }
 
-    fun updateVanish(player: Player, state: Boolean) {
-        val staffSettings = getByPlayer(player)
-        if (staffSettings.vanish != state) {
-            staffSettings.vanish = state
-            staffSettings.flushChanges()
-        }
+    fun toggleVanish(player: Player): Boolean {
+        val staffSettings = getByOnlinePlayer(player)
+        staffSettings.vanish = !staffSettings.vanish
+        // TODO: DO THIS ON MAIN THREAD
         FrozenNametagHandler.reloadPlayer(player)
-        TaskDispatcher.dispatch { updateVanishInternal(player, state) }
-    }
+        updateVanishInternal(player, staffSettings.vanish)
+
+        TaskDispatcher.dispatchAsync { staffSettingsRepository.updateSettings(staffSettings) }
+        return staffSettings.vanish    }
 
     fun applyToPlayer(player: Player) {
         val staffSettings = getByOnlinePlayer(player)

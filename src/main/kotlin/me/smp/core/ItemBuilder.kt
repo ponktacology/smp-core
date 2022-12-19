@@ -51,6 +51,15 @@ class ItemBuilder(private val itemStack: ItemStack) {
         return this
     }
 
+    fun addLore(vararg components: Component): ItemBuilder {
+        updateMeta {
+            val lore = it.lore() ?: mutableListOf()
+            lore.addAll(components)
+            it.lore(lore)
+        }
+        return this
+    }
+
 
     fun enchant(enchantment: Enchantment, level: Int): ItemBuilder {
         updateMeta { it.addEnchant(enchantment, level, true) }
