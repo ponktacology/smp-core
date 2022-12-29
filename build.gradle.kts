@@ -30,9 +30,9 @@ dependencies {
     implementation("org.ktorm:ktorm-core:3.5.0")
     implementation("org.ktorm:ktorm-support-postgresql:3.5.0")
     implementation("com.zaxxer:HikariCP:5.0.1")
-    implementation("com.github.vaperion.blade:bukkit:3.0.0")
     implementation("dev.triumphteam:triumph-gui:3.1.2")
-    compileOnly("com.comphenix.protocol:ProtocolLib:4.7.0")
+    implementation("me.vaperion.blade:bukkit:3.0.1")
+    compileOnly("com.comphenix.protocol:ProtocolLib:4.8.0")
     implementation("fr.mrmicky:fastboard:1.2.1")
     testImplementation(kotlin("test"))
 }

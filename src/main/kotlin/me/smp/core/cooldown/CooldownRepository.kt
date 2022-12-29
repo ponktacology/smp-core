@@ -31,16 +31,14 @@ class CooldownRepository : UUIDCache, KoinComponent {
     }
 
     fun reset(uuid: UUID, type: CooldownType) {
-        synchronized(uuid) {
-            setCooldown(uuid, type, System.currentTimeMillis())
+        setCooldown(uuid, type, System.currentTimeMillis())
 
-            TaskDispatcher.dispatchAsync {
-                database.insertOrUpdate(PlayerCooldowns) {
-                    set(it.id, type.id)
-                    set(it.player, uuid)
-                    set(it.resetAt, System.currentTimeMillis())
-                    onConflict { doNothing() }
-                }
+        TaskDispatcher.dispatchAsync {
+            database.insertOrUpdate(PlayerCooldowns) {
+                set(it.id, type.id)
+                set(it.player, uuid)
+                set(it.resetAt, System.currentTimeMillis())
+                onConflict { doNothing() }
             }
         }
     }

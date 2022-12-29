@@ -1,6 +1,7 @@
 package me.smp.core.rank
 
 import me.smp.core.player.PlayerContainer
+import me.smp.core.staff.StaffService
 import me.smp.core.util.SenderUtil
 import me.smp.shared.Duration
 import me.vaperion.blade.annotation.argument.Name
@@ -11,6 +12,11 @@ import me.vaperion.blade.annotation.command.Async
 import me.vaperion.blade.annotation.command.Command
 import me.vaperion.blade.annotation.command.Description
 import me.vaperion.blade.annotation.command.Permission
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.JoinConfiguration
+import net.kyori.adventure.text.format.NamedTextColor
+import org.bukkit.Bukkit
+import org.bukkit.ChatColor
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.koin.core.component.KoinComponent
@@ -18,7 +24,35 @@ import org.koin.core.component.inject
 
 object RankCommands : KoinComponent {
 
+    private val staffService: StaffService by inject()
     private val rankService: RankService by inject()
+
+    @Command("list")
+    @Description("Show all online players")
+    fun list(@Sender sender: Player) {
+        val ranks = Component.join(
+            JoinConfiguration.separator(
+                Component.text(", ", NamedTextColor.WHITE)
+            ),
+            Rank.values().map { it.getPrefix() })
+
+
+        sender.sendMessage(ranks)
+        var visiblePlayers = 0
+        val players = Component.join(
+            JoinConfiguration.separator(Component.text(", ", NamedTextColor.WHITE)),
+            Bukkit.getOnlinePlayers()
+                .filter { !staffService.getByOnlinePlayer(it).vanish }
+                .take(250)
+                .map {
+                    visiblePlayers++
+                    return@map rankService.getDisplayName(it)
+                })
+
+        sender.sendMessage(Component.text("${visiblePlayers}/${Bukkit.getMaxPlayers()}"))
+        sender.sendMessage(ranks)
+        sender.sendMessage(players)
+    }
 
     @Command("rank add", "grant")
     @Async
