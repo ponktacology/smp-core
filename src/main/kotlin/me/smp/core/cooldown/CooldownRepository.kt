@@ -1,70 +1,75 @@
 package me.smp.core.cooldown
 
-import me.smp.core.Cooldown
 import me.smp.core.TaskDispatcher
 import me.smp.core.UUIDCache
-import me.smp.shared.Duration
+import me.smp.core.player.PlayerNotFoundInCacheException
+import org.bukkit.entity.Player
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.ktorm.database.Database
 import org.ktorm.dsl.eq
-import org.ktorm.entity.filter
-import org.ktorm.entity.forEach
-import org.ktorm.entity.sequenceOf
-import org.ktorm.support.postgresql.insertOrUpdate
+import org.ktorm.entity.*
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
 class CooldownRepository : UUIDCache, KoinComponent {
 
     private val database: Database by inject()
-    private val Database.cooldowns get() = this.sequenceOf(PlayerCooldowns)
-    private val cache = ConcurrentHashMap<UUID, MutableMap<String, Cooldown>>()
-    private val cooldowns = ConcurrentHashMap<String, CooldownType>()
+    private val Database.cooldowns get() = this.sequenceOf(CooldownsTable)
+    private val cache = ConcurrentHashMap<UUID, PlayerCooldowns>()
+    private val cooldownById = HashMap<String, CooldownType>()
 
-    fun registerPersistentCooldown(cooldownType: CooldownType) = cooldowns.put(cooldownType.id, cooldownType)
+    fun registerPersistentCooldown(cooldownType: CooldownType) = cooldownById.put(cooldownType.id, cooldownType)
 
-    fun isOnCooldown(uuid: UUID, type: CooldownType): Boolean {
-        val cooldowns = cache[uuid] ?: return false
-        val cooldown = cooldowns[type.id] ?: return false
-        return !cooldown.hasExpired()
+    fun isOnCooldown(player: Player, type: CooldownType): Boolean {
+        val cooldowns = cache[player.uniqueId] ?: throw PlayerNotFoundInCacheException()
+        return cooldowns.isOnCooldown(type)
     }
 
-    fun reset(uuid: UUID, type: CooldownType) {
-        setCooldown(uuid, type, System.currentTimeMillis())
-
-        TaskDispatcher.dispatchAsync {
-            database.insertOrUpdate(PlayerCooldowns) {
-                set(it.id, type.id)
-                set(it.player, uuid)
-                set(it.resetAt, System.currentTimeMillis())
-                onConflict { doNothing() }
-            }
-        }
+    fun reset(player: Player, type: CooldownType) {
+        val cooldowns = cache[player.uniqueId] ?: throw PlayerNotFoundInCacheException()
+        cooldowns.reset(type)
     }
 
     override fun loadCache(uuid: UUID) {
-        database.cooldowns.filter { it.player eq uuid }.forEach { cooldown ->
-            val cooldownType = cooldowns[cooldown.id] ?: return@forEach
-            setCooldown(uuid, cooldownType, cooldown.resetAt)
+        database.useTransaction {
+            val cooldowns = PlayerCooldowns()
+            val loadedCooldowns = database.cooldowns.filter { it.player eq uuid }.toList()
+
+            loadedCooldowns.forEach {
+                val type = cooldownById[it.type] ?: return
+                cooldowns.register(it.toDomain(type))
+            }
+
+            val loadedCooldownsIds = loadedCooldowns.map { it.type }.toList()
+
+            cooldownById.values.forEach { type ->
+                if (type.id in loadedCooldownsIds) return@forEach
+                val remoteCooldown = RemoteCooldown {
+                    this.player = uuid
+                    this.type = type.id
+                    this.resetAt = System.currentTimeMillis()
+                }
+                println("ADDED NEW COOLDOWN")
+                database.cooldowns.add(remoteCooldown)
+                cooldowns.register(remoteCooldown.toDomain(type))
+            }
+
+            cache[uuid] = cooldowns
         }
     }
 
-    private fun setCooldown(uuid: UUID, type: CooldownType, startedAt: Long) {
-        cache.computeIfAbsent(uuid) { ConcurrentHashMap() }
-            .computeIfAbsent(type.id) {
-                Cooldown(Duration(type.duration), startedAt)
-            }.startedAt = startedAt
-    }
+    override fun verifyCache(uuid: UUID) = cache.containsKey(uuid) && cache[uuid]!!.entries().size == cooldownById.size
 
     override fun flushCache(uuid: UUID) {
-        cache.remove(uuid)
+        val cooldowns = cache.remove(uuid) ?: return
+        TaskDispatcher.dispatchAsync {
+            cooldowns.entries().forEach { database.cooldowns.update(it.toRemote(uuid)) }
+        }
     }
-
-    override fun verifyCache(uuid: UUID) = true
 
     fun flushCache() {
         cache.clear()
-        cooldowns.clear()
+        cooldownById.clear()
     }
 }

@@ -6,7 +6,7 @@ import me.smp.core.chat.ChatState
 import me.smp.core.chat.ChatStateArgumentProvider
 import me.smp.core.cooldown.CooldownListener
 import me.smp.core.cooldown.CooldownRepository
-import me.smp.core.cooldown.Cooldowns
+import me.smp.core.cooldown.CoreCooldowns
 import me.smp.core.invsee.InvSeeCommands
 import me.smp.core.nametag.CoreNameTagProvider
 import me.smp.core.nametag.FrozenNametagHandler
@@ -89,7 +89,7 @@ class Plugin : JavaPlugin() {
         networkRepository.startListening()
 
         val cooldownRepository: CooldownRepository = koinApp.koin.get()
-        Cooldowns.values().forEach { cooldownRepository.registerPersistentCooldown(it) }
+        CoreCooldowns.values().forEach { cooldownRepository.registerPersistentCooldown(it) }
 
         val scoreboardService: ScoreboardService = koinApp.koin.get()
         scoreboardService.start()

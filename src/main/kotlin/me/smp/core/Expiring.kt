@@ -9,6 +9,8 @@ interface Expiring {
 
     fun hasExpired() = !duration.isPermanent() && System.currentTimeMillis() >= expiringAt()
 
+    fun hasNotExpired() = !hasExpired()
+
     fun expiringAt() = if (duration.isPermanent()) -1 else duration + startedAt
 
     fun reset() {

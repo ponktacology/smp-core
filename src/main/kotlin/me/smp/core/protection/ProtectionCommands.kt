@@ -3,10 +3,12 @@ package me.smp.core.protection
 import me.vaperion.blade.annotation.argument.Name
 import me.vaperion.blade.annotation.argument.Optional
 import me.vaperion.blade.annotation.argument.Sender
+import me.vaperion.blade.annotation.argument.Text
 import me.vaperion.blade.annotation.command.Command
 import me.vaperion.blade.annotation.command.Description
 import me.vaperion.blade.annotation.command.Permission
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.World
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
@@ -36,5 +38,11 @@ object ProtectionCommands : KoinComponent {
     @Permission("core.testperm")
     fun testperm(@Sender sender: Player, @Name("target") target: Player, @Name("perm") perm: String) {
         sender.sendMessage(Component.text(target.hasPermission(perm)))
+    }
+
+    @Command("testcolor")
+    @Permission("test.color")
+    fun color(@Sender sender: CommandSender, @Text @Name("message") message: String) {
+        sender.sendMessage(MiniMessage.get().parse(message))
     }
 }

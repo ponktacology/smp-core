@@ -2,7 +2,7 @@ package me.smp.core.cooldown
 
 import java.util.concurrent.TimeUnit
 
-enum class Cooldowns(override val duration: Long) : CooldownType {
+enum class CoreCooldowns(override val duration: Long) : CooldownType {
 
     ASSISTANCE_REQUEST(TimeUnit.MILLISECONDS.convert(45, TimeUnit.SECONDS)),
     CHAT(TimeUnit.MILLISECONDS.convert(2, TimeUnit.SECONDS)),

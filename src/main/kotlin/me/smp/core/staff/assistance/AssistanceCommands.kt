@@ -1,7 +1,7 @@
 package me.smp.core.staff.assistance
 
 import me.smp.core.cooldown.CooldownService
-import me.smp.core.cooldown.Cooldowns
+import me.smp.core.cooldown.CoreCooldowns
 import me.vaperion.blade.annotation.argument.Name
 import me.vaperion.blade.annotation.argument.Sender
 import me.vaperion.blade.annotation.argument.Text
@@ -28,11 +28,11 @@ object AssistanceCommands : KoinComponent {
         @Name("message")
         message: String
     ) {
-        if (cooldownService.isOnCooldown(sender, Cooldowns.ASSISTANCE_REQUEST)) {
+        if (cooldownService.hasCooldown(sender, CoreCooldowns.ASSISTANCE_REQUEST)) {
             sender.sendMessage(Component.text("Wait a bit before requesting help from staff again.", NamedTextColor.RED))
             return
         }
-        cooldownService.reset(sender, Cooldowns.ASSISTANCE_REQUEST)
+        cooldownService.reset(sender, CoreCooldowns.ASSISTANCE_REQUEST)
         assistanceService.request(sender, message)
     }
 
@@ -46,11 +46,11 @@ object AssistanceCommands : KoinComponent {
         @Text
         reason: String
     ) {
-        if (cooldownService.isOnCooldown(sender, Cooldowns.ASSISTANCE_REPORT)) {
+        if (cooldownService.hasCooldown(sender, CoreCooldowns.ASSISTANCE_REPORT)) {
             sender.sendMessage(Component.text("Wait a bit before reporting a player again.", NamedTextColor.RED))
             return
         }
-        cooldownService.reset(sender, Cooldowns.ASSISTANCE_REPORT)
+        cooldownService.reset(sender, CoreCooldowns.ASSISTANCE_REPORT)
         assistanceService.report(sender, player, reason)
     }
 }
