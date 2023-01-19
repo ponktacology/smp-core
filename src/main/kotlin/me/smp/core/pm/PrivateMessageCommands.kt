@@ -49,13 +49,13 @@ object PrivateMessageCommands : KoinComponent {
     @Command("unignore")
     @Description("Unignore a player")
     @Async
-    fun unignore(@Sender sender: Player, @Name("player") player: PlayerContainer) {
+    fun unIgnore(@Sender sender: Player, @Name("player") player: PlayerContainer) {
         if (!privateMessageService.isIgnoring(sender, player.uuid)) {
             sender.sendMessage("You are not ignoring this player.")
             return
         }
 
-        privateMessageService.unignore(sender, player.uuid)
+        privateMessageService.unIgnore(sender, player.uuid)
         sender.sendMessage(ComponentHelper.createBoolean("You are", "ignoring ${player.name}.", false))
     }
 

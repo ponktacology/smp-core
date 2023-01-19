@@ -1,6 +1,7 @@
 package me.smp.core.staff
 
 import me.smp.core.SyncCatcher
+import me.smp.core.TaskDispatcher
 import me.smp.core.UUIDCache
 import me.smp.core.player.PlayerNotFoundInCacheException
 import org.bukkit.entity.Player
@@ -38,14 +39,14 @@ class StaffSettingsRepository : UUIDCache, KoinComponent {
     override fun verifyCache(uuid: UUID) = cache.containsKey(uuid)
 
     override fun flushCache(uuid: UUID) {
-        cache.remove(uuid)
+        val settings = cache.remove(uuid) ?: return
+
+        TaskDispatcher.dispatchAsync {
+            database.staffSettings.update(settings)
+        }
     }
 
     fun flushCache() {
         cache.clear()
-    }
-
-    fun updateSettings(settings: StaffSettings) {
-        database.staffSettings.update(settings)
     }
 }

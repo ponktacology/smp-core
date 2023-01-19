@@ -14,7 +14,7 @@ enum class Rank(
     val color: TextColor,
     val nameTagColor: ChatColor,
     vararg val decorations: TextDecoration
-) {
+) : Comparable<Rank> {
 
     CONSOLE(
         "CONSOLE",
@@ -81,4 +81,5 @@ enum class Rank(
         KINGPIN, PIMP, DEALER, TRAPPER -> true
         else -> false
     }
+
 }

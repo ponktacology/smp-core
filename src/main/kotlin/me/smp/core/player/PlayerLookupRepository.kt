@@ -23,22 +23,20 @@ class PlayerLookupRepository : KoinComponent {
     fun loadCache(uuid: UUID, name: String, address: String? = null) {
         SyncCatcher.verify()
 
-        synchronized(uuid) {
-            println("Caching $uuid and $name${if (address != null) " and $address" else ""}")
-            networkService.setExpiring(
-                "$NAME_PREFIX${name.uppercase()}",
-                uuid.toString(),
-                Config.NAME_CACHE_EXPIRY_SECONDS
-            )
-            networkService.setExpiring("$NAME_PREFIX$uuid", name, Config.NAME_CACHE_EXPIRY_SECONDS)
+        println("Caching $uuid and $name${if (address != null) " and $address" else ""}")
+        networkService.setExpiring(
+            "$NAME_PREFIX${name.uppercase()}",
+            uuid.toString(),
+            Config.NAME_CACHE_EXPIRY_SECONDS
+        )
+        networkService.setExpiring("$NAME_PREFIX$uuid", name, Config.NAME_CACHE_EXPIRY_SECONDS)
 
-            address?.let {
-                print("key: ${ADDRESS_PREFIX}$uuid")
-                networkService.setExpiring("${ADDRESS_PREFIX}$uuid", it, Config.ADDRESS_CACHE_EXPIRY_SECONDS)
-            }
-
-            println("Cached $uuid and $name")
+        address?.let {
+            print("key: ${ADDRESS_PREFIX}$uuid")
+            networkService.setExpiring("${ADDRESS_PREFIX}$uuid", it, Config.ADDRESS_CACHE_EXPIRY_SECONDS)
         }
+
+        println("Cached $uuid and $name")
     }
 
     fun getUUIDByName(name: String): UUID? {

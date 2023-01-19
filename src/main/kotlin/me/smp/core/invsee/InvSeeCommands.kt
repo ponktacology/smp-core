@@ -43,4 +43,11 @@ object InvSeeCommands : KoinComponent {
     fun workbench(@Sender sender: Player) {
         sender.openInventory(Bukkit.createInventory(sender, InventoryType.WORKBENCH))
     }
+
+    @Command(value = ["anvil", "anvil"])
+    @Description("Open anvil")
+    @Permission("core.anvil")
+    fun anvil(@Sender sender: Player) {
+        sender.openInventory(Bukkit.createInventory(sender, InventoryType.ANVIL))
+    }
 }

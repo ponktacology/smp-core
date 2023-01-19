@@ -77,10 +77,9 @@ class PrivateMessageService : KoinComponent {
         settings.flushChanges()
     }
 
-    fun ignore(player: Player, uuid: UUID) = privateMessageRepository.ignore(player.uniqueId, uuid)
+    fun ignore(player: Player, uuid: UUID) = privateMessageRepository.ignore(player, uuid)
 
-    fun unignore(player: Player, uuid: UUID) = privateMessageRepository.unignore(player.uniqueId, uuid)
+    fun unIgnore(player: Player, uuid: UUID) = privateMessageRepository.unIgnore(player, uuid)
 
-    fun isIgnoring(player: Player, other: UUID) =
-        privateMessageRepository.getIgnoredByPlayer(player).any { it.ignored == other }
+    fun isIgnoring(player: Player, other: UUID) = privateMessageRepository.isIgnoring(player, other)
 }

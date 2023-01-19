@@ -66,6 +66,7 @@ class RankRepository : KoinComponent, UUIDCache {
 
     @Synchronized
     fun grant(uuid: UUID, grantId: Int) {
+        SyncCatcher.verify()
         val grant =
             database.grants.find { it.player eq uuid and (it.id eq grantId) }
                 ?: error("trying to grant non-existing grant")
@@ -120,6 +121,7 @@ class RankRepository : KoinComponent, UUIDCache {
     }
 
     private fun findOrCreate(uuid: UUID): MutableList<Grant> {
+        SyncCatcher.verify()
         database.useTransaction {
             val grants = database.grants.filter { it.player eq uuid }.toMutableList()
             return if (grants.isEmpty()) {

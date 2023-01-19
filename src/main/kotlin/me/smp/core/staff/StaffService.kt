@@ -22,7 +22,6 @@ class StaffService : KoinComponent {
     fun toggleGod(player: Player): Boolean {
         val staffSettings = getByOnlinePlayer(player)
         staffSettings.god = !staffSettings.god
-        TaskDispatcher.dispatchAsync { staffSettingsRepository.updateSettings(staffSettings) }
         return staffSettings.god
     }
 
@@ -40,7 +39,6 @@ class StaffService : KoinComponent {
         val staffSettings = getByOnlinePlayer(player)
         staffSettings.fly = !staffSettings.fly
         updateFlyInternal(player, staffSettings.fly)
-        TaskDispatcher.dispatchAsync { staffSettingsRepository.updateSettings(staffSettings) }
         return staffSettings.fly
     }
 
@@ -72,8 +70,6 @@ class StaffService : KoinComponent {
         // TODO: DO THIS ON MAIN THREAD
         FrozenNametagHandler.reloadPlayer(player)
         updateVanishInternal(player, staffSettings.vanish)
-
-        TaskDispatcher.dispatchAsync { staffSettingsRepository.updateSettings(staffSettings) }
         return staffSettings.vanish    }
 
     fun applyToPlayer(player: Player) {
