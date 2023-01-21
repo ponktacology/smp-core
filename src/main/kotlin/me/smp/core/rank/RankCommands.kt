@@ -42,10 +42,14 @@ object RankCommands : KoinComponent {
         val players = Component.join(
             JoinConfiguration.separator(Component.text(", ", NamedTextColor.WHITE)),
             Bukkit.getOnlinePlayers()
-                .filter { !staffService.getByOnlinePlayer(it).vanish }
+                .filter {
+                    !staffService.getByOnlinePlayer(it).vanish.also { notVanished ->
+                        if (notVanished)
+                            visiblePlayers++
+                    }
+                }
                 .take(250)
                 .map {
-                    visiblePlayers++
                     return@map rankService.getDisplayName(it)
                 })
 

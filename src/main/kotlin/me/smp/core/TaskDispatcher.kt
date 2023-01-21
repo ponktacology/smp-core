@@ -1,12 +1,13 @@
 package me.smp.core
 
 import org.bukkit.Bukkit
+import org.bukkit.plugin.java.JavaPlugin
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
 object TaskDispatcher : KoinComponent {
 
-    private val plugin: Plugin by inject()
+    private val plugin: JavaPlugin by inject()
 
     fun dispatchAsync(runnable: Runnable) {
         if (!Bukkit.isPrimaryThread()) {

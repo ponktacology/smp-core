@@ -35,7 +35,7 @@ val MODULE = module {
     single(null, true) {
         ConnectionProvider.network("redis://fiutfiut@localhost:6379")
     }
-    single { JavaPlugin.getPlugin(Plugin::class.java) }
+    single { JavaPlugin.getPlugin(Plugin::class.java) as JavaPlugin }
     single { JavaPlugin.getPlugin(Plugin::class.java).config }
     single { Bukkit.getServer().logger }
     single { ChatService() }

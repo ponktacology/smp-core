@@ -9,6 +9,7 @@ import me.smp.shared.network.NetworkService
 import org.bukkit.Bukkit
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import java.lang.Exception
 import java.util.*
 
 private val UUID_CONVERT_REGEX = Regex("(\\w{8})(\\w{4})(\\w{4})(\\w{4})(\\w{12})")
@@ -83,7 +84,6 @@ class PlayerLookupRepository : KoinComponent {
 
     fun getAddressByUUID(uuid: UUID): String? {
         SyncCatcher.verify()
-
         if (uuid == Console.UUID) error("can't fetch address of a console")
 
         Bukkit.getPlayer(uuid)?.let {
@@ -95,18 +95,24 @@ class PlayerLookupRepository : KoinComponent {
 
     private fun fetchFromMineTools(param: String): PlayerContainer? {
         SyncCatcher.verify()
-        val response = SimpleHttp.get("$MINE_TOOLS_URL$param")
-        if (response.statusCode() != 200) return null
-        val jsonObject = JsonParser.parseString(response.body()).asJsonObject
-        if (jsonObject.get("status").asString != "OK") return null
-        return PlayerContainer(
-            UUID.fromString(
-                jsonObject.get("id").asString.replace(
-                    UUID_CONVERT_REGEX,
-                    "$1-$2-$3-$4-$5"
-                )
-            ),
-            jsonObject.get("name").asString
-        )
+        try {
+            val response = SimpleHttp.get("$MINE_TOOLS_URL$param")
+            if (response.statusCode() != 200) return null
+            val jsonObject = JsonParser.parseString(response.body()).asJsonObject
+            if (jsonObject.get("status").asString != "OK") return null
+            return PlayerContainer(
+                UUID.fromString(
+                    jsonObject.get("id").asString.replace(
+                        UUID_CONVERT_REGEX,
+                        "$1-$2-$3-$4-$5"
+                    )
+                ),
+                jsonObject.get("name").asString
+            )
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+        return null
     }
 }

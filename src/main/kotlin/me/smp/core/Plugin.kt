@@ -37,6 +37,8 @@ import me.smp.shared.network.NetworkRepository
 import me.vaperion.blade.Blade
 import me.vaperion.blade.bukkit.BladeBukkitPlatform
 import me.vaperion.blade.platform.TabCompleter
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Bukkit
 import org.bukkit.GameRule
 import org.bukkit.World
@@ -117,6 +119,13 @@ class Plugin : JavaPlugin() {
     }
 
     override fun onDisable() {
+        Bukkit.getOnlinePlayers().forEach {
+            it.kick(
+                Component.text("Server is restarting!", NamedTextColor.RED)
+                    .append(Component.newline())
+                    .append(Component.text("Please rejoin in a few minutes.", NamedTextColor.YELLOW))
+            )
+        }
         val punishmentRepository: PunishmentRepository = koinApp.koin.get()
         val rankRepository: RankRepository = koinApp.koin.get()
         val cooldownRepository: CooldownRepository = koinApp.koin.get()

@@ -21,6 +21,7 @@ import org.ktorm.dsl.not
 import org.ktorm.entity.*
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
+import kotlin.collections.HashMap
 
 class RankRepository : KoinComponent, UUIDCache {
 
@@ -28,7 +29,7 @@ class RankRepository : KoinComponent, UUIDCache {
     private val database: Database by inject()
     private val Database.grants get() = this.sequenceOf(Grants)
     private val cache = ConcurrentHashMap<UUID, MutableList<Grant>>()
-    private val permissionAttachments = ConcurrentHashMap<UUID, PermissionAttachment>()
+    private val permissionAttachments = HashMap<UUID, PermissionAttachment>()
 
     fun getByPlayer(player: Player): Rank {
         val grants = cache[player.uniqueId] ?: throw PlayerNotFoundInCacheException()
