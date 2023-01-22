@@ -7,7 +7,7 @@ import org.koin.core.component.inject
 
 object TaskDispatcher : KoinComponent {
 
-    private val plugin: JavaPlugin by inject()
+    private val plugin: Plugin by inject()
 
     fun dispatchAsync(runnable: Runnable) {
         if (!Bukkit.isPrimaryThread()) {

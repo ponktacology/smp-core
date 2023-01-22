@@ -68,7 +68,6 @@ class Plugin : JavaPlugin() {
         server.pluginManager.registerEvents(CooldownListener(), this)
         server.pluginManager.registerEvents(freezeListener, this)
         server.pluginManager.registerEvents(StaffSettingsListener(), this)
-        server.pluginManager.registerEvents(VersionNoticeListener(), this)
 
         blade = Blade.forPlatform(BladeBukkitPlatform(this)).bind {
             it.bind(ChatState::class.java, ChatStateArgumentProvider)

@@ -1,5 +1,6 @@
 package me.smp.core.staff
 
+import me.smp.core.Plugin
 import me.smp.core.TaskDispatcher
 import me.smp.core.nametag.FrozenNametagHandler
 import me.smp.core.rank.RankService
@@ -13,7 +14,7 @@ import org.koin.core.component.inject
 
 class StaffService : KoinComponent {
 
-    private val plugin: JavaPlugin by inject()
+    private val plugin: Plugin by inject()
     private val staffSettingsRepository: StaffSettingsRepository by inject()
     private val rankService: RankService by inject()
 

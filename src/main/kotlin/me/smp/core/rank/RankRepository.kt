@@ -1,9 +1,6 @@
 package me.smp.core.rank
 
-import me.smp.core.Console
-import me.smp.core.SyncCatcher
-import me.smp.core.TaskDispatcher
-import me.smp.core.UUIDCache
+import me.smp.core.*
 import me.smp.core.nametag.FrozenNametagHandler
 import me.smp.core.player.PlayerNotFoundInCacheException
 import me.smp.shared.Duration
@@ -25,7 +22,7 @@ import kotlin.collections.HashMap
 
 class RankRepository : KoinComponent, UUIDCache {
 
-    private val plugin: JavaPlugin by inject()
+    private val plugin: Plugin by inject()
     private val database: Database by inject()
     private val Database.grants get() = this.sequenceOf(Grants)
     private val cache = ConcurrentHashMap<UUID, MutableList<Grant>>()
