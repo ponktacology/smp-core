@@ -9,7 +9,7 @@ fun RemoteCooldown.toDomain(type: CooldownType) = PersistentCooldown(this.id, ty
 fun PersistentCooldown.toRemote(player: UUID) = RemoteCooldown {
     this.id = this@toRemote.id
     this.player = player
-    this.type = this@toRemote.type.id
+    this.type = this@toRemote.type.type
     this.resetAt = this@toRemote.startedAt
 }
 

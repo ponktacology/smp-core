@@ -9,5 +9,5 @@ enum class CoreCooldowns(override val duration: Long) : CooldownType {
     COMMAND(TimeUnit.MILLISECONDS.convert(2, TimeUnit.SECONDS)),
     ASSISTANCE_REPORT(TimeUnit.MILLISECONDS.convert(30, TimeUnit.SECONDS));
 
-    override val id = this.name
+    override val type = this.name
 }

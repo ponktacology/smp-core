@@ -74,7 +74,6 @@ class PrivateMessageService : KoinComponent {
         val settings = privateMessageRepository.getSettingsByPlayer(player)
         settings.enabled = !settings.enabled
         player.sendMessage(ComponentHelper.createBoolean("Your private messages are", "enabled.", settings.enabled))
-        settings.flushChanges()
     }
 
     fun ignore(player: Player, uuid: UUID) = privateMessageRepository.ignore(player, uuid)

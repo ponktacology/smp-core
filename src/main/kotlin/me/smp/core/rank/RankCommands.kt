@@ -32,21 +32,22 @@ object RankCommands : KoinComponent {
     fun list(@Sender sender: Player) {
         val ranks = Component.join(
             JoinConfiguration.separator(
-                Component.text(", ", NamedTextColor.WHITE)
+                Component.text(",", NamedTextColor.WHITE)
             ),
             Rank.values().map { it.getPrefix() })
 
-
-        sender.sendMessage(ranks)
         var visiblePlayers = 0
         val players = Component.join(
-            JoinConfiguration.separator(Component.text(", ", NamedTextColor.WHITE)),
+            JoinConfiguration.separator(Component.text(",", NamedTextColor.WHITE)),
             Bukkit.getOnlinePlayers()
                 .filter {
-                    !staffService.getByOnlinePlayer(it).vanish.also { notVanished ->
-                        if (notVanished)
-                            visiblePlayers++
+                    val vanished = staffService.getByOnlinePlayer(it).vanish
+
+                    if (!vanished) {
+                        visiblePlayers++
                     }
+
+                    return@filter !vanished
                 }
                 .take(250)
                 .map {

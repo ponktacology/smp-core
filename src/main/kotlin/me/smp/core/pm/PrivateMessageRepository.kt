@@ -66,7 +66,7 @@ class PrivateMessageRepository : KoinComponent, UUIDCache {
         val ignoredPlayers = IgnoredPlayers()
         database.ignored
             .filter { it.player eq uuid }
-            .forEach { ignoredPlayers.ignore(uuid) }
+            .forEach { ignoredPlayers.ignore(it.ignored) }
 
         ignoredCache[uuid] = ignoredPlayers
     }
@@ -83,8 +83,10 @@ class PrivateMessageRepository : KoinComponent, UUIDCache {
     override fun verifyCache(uuid: UUID) = settingsCache.containsKey(uuid) && ignoredCache.containsKey(uuid)
 
     override fun flushCache(uuid: UUID) {
-        settingsCache.remove(uuid)
         replyCache.remove(uuid)
         ignoredCache.remove(uuid)
+        settingsCache.remove(uuid)?.let {
+            TaskDispatcher.dispatchAsync { database.settings.update(it) }
+        }
     }
 }
