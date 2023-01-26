@@ -30,10 +30,19 @@ dependencies {
     implementation("org.ktorm:ktorm-core:3.5.0")
     implementation("org.ktorm:ktorm-support-postgresql:3.5.0")
     implementation("com.zaxxer:HikariCP:5.0.1")
-    implementation("com.github.vaperion.blade:bukkit:3.0.0")
     implementation("dev.triumphteam:triumph-gui:3.1.2")
-    compileOnly("com.comphenix.protocol:ProtocolLib:4.7.0")
+    implementation("me.vaperion.blade:bukkit:3.0.1")
+    implementation("io.lettuce:lettuce-core:6.2.0.RELEASE")
+    compileOnly("com.comphenix.protocol:ProtocolLib:4.8.0")
     implementation("fr.mrmicky:fastboard:1.2.1")
+
+    testImplementation("org.jetbrains.kotlin:kotlin-stdlib:1.7.10")
+    testImplementation("io.insert-koin:koin-core:3.2.1")
+    testImplementation("org.ktorm:ktorm-core:3.5.0")
+    testImplementation("org.ktorm:ktorm-support-postgresql:3.5.0")
+    testImplementation("com.zaxxer:HikariCP:5.0.1")
+    testImplementation("me.smp:shared:1.0-SNAPSHOT")
+    testImplementation("io.lettuce:lettuce-core:6.2.0.RELEASE")
     testImplementation(kotlin("test"))
 }
 

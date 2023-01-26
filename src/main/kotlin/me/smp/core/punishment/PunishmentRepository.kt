@@ -18,17 +18,17 @@ class PunishmentRepository : KoinComponent {
 
     private val database: Database by inject()
     private val Database.punishments get() = this.sequenceOf(Punishments)
-    private val cache = ConcurrentHashMap<UUID, MutableList<Punishment>>()
+    private val cache = ConcurrentHashMap<UUID, PlayerPunishments>()
 
     fun getByPlayer(player: Player, type: Punishment.Type): Punishment? {
         val punishments = cache[player.uniqueId] ?: throw PlayerNotFoundInCacheException()
-        return punishments.firstOrNull { it.type == type && it.isActive() }
+        return punishments.findActive(type)
     }
 
     fun getByUUID(uuid: UUID, type: Punishment.Type): Punishment? {
         SyncCatcher.verify()
         cache[uuid]?.let {
-            return it.firstOrNull { punishment -> punishment.type == type && punishment.isActive() }
+            return it.findActive(type)
         }
 
         val punishments =
@@ -41,7 +41,7 @@ class PunishmentRepository : KoinComponent {
     fun getByUUID(uuid: UUID, address: String, type: Punishment.Type): Punishment? {
         SyncCatcher.verify()
         cache[uuid]?.let {
-            return it.firstOrNull { punishment -> punishment.type == type && punishment.isActive() }
+            return it.findActive(type)
         }
 
         val punishments =
@@ -51,45 +51,19 @@ class PunishmentRepository : KoinComponent {
         return punishments.firstOrNull { it.type == type && it.isActive() }
     }
 
-    fun loadCache(uuid: UUID, address: String) {
-        SyncCatcher.verify()
-        cache[uuid] =
-            database.punishments.filter { it.player eq uuid or (it.address.isNotNull() and (it.address eq address)) }
-                .toCollection(CopyOnWriteArrayList())
-    }
-
-    fun flushCache(uuid: UUID) {
-        cache.remove(uuid)
-    }
-
-    fun flushCache() {
-        cache.clear()
-    }
-
     fun punish(punishment: Punishment) {
         cache[punishment.player]?.add(punishment)
     }
 
-    @Synchronized
     fun addPunishment(punishment: Punishment) {
         SyncCatcher.verify()
         database.punishments.add(punishment)
     }
 
-    @Synchronized
     fun unPunish(uuid: UUID, type: Punishment.Type, issuer: UUID, reason: String) {
-        cache[uuid]?.let {
-            it.filter { punishment -> !punishment.removed && punishment.type == type }
-                .forEach { punishment ->
-                    punishment.removed = true
-                    punishment.removedAt = System.currentTimeMillis()
-                    punishment.remover = issuer
-                    punishment.removeReason = reason
-                }
-        }
+        cache[uuid]?.unPunish(type, issuer, reason)
     }
 
-    @Synchronized
     fun removePunishments(uuid: UUID, type: Punishment.Type, issuer: UUID, reason: String) {
         SyncCatcher.verify()
         database.batchUpdate(Punishments) {
@@ -109,4 +83,21 @@ class PunishmentRepository : KoinComponent {
         SyncCatcher.verify()
         return database.punishments.find { it.id eq punishmentId }
     }
+
+    fun loadCache(uuid: UUID, address: String) {
+        SyncCatcher.verify()
+        cache[uuid] = PlayerPunishments().also { punishments ->
+            punishments.addAll(database.punishments.filter { it.player eq uuid or (it.address.isNotNull() and (it.address eq address)) }
+                .toList())
+        }
+    }
+
+    fun flushCache(uuid: UUID) {
+        cache.remove(uuid)
+    }
+
+    fun flushCache() {
+        cache.clear()
+    }
+
 }

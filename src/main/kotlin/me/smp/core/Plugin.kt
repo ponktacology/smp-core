@@ -6,7 +6,7 @@ import me.smp.core.chat.ChatState
 import me.smp.core.chat.ChatStateArgumentProvider
 import me.smp.core.cooldown.CooldownListener
 import me.smp.core.cooldown.CooldownRepository
-import me.smp.core.cooldown.Cooldowns
+import me.smp.core.cooldown.CoreCooldowns
 import me.smp.core.invsee.InvSeeCommands
 import me.smp.core.nametag.CoreNameTagProvider
 import me.smp.core.nametag.FrozenNametagHandler
@@ -37,6 +37,8 @@ import me.smp.shared.network.NetworkRepository
 import me.vaperion.blade.Blade
 import me.vaperion.blade.bukkit.BladeBukkitPlatform
 import me.vaperion.blade.platform.TabCompleter
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Bukkit
 import org.bukkit.GameRule
 import org.bukkit.World
@@ -66,7 +68,6 @@ class Plugin : JavaPlugin() {
         server.pluginManager.registerEvents(CooldownListener(), this)
         server.pluginManager.registerEvents(freezeListener, this)
         server.pluginManager.registerEvents(StaffSettingsListener(), this)
-        server.pluginManager.registerEvents(VersionNoticeListener(), this)
 
         blade = Blade.forPlatform(BladeBukkitPlatform(this)).bind {
             it.bind(ChatState::class.java, ChatStateArgumentProvider)
@@ -89,7 +90,7 @@ class Plugin : JavaPlugin() {
         networkRepository.startListening()
 
         val cooldownRepository: CooldownRepository = koinApp.koin.get()
-        Cooldowns.values().forEach { cooldownRepository.registerPersistentCooldown(it) }
+        CoreCooldowns.values().forEach { cooldownRepository.registerPersistentCooldown(it) }
 
         val scoreboardService: ScoreboardService = koinApp.koin.get()
         scoreboardService.start()
@@ -117,6 +118,13 @@ class Plugin : JavaPlugin() {
     }
 
     override fun onDisable() {
+        Bukkit.getOnlinePlayers().forEach {
+            it.kick(
+                Component.text("Server is restarting!", NamedTextColor.RED)
+                    .append(Component.newline())
+                    .append(Component.text("Please rejoin in a few minutes.", NamedTextColor.YELLOW))
+            )
+        }
         val punishmentRepository: PunishmentRepository = koinApp.koin.get()
         val rankRepository: RankRepository = koinApp.koin.get()
         val cooldownRepository: CooldownRepository = koinApp.koin.get()

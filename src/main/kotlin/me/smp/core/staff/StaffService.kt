@@ -1,5 +1,6 @@
 package me.smp.core.staff
 
+import me.smp.core.Plugin
 import me.smp.core.TaskDispatcher
 import me.smp.core.nametag.FrozenNametagHandler
 import me.smp.core.rank.RankService
@@ -13,7 +14,7 @@ import org.koin.core.component.inject
 
 class StaffService : KoinComponent {
 
-    private val plugin: JavaPlugin by inject()
+    private val plugin: Plugin by inject()
     private val staffSettingsRepository: StaffSettingsRepository by inject()
     private val rankService: RankService by inject()
 
@@ -22,7 +23,6 @@ class StaffService : KoinComponent {
     fun toggleGod(player: Player): Boolean {
         val staffSettings = getByOnlinePlayer(player)
         staffSettings.god = !staffSettings.god
-        TaskDispatcher.dispatchAsync { staffSettingsRepository.updateSettings(staffSettings) }
         return staffSettings.god
     }
 
@@ -40,7 +40,6 @@ class StaffService : KoinComponent {
         val staffSettings = getByOnlinePlayer(player)
         staffSettings.fly = !staffSettings.fly
         updateFlyInternal(player, staffSettings.fly)
-        TaskDispatcher.dispatchAsync { staffSettingsRepository.updateSettings(staffSettings) }
         return staffSettings.fly
     }
 
@@ -72,8 +71,6 @@ class StaffService : KoinComponent {
         // TODO: DO THIS ON MAIN THREAD
         FrozenNametagHandler.reloadPlayer(player)
         updateVanishInternal(player, staffSettings.vanish)
-
-        TaskDispatcher.dispatchAsync { staffSettingsRepository.updateSettings(staffSettings) }
         return staffSettings.vanish    }
 
     fun applyToPlayer(player: Player) {

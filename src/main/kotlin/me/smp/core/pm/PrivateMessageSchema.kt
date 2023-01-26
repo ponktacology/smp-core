@@ -20,14 +20,14 @@ interface PrivateMessageSettings : Entity<PrivateMessageSettings> {
     var enabled: Boolean
 }
 
-object IgnoredPlayers : Table<IgnoredPlayer>("pm_ignored") {
+object IgnoredPlayersTable : Table<RemoteIgnoredPlayer>("pm_ignored") {
     val id = int("id").primaryKey().bindTo { it.id }
     val player = uuid("player").bindTo { it.player }
     val ignored = uuid("ignored").bindTo { it.ignored }
 }
 
-interface IgnoredPlayer : Entity<IgnoredPlayer> {
-    companion object : Entity.Factory<IgnoredPlayer>()
+interface RemoteIgnoredPlayer : Entity<RemoteIgnoredPlayer> {
+    companion object : Entity.Factory<RemoteIgnoredPlayer>()
     val id: Int
     var player: UUID
     var ignored: UUID

@@ -68,12 +68,13 @@ CREATE INDEX playerPmIgnored ON pm_ignored USING btree (player);
 
 CREATE TABLE cooldowns
 (
-    id       VARCHAR NOT NULL PRIMARY KEY,
-    player   UUID    NOT NULL,
-    reset_at BIGINT  NOT NULL
+    id       SERIAL      NOT NULL PRIMARY KEY,
+    type     VARCHAR(64) NOT NULL,
+    player   UUID        NOT NULL,
+    reset_at BIGINT      NOT NULL
 );
 
-CREATE INDEX playerCooldowns ON pm_ignored USING btree (id, player);
+CREATE INDEX playerCooldowns ON cooldowns USING btree (player);
 
 CREATE TABLE staff_settings
 (

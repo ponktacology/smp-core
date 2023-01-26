@@ -8,7 +8,7 @@ class CooldownService : KoinComponent {
 
     private val cooldownRepository: CooldownRepository by inject()
 
-    fun isOnCooldown(player: Player, type: CooldownType) = cooldownRepository.isOnCooldown(player.uniqueId, type)
+    fun hasCooldown(player: Player, type: CooldownType) = cooldownRepository.isOnCooldown(player, type)
 
-    fun reset(player: Player, type: CooldownType) = cooldownRepository.reset(player.uniqueId, type)
+    fun reset(player: Player, type: CooldownType) = cooldownRepository.reset(player, type)
 }
