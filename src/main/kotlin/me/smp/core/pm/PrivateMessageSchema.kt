@@ -7,15 +7,24 @@ import org.ktorm.schema.int
 import org.ktorm.schema.uuid
 import java.util.*
 
-object PrivateMessagesSettings : Table<PrivateMessageSettings>("pm_settings") {
+fun PrivateMessageSettings.toRemote() = RemotePrivateMessagesSettings {
+    this.id = this@toRemote.id
+    this.player = this@toRemote.uuid
+    this.enabled = this@toRemote.enabled
+}
+
+fun RemotePrivateMessagesSettings.toDomain() = PrivateMessageSettings(this.id, this.player, this.enabled)
+
+object PrivateMessagesSettingsTable : Table<RemotePrivateMessagesSettings>("pm_settings") {
     val id = int("id").primaryKey().bindTo { it.id }
     val player = uuid("player").bindTo { it.player }
     val enabled = boolean("enabled").bindTo { it.enabled }
 }
 
-interface PrivateMessageSettings : Entity<PrivateMessageSettings> {
-    companion object : Entity.Factory<PrivateMessageSettings>()
-    val id: Int
+interface RemotePrivateMessagesSettings : Entity<RemotePrivateMessagesSettings> {
+    companion object : Entity.Factory<RemotePrivateMessagesSettings>()
+
+    var id: Int
     var player: UUID
     var enabled: Boolean
 }
@@ -28,6 +37,7 @@ object IgnoredPlayersTable : Table<RemoteIgnoredPlayer>("pm_ignored") {
 
 interface RemoteIgnoredPlayer : Entity<RemoteIgnoredPlayer> {
     companion object : Entity.Factory<RemoteIgnoredPlayer>()
+
     val id: Int
     var player: UUID
     var ignored: UUID

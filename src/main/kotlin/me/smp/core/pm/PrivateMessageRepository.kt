@@ -17,13 +17,13 @@ import java.util.concurrent.ConcurrentHashMap
 class PrivateMessageRepository : KoinComponent, UUIDCache {
 
     private val database: Database by inject()
-    private val Database.settings get() = this.sequenceOf(PrivateMessagesSettings)
+    private val Database.settings get() = this.sequenceOf(PrivateMessagesSettingsTable)
     private val Database.ignored get() = this.sequenceOf(IgnoredPlayersTable)
     private val settingsCache = ConcurrentHashMap<UUID, PrivateMessageSettings>()
     private val ignoredCache = ConcurrentHashMap<UUID, IgnoredPlayers>()
     private val replyCache = ConcurrentHashMap<UUID, UUID>()
 
-    fun getSettingsByPlayer(player: Player): PrivateMessageSettings {
+    fun settingsByPlayer(player: Player): PrivateMessageSettings {
         return settingsCache[player.uniqueId] ?: throw PlayerNotFoundInCacheException()
     }
 
@@ -72,12 +72,15 @@ class PrivateMessageRepository : KoinComponent, UUIDCache {
     }
 
     private fun findOrCreate(uuid: UUID): PrivateMessageSettings {
-        return database.settings.find { it.player eq uuid } ?: PrivateMessageSettings {
-            this.player = uuid
-            this.enabled = true
-        }.also {
-            database.settings.add(it)
-        }
+        val remotePrivateMessagesSettings =
+            database.settings.find { it.player eq uuid } ?: RemotePrivateMessagesSettings {
+                this.player = uuid
+                this.enabled = true
+            }.also {
+                database.settings.add(it)
+            }
+
+        return remotePrivateMessagesSettings.toDomain()
     }
 
     override fun verifyCache(uuid: UUID) = settingsCache.containsKey(uuid) && ignoredCache.containsKey(uuid)
@@ -86,7 +89,7 @@ class PrivateMessageRepository : KoinComponent, UUIDCache {
         replyCache.remove(uuid)
         ignoredCache.remove(uuid)
         settingsCache.remove(uuid)?.let {
-            TaskDispatcher.dispatchAsync { database.settings.update(it) }
+            TaskDispatcher.dispatchAsync { database.settings.update(it.toRemote()) }
         }
     }
 }

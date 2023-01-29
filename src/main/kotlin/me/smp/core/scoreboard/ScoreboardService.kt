@@ -12,7 +12,7 @@ class ScoreboardService : KoinComponent {
     private var provider: ScoreboardProvider? = null
 
     fun start() {
-        TaskDispatcher.runRepeatingAsync(ScoreboardTask(), 2L)
+        TaskDispatcher.runRepeatingAsync(ScoreboardTask(), 10L)
     }
 
     fun registerProvider(provider: ScoreboardProvider) {

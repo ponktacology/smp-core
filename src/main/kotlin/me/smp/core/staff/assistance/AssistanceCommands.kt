@@ -1,5 +1,6 @@
 package me.smp.core.staff.assistance
 
+import me.smp.core.TaskDispatcher
 import me.smp.core.cooldown.CooldownService
 import me.smp.core.cooldown.CoreCooldowns
 import me.vaperion.blade.annotation.argument.Name
@@ -21,7 +22,6 @@ object AssistanceCommands : KoinComponent {
 
     @Command("request", "helpop")
     @Description("Request help from staff")
-    @Async
     fun request(
         @Sender sender: Player,
         @Text
@@ -29,7 +29,12 @@ object AssistanceCommands : KoinComponent {
         message: String
     ) {
         if (cooldownService.hasCooldown(sender, CoreCooldowns.ASSISTANCE_REQUEST)) {
-            sender.sendMessage(Component.text("Wait a bit before requesting help from staff again.", NamedTextColor.RED))
+            sender.sendMessage(
+                Component.text(
+                    "Wait a bit before requesting help from staff again.",
+                    NamedTextColor.RED
+                )
+            )
             return
         }
         cooldownService.reset(sender, CoreCooldowns.ASSISTANCE_REQUEST)
@@ -38,7 +43,6 @@ object AssistanceCommands : KoinComponent {
 
     @Command("report")
     @Description("Report a player")
-    @Async
     fun report(
         @Sender sender: Player,
         @Name("player") player: Player,

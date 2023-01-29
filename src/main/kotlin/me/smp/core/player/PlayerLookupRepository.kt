@@ -1,5 +1,7 @@
 package me.smp.core.player
 
+import com.google.common.cache.Cache
+import com.google.common.cache.CacheBuilder
 import me.smp.core.Config
 import me.smp.core.Console
 import me.smp.core.SyncCatcher
@@ -9,6 +11,7 @@ import org.bukkit.Bukkit
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 
 private const val NAME_PREFIX = "{name-cache}"
@@ -18,6 +21,18 @@ private const val ADDRESS_PREFIX = "{address_cache}"
 class PlayerLookupRepository : KoinComponent {
 
     private val networkService: NetworkService by inject()
+
+    private val uuidCache = CacheBuilder.newBuilder()
+        .maximumSize(500)
+        .concurrencyLevel(4)
+        .expireAfterAccess(1, TimeUnit.HOURS)
+        .build<UUID, PlayerContainer>()
+
+    private val nameCache = CacheBuilder.newBuilder()
+        .maximumSize(500)
+        .concurrencyLevel(4)
+        .expireAfterAccess(1, TimeUnit.HOURS)
+        .build<String, PlayerContainer>()
 
     fun loadCache(uuid: UUID, name: String, address: String? = null) {
         SyncCatcher.verify()
@@ -30,12 +45,19 @@ class PlayerLookupRepository : KoinComponent {
         address?.let {
             networkService.setExpiring("${ADDRESS_PREFIX}$uuid", it, Config.ADDRESS_CACHE_EXPIRY_SECONDS)
         }
+
+        uuidCache.put(uuid, PlayerContainer(uuid, name))
+        nameCache.put(name.uppercase(), PlayerContainer(uuid, name))
     }
 
     fun getUUIDByName(name: String): UUID? {
         SyncCatcher.verify()
         Bukkit.getPlayer(name)?.let {
             return it.uniqueId
+        }
+
+        nameCache.getIfPresent(name.uppercase())?.let {
+            return it.uuid
         }
 
         networkService.get("$NAME_PREFIX${name.uppercase()}")?.let {
@@ -54,6 +76,10 @@ class PlayerLookupRepository : KoinComponent {
         if (uuid == Console.UUID) return Console.DISPLAY_NAME
 
         Bukkit.getPlayer(uuid)?.let {
+            return it.name
+        }
+
+        uuidCache.getIfPresent(uuid)?.let {
             return it.name
         }
 

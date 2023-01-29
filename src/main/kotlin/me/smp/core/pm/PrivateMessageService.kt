@@ -67,11 +67,10 @@ class PrivateMessageService : KoinComponent {
     }
 
     private fun hasDisabledPrivateMessages(player: Player) =
-        !privateMessageRepository.getSettingsByPlayer(player).enabled
+        !privateMessageRepository.settingsByPlayer(player).enabled
 
     fun togglePrivateMessages(player: Player) {
-        SyncCatcher.verify()
-        val settings = privateMessageRepository.getSettingsByPlayer(player)
+        val settings = privateMessageRepository.settingsByPlayer(player)
         settings.enabled = !settings.enabled
         player.sendMessage(ComponentHelper.createBoolean("Your private messages are", "enabled.", settings.enabled))
     }

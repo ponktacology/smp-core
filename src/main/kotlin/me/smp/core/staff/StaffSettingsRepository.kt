@@ -26,7 +26,8 @@ class StaffSettingsRepository : UUIDCache, KoinComponent {
 
     override fun loadCache(uuid: UUID) {
         SyncCatcher.verify()
-        cache[uuid] = database.staffSettings.find { it.player eq uuid } ?: StaffSettings {
+
+        val remoteStaffSettings = database.staffSettings.find { it.player eq uuid } ?: RemoteStaffSettings {
             this.player = uuid
             this.vanish = false
             this.god = false
@@ -34,6 +35,8 @@ class StaffSettingsRepository : UUIDCache, KoinComponent {
         }.also {
             database.staffSettings.add(it)
         }
+
+        cache[uuid] = remoteStaffSettings.toDomain()
     }
 
     override fun verifyCache(uuid: UUID) = cache.containsKey(uuid)
@@ -42,7 +45,7 @@ class StaffSettingsRepository : UUIDCache, KoinComponent {
         val settings = cache.remove(uuid) ?: return
 
         TaskDispatcher.dispatchAsync {
-            database.staffSettings.update(settings)
+            database.staffSettings.update(settings.toRemote())
         }
     }
 

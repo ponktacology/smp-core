@@ -16,7 +16,6 @@ object StaffChatCommands : KoinComponent {
 
     @Command("staffchat", "sc")
     @Permission("core.staffchat")
-    @Async
     fun staffchat(
         @Sender sender: Player,
         @Text
