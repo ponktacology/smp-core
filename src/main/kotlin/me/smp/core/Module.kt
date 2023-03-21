@@ -33,7 +33,7 @@ val MODULE = module {
         ConnectionProvider.database("localhost", 5432, "smp", "smp", "1234")
     }
     single(null, true) {
-        ConnectionProvider.network("redis://fiutfiut@localhost:6379")
+        ConnectionProvider.network("redis://127.0.0.1:6379")
     }
     single { JavaPlugin.getPlugin(Plugin::class.java) as Plugin }
     single { JavaPlugin.getPlugin(Plugin::class.java).config }

@@ -11,9 +11,7 @@ object StaffUtil : KoinComponent {
     private val rankService: RankService by inject()
 
     fun messageStaff(component: Component) {
-        println("MESSAGED STAFF")
         Bukkit.getOnlinePlayers().filter { rankService.getByPlayer(it).isStaff() }.forEach {
-            println("MESSAGED STAFF 2")
             it.sendMessage(component)
         }
     }

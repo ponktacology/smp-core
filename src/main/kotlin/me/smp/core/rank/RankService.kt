@@ -37,7 +37,7 @@ class RankService : KoinComponent {
 
     fun getDisplayName(uuid: UUID): Component {
         val rank = getByUUID(uuid)
-        val name = playerLookupService.getNameByUUID(uuid) ?: return Component.text("Anonymous", NamedTextColor.WHITE)
+        val name = playerLookupService.getNameByUUID(uuid) ?: return Component.text("Unknown", NamedTextColor.WHITE)
         return Component.text(name, rank.color, *rank.decorations)
     }
 
