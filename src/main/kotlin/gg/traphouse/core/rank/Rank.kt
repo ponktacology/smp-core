@@ -25,10 +25,10 @@ enum class Rank(
         NamedTextColor.DARK_RED,
         ChatColor.GRAY
     ),
-    HEAD_ADMIN(
+    OWNER(
         "OWNER",
         999,
-        emptySet<String>(),
+        setOf("core.testperm"),
         emptySet<Rank>(),
         NamedTextColor.DARK_RED,
         ChatColor.GRAY

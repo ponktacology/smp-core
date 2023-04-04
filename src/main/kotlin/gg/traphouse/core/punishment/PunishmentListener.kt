@@ -1,6 +1,5 @@
 package gg.traphouse.core.punishment
 
-import io.papermc.paper.event.player.AsyncChatEvent
 import gg.traphouse.core.Config
 import gg.traphouse.core.TaskDispatcher
 import gg.traphouse.core.rank.RankService
@@ -9,6 +8,7 @@ import gg.traphouse.shared.TimeFormatter
 import gg.traphouse.shared.network.NetworkHandler
 import gg.traphouse.shared.network.NetworkListener
 import gg.traphouse.shared.punishment.Punishment
+import io.papermc.paper.event.player.AsyncChatEvent
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.event.HoverEvent
 import net.kyori.adventure.text.format.NamedTextColor
@@ -38,49 +38,49 @@ class PunishmentListener : KoinComponent, Listener, NetworkListener {
     @NetworkHandler
     fun onPunishment(packet: PacketPunishment) {
         val punishment = punishmentRepository.getById(packet.punishmentId) ?: error("invalid punishment")
-        if (punishment.type != Punishment.Type.MUTE) {
-            Bukkit.getPlayer(punishment.player)?.let {
-                TaskDispatcher.dispatch {
-                    val permanent = punishment.duration.isPermanent()
-                    var component = Component.newline()
-                        .append(
-                            Component.text(
-                                "You have been${if (permanent) " permanently " else " "}${punishment.type.addFormat}!",
-                                NamedTextColor.RED,
-                                TextDecoration.ITALIC
-                            )
+        Bukkit.getPlayer(punishment.player)?.let {
+            TaskDispatcher.dispatch {
+                val permanent = punishment.duration.isPermanent()
+                var component = Component.newline()
+                    .append(
+                        if (punishment.type != Punishment.Type.KICK) Component.text(
+                            "You have been${if (permanent) " permanently " else " "}${punishment.type.addFormat}!",
+                            NamedTextColor.RED,
+                            TextDecoration.ITALIC
+                        ).append(Component.newline())
+                        else Component.empty()
+                    )
+                    .append(Component.newline())
+                    .append(Component.text("Reason: ${punishment.reason}", NamedTextColor.RED))
+
+                if (punishment.type != Punishment.Type.KICK) {
+                    if (!permanent) {
+                        component = component.append(
+                            Component.newline()
+                                .append(
+                                    Component.text(
+                                        "Expires at: ${TimeFormatter.formatDate(punishment.duration + punishment.addedAt)}",
+                                        NamedTextColor.RED
+                                    )
+                                )
                         )
-                        .append(Component.newline())
-                        .append(Component.newline())
-                        .append(Component.text("Reason: ${punishment.reason}", NamedTextColor.RED))
-
-                    if (punishment.type != Punishment.Type.KICK) {
-                        if (!permanent) {
-                            component = component.append(
-                                Component.newline()
-                                    .append(
-                                        Component.text(
-                                            "Expires at: ${TimeFormatter.formatDate(punishment.duration + punishment.addedAt)}",
-                                            NamedTextColor.RED
-                                        )
-                                    )
-                            )
-                        }
-                        component =
-                            component.append(
-                                Component.newline()
-                                    .append(Component.newline())
-                                    .append(
-                                        Component.text(
-                                            "You can appeal at discord dc.traphouse.gg",
-                                            NamedTextColor.RED
-                                        )
-                                    )
-                            )
                     }
-
-                    it.kick(component)
+                    component =
+                        component.append(
+                            Component.newline()
+                                .append(Component.newline())
+                                .append(
+                                    Component.text(
+                                        "You can appeal at discord dc.traphouse.gg",
+                                        NamedTextColor.RED
+                                    )
+                                )
+                        )
                 }
+
+                if (punishment.type == Punishment.Type.MUTE) {
+                    it.sendMessage(component)
+                } else it.kick(component)
             }
         }
 

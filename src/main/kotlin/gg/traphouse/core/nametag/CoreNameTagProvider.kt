@@ -26,7 +26,7 @@ class CoreNameTagProvider : NametagProvider("Rank", 0), KoinComponent {
             Component.text(" FROZEN", NamedTextColor.DARK_RED, TextDecoration.BOLD)
         } else Component.empty()
         return createNametag(
-            rank.getPrefix(),
+            rank.getPrefix().append(Component.text(" ")),
             suffix,
             rank.nameTagColor
         )

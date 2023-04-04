@@ -12,7 +12,7 @@ object SyncCatcher : KoinComponent {
 
     fun verify() {
         if (Bukkit.isPrimaryThread()) throw IllegalStateException("This method can't be called from main thread")
-        val stackTrace = Throwable().stackTrace
-        logger.log(Level.INFO, "ASYNC= ${stackTrace[1].className}.${stackTrace[1].methodName} THREAD= ${Thread.currentThread().name}")
+      //  val stackTrace = Throwable().stackTrace
+        //logger.log(Level.WARNING, "ASYNC= ${stackTrace[1].className}.${stackTrace[1].methodName} THREAD= ${Thread.currentThread().name}")
     }
 }
