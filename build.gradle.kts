@@ -10,7 +10,7 @@ plugins {
     id("maven-publish")
 }
 
-group = "me.smp"
+group = "gg.traphouse"
 version = "1.0-SNAPSHOT"
 
 repositories {
@@ -23,7 +23,7 @@ repositories {
 
 dependencies {
     compileOnly("org.purpurmc.purpur:purpur-api:1.17.1-R0.1-SNAPSHOT")
-    implementation("me.smp:shared:1.0-SNAPSHOT")
+    implementation("gg.traphouse:shared:1.0-SNAPSHOT")
     implementation("org.jetbrains.kotlin:kotlin-stdlib:1.7.10")
     implementation("io.insert-koin:koin-core:3.2.1")
     implementation("org.ktorm:ktorm-core:3.5.0")
@@ -40,7 +40,7 @@ dependencies {
     testImplementation("org.ktorm:ktorm-core:3.5.0")
     testImplementation("org.ktorm:ktorm-support-postgresql:3.5.0")
     testImplementation("com.zaxxer:HikariCP:5.0.1")
-    testImplementation("me.smp:shared:1.0-SNAPSHOT")
+    testImplementation("gg.traphouse:shared:1.0-SNAPSHOT")
     testImplementation("io.lettuce:lettuce-core:6.2.0.RELEASE")
     testImplementation(kotlin("test"))
 }
@@ -61,7 +61,7 @@ tasks.withType<KotlinCompile> {
 publishing {
     publications {
         create<MavenPublication>("maven") {
-            groupId = "me.smp"
+            groupId = "gg.traphouse"
             artifactId = "core"
             version = "1.0-SNAPSHOT"
 
