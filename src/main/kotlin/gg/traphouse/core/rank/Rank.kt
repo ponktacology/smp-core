@@ -45,10 +45,10 @@ enum class Rank(
     ), // kingpin, pimp, trapper, dealer
     MEDIA("MEDIA", 23, emptySet<String>(), emptySet<Rank>(), NamedTextColor.LIGHT_PURPLE, ChatColor.GRAY),
     KING("KING", 13, emptySet<String>(), emptySet<Rank>(), NamedTextColor.GOLD, ChatColor.GRAY),
-    PIMP("PIMP", 12, emptySet<String>(), emptySet<Rank>(), NamedTextColor.GOLD, ChatColor.GOLD),
+    PIMP("PIMP", 12, emptySet<String>(), emptySet<Rank>(), NamedTextColor.GOLD, ChatColor.GRAY),
     OG("OG", 11, emptySet<String>(), emptySet<Rank>(), NamedTextColor.RED, ChatColor.GRAY),
     DEALER("DEALER", 10, emptySet<String>(), emptySet<Rank>(), NamedTextColor.GREEN, ChatColor.GRAY),
-    DEFAULT("DEFAULT", 0, emptySet<String>(), emptySet<Rank>(), NamedTextColor.GRAY, ChatColor.WHITE);
+    DEFAULT("DEFAULT", 0, emptySet<String>(), emptySet<Rank>(), NamedTextColor.GRAY, ChatColor.GRAY);
 
     val permissions: Set<String>
         get() {
@@ -58,8 +58,10 @@ enum class Rank(
             return allPermissions
         }
 
+    fun displayName() = Component.text(StringUtil.customFont("${this.displayName}"), this.color)
+
     fun getPrefix() = if (this == DEFAULT) Component.empty() else Component.empty()
-        .append(Component.text(StringUtil.customFont("${this.displayName}"), this.color))
+        .append(displayName())
 
     fun isSuperior(rank: Rank) = power > rank.power
 

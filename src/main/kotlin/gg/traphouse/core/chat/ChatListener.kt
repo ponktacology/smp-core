@@ -1,11 +1,14 @@
 package gg.traphouse.core.chat
 
-import io.papermc.paper.event.player.AsyncChatEvent
 import gg.traphouse.core.rank.RankService
 import gg.traphouse.core.util.StaffUtil
+import gg.traphouse.shared.network.NetworkHandler
+import gg.traphouse.shared.network.NetworkListener
+import io.papermc.paper.event.player.AsyncChatEvent
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.format.NamedTextColor
+import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -13,7 +16,7 @@ import org.bukkit.event.Listener
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
-class ChatListener : Listener, KoinComponent {
+class ChatListener : Listener, NetworkListener, KoinComponent {
 
     private val rankService: RankService by inject()
     private val chatService: ChatService by inject()
@@ -26,26 +29,26 @@ class ChatListener : Listener, KoinComponent {
 
         if (rank.isStaff()) return
         if (when (chatService.chatState()) {
-            ChatState.DISABLED -> {
-                player.sendMessage(Component.text("Chat is currently disabled.", NamedTextColor.RED))
-                true
-            }
-
-            ChatState.DONATOR_ONLY -> {
-                if (!rank.isDonator()) {
-                    player.sendMessage(
-                            Component.text(
-                                    "Chat is currently only available to donators.",
-                                    NamedTextColor.RED
-                                )
-                        )
+                ChatState.DISABLED -> {
+                    player.sendMessage(Component.text("Chat is currently disabled.", NamedTextColor.RED))
                     true
                 }
-                false
-            }
 
-            else -> false
-        }
+                ChatState.DONATOR_ONLY -> {
+                    if (!rank.isDonator()) {
+                        player.sendMessage(
+                            Component.text(
+                                "Chat is currently only available to donators.",
+                                NamedTextColor.RED
+                            )
+                        )
+                        true
+                    }
+                    false
+                }
+
+                else -> false
+            }
         ) {
             event.isCancelled = true
         }
@@ -69,5 +72,10 @@ class ChatListener : Listener, KoinComponent {
                     )
             )
         }
+    }
+
+    @NetworkHandler
+    fun on(packet: PacketBroadcast) {
+        Bukkit.broadcast(packet.message)
     }
 }

@@ -1,14 +1,12 @@
 package gg.traphouse.core.staff
 
 import gg.traphouse.core.Plugin
-import gg.traphouse.core.TaskDispatcher
-import gg.traphouse.core.nametag.FrozenNametagHandler
+import gg.traphouse.core.nametag.NameTagHandler
 import gg.traphouse.core.rank.RankService
 import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
 import org.bukkit.entity.Player
-import org.bukkit.plugin.java.JavaPlugin
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
@@ -69,7 +67,7 @@ class StaffService : KoinComponent {
         val staffSettings = getByOnlinePlayer(player)
         staffSettings.vanish = !staffSettings.vanish
         // TODO: DO THIS ON MAIN THREAD
-        FrozenNametagHandler.reloadPlayer(player)
+        NameTagHandler.reloadPlayer(player)
         updateVanishInternal(player, staffSettings.vanish)
         return staffSettings.vanish    }
 

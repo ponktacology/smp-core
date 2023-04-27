@@ -25,13 +25,14 @@ object ChatCommands : KoinComponent {
         chatService.updateState(state)
     }
 
-    @Command("broadcast")
+    @Command("broadcast", "bc", "alert")
     @Permission("core.chat.broadcast")
     fun broadcast(
         @Sender sender: CommandSender,
         @Flag(value = 'r', description = "raw broadcast") raw: Boolean,
+        @Flag(value = 'g', description = "global") global: Boolean,
         @Text @Name("message") message: String
     ) {
-        chatService.broadcast(MiniMessage.get().parse(message), raw)
+        chatService.broadcast(MiniMessage.get().parse(message), raw, global)
     }
 }

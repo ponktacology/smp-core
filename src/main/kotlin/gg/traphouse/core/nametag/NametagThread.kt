@@ -12,13 +12,13 @@ internal class NametagThread : Thread("Nametag Thread") {
             while (pendingUpdates.peek() != null) {
                 val pendingUpdate = pendingUpdates.poll()
                 try {
-                    FrozenNametagHandler.applyUpdate(pendingUpdate)
+                    NameTagHandler.applyUpdate(pendingUpdate)
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
             }
             try {
-                sleep(FrozenNametagHandler.updateInterval * 50L)
+                sleep(NameTagHandler.updateInterval * 50L)
             } catch (e2: InterruptedException) {
                 e2.printStackTrace()
             }

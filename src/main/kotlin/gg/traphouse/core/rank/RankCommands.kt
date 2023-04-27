@@ -34,7 +34,7 @@ object RankCommands : KoinComponent {
             JoinConfiguration.separator(
                 Component.text(", ", NamedTextColor.WHITE)
             ),
-            Rank.values().map { it.getPrefix() })
+            Rank.values().map { it.displayName() })
 
         var visiblePlayers = 0
         val players = Component.join(

@@ -1,18 +1,12 @@
 package gg.traphouse.core.nametag
 
 import org.bukkit.entity.Player
+import java.util.*
 
-internal class NametagUpdate {
-    val toRefresh: String
-    var refreshFor: String? = null
-        private set
+internal class NametagUpdate(val toRefresh: UUID, var refreshFor: UUID? = null) {
 
-    constructor(toRefresh: Player) {
-        this.toRefresh = toRefresh.name
-    }
+    constructor(toRefresh: Player) : this(toRefresh.uniqueId)
 
-    constructor(toRefresh: Player, refreshFor: Player) {
-        this.toRefresh = toRefresh.name
-        this.refreshFor = refreshFor.name
-    }
+    constructor(toRefresh: Player, refreshFor: Player) : this(toRefresh.uniqueId, refreshFor.uniqueId)
+
 }

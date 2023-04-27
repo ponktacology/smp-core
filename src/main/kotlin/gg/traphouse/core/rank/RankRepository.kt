@@ -1,7 +1,7 @@
 package gg.traphouse.core.rank
 
 import gg.traphouse.core.*
-import gg.traphouse.core.nametag.FrozenNametagHandler
+import gg.traphouse.core.nametag.NameTagHandler
 import gg.traphouse.core.player.PlayerNotFoundInCacheException
 import gg.traphouse.shared.Duration
 import org.bukkit.Bukkit
@@ -64,7 +64,7 @@ class RankRepository : KoinComponent, UUIDCache {
         cache[uuid]?.let {
             it.add(grant)
             Bukkit.getPlayer(uuid)?.let { player ->
-                FrozenNametagHandler.reloadPlayer(player)
+                NameTagHandler.reloadPlayer(player)
                 TaskDispatcher.dispatch { recalculatePermissions(player) }
             }
         }
@@ -95,7 +95,7 @@ class RankRepository : KoinComponent, UUIDCache {
         cache[uuid]?.let {
             it.unGrant(rank, issuer, reason)
             Bukkit.getPlayer(uuid)?.let { player ->
-                FrozenNametagHandler.reloadPlayer(player)
+                NameTagHandler.reloadPlayer(player)
                 TaskDispatcher.dispatch { recalculatePermissions(player) }
             }
         }

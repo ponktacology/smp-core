@@ -1,6 +1,6 @@
 package gg.traphouse.core.punishment
 
-class PacketPunishment(
+data class PacketPunishment(
     val punishmentId: Int,
     val silent: Boolean
 )
