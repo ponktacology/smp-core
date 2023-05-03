@@ -9,6 +9,7 @@ import gg.traphouse.core.scoreboard.ScoreboardRepository
 import gg.traphouse.core.staff.StaffSettingsRepository
 import gg.traphouse.core.staff.freeze.FreezeRepository
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
@@ -17,9 +18,12 @@ import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import java.util.logging.Level
+import java.util.logging.Logger
 
 class CacheListener : Listener, KoinComponent {
 
+    private val logger: Logger by inject()
     private val rankRepository: RankRepository by inject()
     private val punishmentRepository: PunishmentRepository by inject()
     private val playerLookupRepository: PlayerLookupRepository by inject()
@@ -29,7 +33,7 @@ class CacheListener : Listener, KoinComponent {
     private val freezeRepository: FreezeRepository by inject()
     private val staffSettingsRepository: StaffSettingsRepository by inject()
 
-    private val cacheList = listOf<gg.traphouse.core.UUIDCache>(
+    private val cacheList = listOf<UUIDCache>(
         rankRepository,
         privateMessageRepository,
         cooldownRepository,
@@ -43,14 +47,16 @@ class CacheListener : Listener, KoinComponent {
                 it.loadCache(event.uniqueId)
             }
             val address = event.address.toString().replace("/", "")
-            println(address)
             punishmentRepository.loadCache(event.uniqueId, address)
             playerLookupRepository.loadCache(event.uniqueId, event.name, address)
         } catch (e: Exception) {
             e.printStackTrace()
             event.disallow(
                 AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
-                Component.text("Error while loading player data")
+                Component.text(
+                    "\nError while loading player data!\nIf this error repeats, please contact staff at dc.traphouse.gg",
+                    NamedTextColor.RED
+                )
             )
         }
     }
@@ -61,7 +67,13 @@ class CacheListener : Listener, KoinComponent {
         event.joinMessage(Component.empty())
         cacheList.forEach {
             if (!it.verifyCache(player.uniqueId)) {
-                player.kick(Component.text("Error while verifying player data"))
+                logger.log(Level.WARNING, "Player failed ${it.javaClass.simpleName} verification.")
+                player.kick(
+                    Component.text(
+                        "Error while verifying player data!\nIf this error repeats, please contact staff at dc.traphouse.gg",
+                        NamedTextColor.RED
+                    )
+                )
                 return
             }
         }

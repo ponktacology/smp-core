@@ -36,14 +36,12 @@ class CooldownRepository : UUIDCache, KoinComponent {
         val loadedCooldowns = database.cooldowns.filter { it.player eq uuid }.toList()
 
         loadedCooldowns.forEach {
-            println("LOADED ${it.type} for $uuid")
-            val type = cooldownsByType[it.type] ?: return
+            val type = cooldownsByType[it.type] ?: return@forEach
             cooldowns.register(it.toDomain(type))
         }
 
         cooldownsByType.values.forEach { type ->
             if (loadedCooldowns.any { it.type == type.type }) return@forEach
-
 
             val remoteCooldown = RemoteCooldown {
                 this.player = uuid
@@ -62,10 +60,7 @@ class CooldownRepository : UUIDCache, KoinComponent {
 
     override fun flushCache(uuid: UUID) {
         val cooldowns = cache.remove(uuid) ?: return
-        println("SAVING ${cooldowns.entries().size}")
-        TaskDispatcher.dispatchAsync {
-            cooldowns.entries().forEach { database.cooldowns.update(it.toRemote(uuid)) }
-        }
+        TaskDispatcher.dispatchAsync { cooldowns.entries().forEach { database.cooldowns.update(it.toRemote(uuid)) } }
     }
 
     fun flushCache() {

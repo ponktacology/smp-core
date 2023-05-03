@@ -30,10 +30,7 @@ class RankService : KoinComponent {
         networkService.publish(PacketUngrant(uuid, rank, issuer, reason))
     }
 
-    fun getDisplayName(player: Player): Component {
-        val rank = getByPlayer(player)
-        return Component.text(player.name, NamedTextColor.GRAY, *rank.decorations)
-    }
+    fun getDisplayName(player: Player) = rankRepository.getDisplayName(player)
 
     fun getDisplayName(uuid: UUID): Component {
         val rank = getByUUID(uuid)
@@ -41,10 +38,5 @@ class RankService : KoinComponent {
         return Component.text(name, NamedTextColor.GRAY, *rank.decorations)
     }
 
-    fun getFullDisplayName(player: Player): Component {
-        val rank = getByPlayer(player)
-        val prefix = rank.getPrefix()
-        return prefix.append(if (prefix == Component.empty()) Component.empty() else Component.text(" "))
-            .append(getDisplayName(player))
-    }
+    fun getFullDisplayName(player: Player) = rankRepository.getFullDisplayName(player)
 }

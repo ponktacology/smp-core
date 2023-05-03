@@ -30,7 +30,7 @@ import org.koin.dsl.module
 
 val MODULE = module {
     single(null, true) {
-        ConnectionProvider.database("localhost", 5432, "smp", "smp", "1234")
+        ConnectionProvider.database("127.0.0.1", 5432, "smp", "smp", "1234")
     }
     single(null, true) {
         ConnectionProvider.network("redis://127.0.0.1:6379")

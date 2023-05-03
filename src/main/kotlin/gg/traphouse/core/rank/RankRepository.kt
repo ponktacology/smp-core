@@ -4,6 +4,8 @@ import gg.traphouse.core.*
 import gg.traphouse.core.nametag.NameTagHandler
 import gg.traphouse.core.player.PlayerNotFoundInCacheException
 import gg.traphouse.shared.Duration
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.permissions.PermissionAttachment
@@ -65,6 +67,7 @@ class RankRepository : KoinComponent, UUIDCache {
             it.add(grant)
             Bukkit.getPlayer(uuid)?.let { player ->
                 NameTagHandler.reloadPlayer(player)
+                player.playerListName(Component.empty().append(getFullDisplayName(player)))
                 TaskDispatcher.dispatch { recalculatePermissions(player) }
             }
         }
@@ -96,9 +99,23 @@ class RankRepository : KoinComponent, UUIDCache {
             it.unGrant(rank, issuer, reason)
             Bukkit.getPlayer(uuid)?.let { player ->
                 NameTagHandler.reloadPlayer(player)
+                player.playerListName(Component.empty().append(getFullDisplayName(player)))
                 TaskDispatcher.dispatch { recalculatePermissions(player) }
+
             }
         }
+    }
+
+    fun getFullDisplayName(player: Player): Component {
+        val rank = getByPlayer(player)
+        val prefix = rank.getPrefix()
+        return prefix.append(if (prefix == Component.empty()) Component.empty() else Component.text(" "))
+            .append(getDisplayName(player))
+    }
+
+    fun getDisplayName(player: Player): Component {
+        val rank = getByPlayer(player)
+        return Component.text(player.name, NamedTextColor.GRAY, *rank.decorations)
     }
 
     private fun findOrCreate(uuid: UUID): PlayerGrants {
