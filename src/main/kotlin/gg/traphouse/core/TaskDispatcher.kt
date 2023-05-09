@@ -1,9 +1,11 @@
 package gg.traphouse.core
 
 import org.bukkit.Bukkit
-import org.bukkit.plugin.java.JavaPlugin
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import java.util.concurrent.CompletableFuture
+
+typealias BatchTask = List<CompletableFuture<Void>>
 
 object TaskDispatcher : KoinComponent {
 
@@ -35,6 +37,15 @@ object TaskDispatcher : KoinComponent {
         Bukkit.getServer().scheduler.runTaskTimerAsynchronously(plugin, runnable, 0L, ticks)
     }
 
+    fun runBatch(runnables: Collection<Runnable>): BatchTask {
+        return runnables.map { CompletableFuture.runAsync(it) }
+    }
+
+    fun BatchTask.awaitAll() {
+        return this.forEach { it.join() }
+    }
     fun runRepeating(runnable: Runnable, ticks: Long) =
         Bukkit.getServer().scheduler.runTaskTimer(plugin, runnable, 0L, ticks)
 }
+
+
