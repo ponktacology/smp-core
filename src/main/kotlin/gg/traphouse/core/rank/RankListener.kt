@@ -12,6 +12,7 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerJoinEvent
+import org.bukkit.event.player.PlayerLoginEvent
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
@@ -26,17 +27,42 @@ class RankListener : Listener, KoinComponent, NetworkListener {
             ChatRenderer.viewerUnaware { _, _, message ->
                 Component.empty()
                     .append(
-                        rankService.getFullDisplayName(event.player).hoverEvent(
-                            HoverEvent.hoverEvent(
-                                HoverEvent.Action.SHOW_TEXT,
-                                Component.text("Click to send a private message to ${event.player.name}", NamedTextColor.YELLOW)
+                        rankService.getFullDisplayName(event.player)
+                            .clickEvent(
+                                ClickEvent.clickEvent(
+                                    ClickEvent.Action.SUGGEST_COMMAND,
+                                    "/msg ${event.player.name} "
+                                )
                             )
-                        )
-                            .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/msg ${event.player.name} "))
+                            .hoverEvent(
+                                HoverEvent.hoverEvent(
+                                    HoverEvent.Action.SHOW_TEXT,
+                                    Component.text("Ping: ", NamedTextColor.RED)
+                                        .append(Component.text(event.player.ping, NamedTextColor.GRAY))
+                                        .append(Component.newline())
+                                        .append(
+                                            Component.text(
+                                                "Click to send a private message to ${event.player.name}",
+                                                NamedTextColor.YELLOW
+                                            )
+                                        )
+                                )
+                            )
                     )
-                    .append(Component.text(": ", NamedTextColor.WHITE).append(message))
-            }
-        )
+                    .append(
+                        Component.text(": ", NamedTextColor.WHITE).append(message)
+                    )
+            })
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    fun on(event: PlayerLoginEvent) {
+        println()
+        if (event.result == PlayerLoginEvent.Result.KICK_FULL) {
+            val rank = rankService.getByPlayer(event.player)
+            if (!rank.isDonator()) return
+            event.allow()
+        }
     }
 
     @EventHandler(priority = EventPriority.LOW)
