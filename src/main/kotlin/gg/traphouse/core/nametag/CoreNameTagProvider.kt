@@ -16,19 +16,23 @@ class CoreNameTagProvider : NametagProvider("Rank", 0), KoinComponent {
     private val staffService: StaffService by inject()
     private val freezeService: FreezeService by inject()
 
-    override fun fetchNametag(player: Player, other: Player): NametagInfo {
-        val rank = rankService.getByPlayer(player)
-        val otherRank = rankService.getByPlayer(other)
-        val staffSettings = staffService.getByOnlinePlayer(player)
+    override fun modifyNameTag(previous: NameTagInfo, viewer: Player, viewed: Player) {
+        val rank = rankService.getByPlayer(viewer)
+        val otherRank = rankService.getByPlayer(viewed)
+        val staffSettings = staffService.getByOnlinePlayer(viewer)
         val suffix = if (staffSettings.vanish && otherRank.isStaff()) {
             Component.text(" HIDDEN", NamedTextColor.GREEN, TextDecoration.BOLD)
-        } else if (freezeService.isFrozen(player)) {
+        } else if (freezeService.isFrozen(viewer)) {
             Component.text(" FROZEN", NamedTextColor.DARK_RED, TextDecoration.BOLD)
         } else Component.empty()
-        return createNametag(
-            rank.getPrefix().append(Component.text(" ")),
-            suffix,
-            rank.nameTagColor
-        )
+
+        previous.color = rank.nameTagColor
+        val prefix = rank.getPrefix()
+        if (prefix != Component.empty()) {
+            previous.prefix = rank.getPrefix().append(Component.text(" "))
+        }
+        previous.suffix = suffix
     }
+
+
 }

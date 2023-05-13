@@ -44,6 +44,11 @@ class RankService : KoinComponent {
     fun getFullDisplayName(player: Player): Component {
         val rank = getByPlayer(player)
         val prefix = rank.getPrefix()
-        return prefix.append(Component.text(" ")).append(getDisplayName(player))
+        val displayName = getDisplayName(player)
+        if (prefix == Component.empty()) {
+            println("XD")
+            return displayName
+        }
+        return prefix.append(Component.text(" ")).append(displayName)
     }
 }

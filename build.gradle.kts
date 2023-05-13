@@ -17,6 +17,7 @@ repositories {
     mavenCentral()
     mavenLocal()
     maven("https://repo.purpurmc.org/snapshots")
+
     maven("https://repo.mattstudios.me/artifactory/public/")
     maven("https://repo.dmulloy2.net/repository/public/")
 }
@@ -30,7 +31,7 @@ dependencies {
     implementation("org.ktorm:ktorm-support-postgresql:3.5.0")
     implementation("com.zaxxer:HikariCP:5.0.1")
     implementation("dev.triumphteam:triumph-gui:3.1.2")
-    implementation("me.vaperion.blade:bukkit:3.0.3")
+    implementation("me.vaperion.blade:bukkit:3.0.2")
     implementation("io.lettuce:lettuce-core:6.2.0.RELEASE")
     compileOnly("com.comphenix.protocol:ProtocolLib:4.8.0")
     implementation("fr.mrmicky:fastboard:1.2.1")

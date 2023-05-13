@@ -1,6 +1,5 @@
 package gg.traphouse.core
 
-import com.google.gson.reflect.TypeToken
 import gg.traphouse.core.chat.ChatCommands
 import gg.traphouse.core.chat.ChatListener
 import gg.traphouse.core.chat.ChatState
@@ -10,7 +9,7 @@ import gg.traphouse.core.cooldown.CooldownRepository
 import gg.traphouse.core.cooldown.CoreCooldowns
 import gg.traphouse.core.invsee.InvSeeCommands
 import gg.traphouse.core.nametag.CoreNameTagProvider
-import gg.traphouse.core.nametag.FrozenNametagHandler
+import gg.traphouse.core.nametag.NameTagHandler
 import gg.traphouse.core.player.PlayerCommands
 import gg.traphouse.core.player.PlayerContainer
 import gg.traphouse.core.player.PlayerContainerArgumentProvider
@@ -45,7 +44,6 @@ import org.bukkit.GameRule
 import org.bukkit.World
 import org.bukkit.plugin.java.JavaPlugin
 import org.koin.core.context.startKoin
-import java.util.concurrent.CompletableFuture
 
 class Plugin : JavaPlugin() {
 
@@ -109,8 +107,8 @@ class Plugin : JavaPlugin() {
         blade.register(ProtectionCommands)
         blade.register(PlayerCommands)
 
-        FrozenNametagHandler.init(this)
-        FrozenNametagHandler.registerProvider(CoreNameTagProvider())
+        NameTagHandler.init(this)
+        NameTagHandler.registerProvider(CoreNameTagProvider())
 
         TaskDispatcher.runRepeatingAsync(VanishDisplayTask(), 10L)
 

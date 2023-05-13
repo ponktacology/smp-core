@@ -1,7 +1,7 @@
 package gg.traphouse.core.staff.freeze
 
 import gg.traphouse.core.TaskDispatcher
-import gg.traphouse.core.nametag.FrozenNametagHandler
+import gg.traphouse.core.nametag.NameTagHandler
 import gg.traphouse.shared.network.NetworkService
 import org.bukkit.entity.Player
 import org.koin.core.component.KoinComponent
@@ -18,13 +18,13 @@ class FreezeService : KoinComponent {
     fun freeze(issuer: UUID, player: Player) {
         freezeRepository.freeze(player)
         FreezeGUI().open(player)
-        FrozenNametagHandler.reloadPlayer(player)
+        NameTagHandler.reloadPlayer(player)
         TaskDispatcher.dispatchAsync { networkService.publish(PacketFreeze(issuer, player.uniqueId)) }
     }
 
     fun unFreeze(player: Player) {
         freezeRepository.unFreeze(player)
-        FrozenNametagHandler.reloadPlayer(player)
+        NameTagHandler.reloadPlayer(player)
         player.closeInventory()
     }
 

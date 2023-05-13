@@ -8,13 +8,12 @@ import org.bukkit.event.player.PlayerQuitEvent
 class NametagListener : Listener {
     @EventHandler
     fun onPlayerJoin(event: PlayerJoinEvent) {
-        FrozenNametagHandler.initiatePlayer(event.player)
-        FrozenNametagHandler.reloadPlayer(event.player)
-        FrozenNametagHandler.reloadOthersFor(event.player)
+        NameTagHandler.initiatePlayer(event.player)
+        NameTagHandler.reloadPlayer(event.player)
     }
 
     @EventHandler
     fun onPlayerQuit(event: PlayerQuitEvent) {
-        FrozenNametagHandler.getTeamMap().remove(event.player.name)
+      //  NameTagHandler.getTeamMap().remove(event.player.name)
     }
 }

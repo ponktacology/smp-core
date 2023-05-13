@@ -48,7 +48,7 @@ enum class Rank(
     PIMP("PIMP", 12, emptySet<String>(), emptySet<Rank>(), NamedTextColor.GOLD, ChatColor.GOLD),
     OG("OG", 11, emptySet<String>(), emptySet<Rank>(), NamedTextColor.RED, ChatColor.GRAY),
     DEALER("DEALER", 10, emptySet<String>(), emptySet<Rank>(), NamedTextColor.GREEN, ChatColor.GRAY),
-    DEFAULT("DEFAULT", 0, emptySet<String>(), emptySet<Rank>(), NamedTextColor.GRAY, ChatColor.WHITE);
+    DEFAULT("DEFAULT", 0, emptySet<String>(), emptySet<Rank>(), NamedTextColor.GRAY, ChatColor.GRAY);
 
     val permissions: Set<String>
         get() {
