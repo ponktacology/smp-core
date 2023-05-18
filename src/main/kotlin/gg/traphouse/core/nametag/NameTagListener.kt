@@ -5,7 +5,8 @@ import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
 
-class NametagListener : Listener {
+class NameTagListener : Listener {
+
     @EventHandler
     fun onPlayerJoin(event: PlayerJoinEvent) {
         NameTagHandler.initiatePlayer(event.player)

@@ -1,14 +1,17 @@
 package gg.traphouse.core
 
+import com.destroystokyo.paper.profile.ProfileProperty
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
+import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.inventory.meta.SkullMeta
+import java.util.*
 
 val RESET_COMPONENT = LegacyComponentSerializer.legacyAmpersand().deserialize("&r")
 
@@ -84,7 +87,21 @@ class ItemBuilder(private val itemStack: ItemStack) {
     @Suppress("deprecation")
     fun skull(owner: String): ItemBuilder {
         require(itemStack.type == Material.PLAYER_HEAD)
-        updateMeta { (it as SkullMeta).owner = owner }
+        updateMeta {
+            (it as SkullMeta).playerProfile = Bukkit.createProfile(owner)
+        }
+        return this
+    }
+
+    @Suppress("deprecation")
+    fun skullFromURL(url: String): ItemBuilder {
+        require(itemStack.type == Material.PLAYER_HEAD)
+        updateMeta {
+            val profile = Bukkit.createProfile(UUID.randomUUID())
+            profile.clearProperties()
+            profile.properties.add(ProfileProperty("textures", url))
+            (it as SkullMeta).playerProfile = profile
+        }
         return this
     }
 

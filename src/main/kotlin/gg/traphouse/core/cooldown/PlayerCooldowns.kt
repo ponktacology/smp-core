@@ -10,11 +10,17 @@ class PlayerCooldowns {
 
     fun isOnCooldown(type: CooldownType) = cooldownsById[type]?.hasNotExpired() ?: false
 
+    fun cooldown(type: CooldownType): Long {
+        val cooldown = cooldownsById[type] ?: return -1
+        return cooldown.expiresIn()
+    }
+
     fun reset(type: CooldownType) {
         val cooldown = cooldownsById[type] ?: throw IllegalStateException("cooldown not found")
         cooldown.reset()
     }
 
     fun entries() = cooldownsById.values.toList()
+
 
 }

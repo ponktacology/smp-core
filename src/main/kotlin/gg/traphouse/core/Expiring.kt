@@ -16,4 +16,6 @@ interface Expiring {
     fun reset() {
         startedAt = System.currentTimeMillis()
     }
+
+    fun expiresIn() = expiringAt() - System.currentTimeMillis()
 }

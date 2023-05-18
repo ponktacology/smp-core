@@ -10,7 +10,7 @@ import org.bukkit.entity.Player
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
-class CoreNameTagProvider : NametagProvider("Rank", 0), KoinComponent {
+class CoreNameTagProvider : NameTagProvider("Rank", 0), KoinComponent {
 
     private val rankService: RankService by inject()
     private val staffService: StaffService by inject()

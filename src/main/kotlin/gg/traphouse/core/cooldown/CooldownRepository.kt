@@ -26,6 +26,11 @@ class CooldownRepository : UUIDCache, KoinComponent {
         return cooldowns.isOnCooldown(type)
     }
 
+    fun cooldown(player: Player, type: CooldownType): Long {
+        val cooldowns = cache[player.uniqueId] ?: throw PlayerNotFoundInCacheException()
+        return cooldowns.cooldown(type)
+    }
+
     fun reset(player: Player, type: CooldownType) {
         val cooldowns = cache[player.uniqueId] ?: throw PlayerNotFoundInCacheException()
         cooldowns.reset(type)

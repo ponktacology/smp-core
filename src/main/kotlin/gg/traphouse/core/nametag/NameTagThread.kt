@@ -2,7 +2,7 @@ package gg.traphouse.core.nametag
 
 import java.util.concurrent.ConcurrentLinkedQueue
 
-internal class NametagThread : Thread("Nametag Thread") {
+internal class NameTagThread : Thread("NameTag Thread") {
     init {
         this.isDaemon = true
     }
@@ -18,7 +18,7 @@ internal class NametagThread : Thread("Nametag Thread") {
                 }
             }
             try {
-                sleep(NameTagHandler.updateInterval * 50L)
+                sleep(NameTagHandler.UPDATE_INTERVAL * 50L)
             } catch (e2: InterruptedException) {
                 e2.printStackTrace()
             }
@@ -27,6 +27,6 @@ internal class NametagThread : Thread("Nametag Thread") {
 
     companion object {
         @JvmStatic
-        val pendingUpdates = ConcurrentLinkedQueue<NametagUpdate>()
+        val pendingUpdates = ConcurrentLinkedQueue<NameTagUpdate>()
     }
 }
