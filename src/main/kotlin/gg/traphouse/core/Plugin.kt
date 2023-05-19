@@ -21,10 +21,7 @@ import gg.traphouse.core.punishment.PunishmentListener
 import gg.traphouse.core.punishment.PunishmentRepository
 import gg.traphouse.core.rank.*
 import gg.traphouse.core.scoreboard.ScoreboardService
-import gg.traphouse.core.staff.StaffCommands
-import gg.traphouse.core.staff.StaffSettingsListener
-import gg.traphouse.core.staff.StaffSettingsRepository
-import gg.traphouse.core.staff.VanishDisplayTask
+import gg.traphouse.core.staff.*
 import gg.traphouse.core.staff.assistance.AssistanceCommands
 import gg.traphouse.core.staff.assistance.AssistanceListener
 import gg.traphouse.core.staff.chat.StaffChatCommands
@@ -67,6 +64,7 @@ class Plugin : JavaPlugin() {
         server.pluginManager.registerEvents(BenchmarkListener(), this)
         server.pluginManager.registerEvents(CooldownListener(), this)
         server.pluginManager.registerEvents(freezeListener, this)
+        server.pluginManager.registerEvents(VanishListener(), this)
         server.pluginManager.registerEvents(StaffSettingsListener(), this)
 
         blade = Blade.forPlatform(BladeBukkitPlatform(this)).bind {

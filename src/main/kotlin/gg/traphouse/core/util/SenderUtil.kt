@@ -21,10 +21,10 @@ object SenderUtil {
     fun Player.sendError(error: String) = sendError(Component.text(error))
 
     fun Player.sendSuccess(success: Component) {
-        this.sendMessage(Component.text(" ☺ ", NamedTextColor.GREEN).append(success))
+        this.sendMessage(Component.text("☺ ", NamedTextColor.GREEN).append(success))
     }
 
     fun Player.sendError(error: Component) {
-        this.sendMessage(Component.text(" ☹ ", NamedTextColor.RED).append(error))
+        this.sendMessage(Component.text("☹ ", NamedTextColor.RED).append(error))
     }
 }

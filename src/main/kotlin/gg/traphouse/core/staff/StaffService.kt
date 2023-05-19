@@ -18,6 +18,8 @@ class StaffService : KoinComponent {
 
     fun getByOnlinePlayer(player: Player) = staffSettingsRepository.getByOnlinePlayer(player)
 
+
+
     fun toggleGod(player: Player): Boolean {
         val staffSettings = getByOnlinePlayer(player)
         staffSettings.god = !staffSettings.god

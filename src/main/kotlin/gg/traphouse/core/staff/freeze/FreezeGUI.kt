@@ -5,6 +5,7 @@ import dev.triumphteam.gui.guis.Gui
 import dev.triumphteam.gui.guis.GuiItem
 import gg.traphouse.core.ItemBuilder
 import gg.traphouse.core.TaskDispatcher
+import gg.traphouse.core.util.GUIUtil
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
@@ -16,7 +17,7 @@ import org.koin.core.component.inject
 class FreezeGUI :
     Gui(
         3,
-        "Freeze",
+        GUIUtil.title("FREEZE"),
         setOf(
             InteractionModifier.PREVENT_ITEM_PLACE,
             InteractionModifier.PREVENT_ITEM_TAKE,
@@ -46,6 +47,7 @@ class FreezeGUI :
                     .build()
             )
         )
+        filler.fill(GUIUtil.FILLER_ITEM)
         setCloseGuiAction { event ->
             val player = event.player as Player
             if (freezeService.isFrozen(player)) {
