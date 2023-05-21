@@ -7,6 +7,7 @@ import gg.traphouse.core.chat.ChatStateArgumentProvider
 import gg.traphouse.core.cooldown.CooldownListener
 import gg.traphouse.core.cooldown.CooldownRepository
 import gg.traphouse.core.cooldown.CoreCooldowns
+import gg.traphouse.core.fix.CaseInsensetiveCommandsFix
 import gg.traphouse.core.invsee.InvSeeCommands
 import gg.traphouse.core.nametag.CoreNameTagProvider
 import gg.traphouse.core.nametag.NameTagHandler
@@ -56,6 +57,8 @@ class Plugin : JavaPlugin() {
         val punishmentListener = PunishmentListener()
         val rankListener = RankListener()
         val freezeListener = FreezeListener()
+
+        CaseInsensetiveCommandsFix()
 
         server.pluginManager.registerEvents(rankListener, this)
         server.pluginManager.registerEvents(punishmentListener, this)

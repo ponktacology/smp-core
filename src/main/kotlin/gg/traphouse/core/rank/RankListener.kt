@@ -69,7 +69,7 @@ class RankListener : Listener, KoinComponent, NetworkListener {
     fun onPlayerJoin(event: PlayerJoinEvent) {
         val player = event.player
         rankRepository.recalculatePermissions(player)
-        player.playerListName(Component.empty().append(rankService.getFullDisplayName(player)))
+        rankService.updatePlayerListName(player)
     }
 
     @NetworkHandler

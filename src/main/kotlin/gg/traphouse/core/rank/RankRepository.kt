@@ -22,6 +22,7 @@ class RankRepository : KoinComponent, UUIDCache {
 
     private val plugin: Plugin by inject()
     private val database: Database by inject()
+    private val rankService: RankService by inject()
     private val Database.grants get() = this.sequenceOf(Grants)
     private val cache = ConcurrentHashMap<UUID, PlayerGrants>()
     private val permissionAttachments = HashMap<UUID, PermissionAttachment>()
@@ -64,6 +65,7 @@ class RankRepository : KoinComponent, UUIDCache {
             it.add(grant)
             Bukkit.getPlayer(uuid)?.let { player ->
                 NameTagHandler.reloadPlayer(player)
+                rankService.updatePlayerListName(player)
                 TaskDispatcher.dispatch { recalculatePermissions(player) }
             }
         }

@@ -25,7 +25,7 @@ class FreezeService : KoinComponent {
     fun unFreeze(player: Player) {
         freezeRepository.unFreeze(player)
         NameTagHandler.reloadPlayer(player)
-        player.closeInventory()
+        player.openInventory.close()
     }
 
     fun loggedOutWhileFrozen(player: Player) {
