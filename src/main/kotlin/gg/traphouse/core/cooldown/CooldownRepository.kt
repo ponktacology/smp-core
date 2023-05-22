@@ -19,9 +19,25 @@ class CooldownRepository : UUIDCache, KoinComponent {
     private val cache = ConcurrentHashMap<UUID, PlayerCooldowns>()
     private val cooldownsByType = HashMap<String, CooldownType>()
 
-    fun registerPersistentCooldown(cooldownType: CooldownType) = cooldownsByType.put(cooldownType.type, cooldownType)
+    fun registerPersistentCooldown(cooldownType: CooldownType) {
+        cooldownsByType[cooldownType.type] = cooldownType
+
+        TaskDispatcher.dispatchAsync {
+            cache.entries.forEach { entry ->
+                val remoteCooldown = RemoteCooldown {
+                    this.player = entry.key
+                    this.type = cooldownType.type
+                    this.resetAt = System.currentTimeMillis()
+                }
+                database.cooldowns.add(remoteCooldown)
+                val cooldowns = entry.value
+                cooldowns.register(remoteCooldown.toDomain(cooldownType))
+            }
+        }
+    }
 
     fun isOnCooldown(player: Player, type: CooldownType): Boolean {
+        if (player.hasPermission("core.cooldown.bypass")) return false
         val cooldowns = cache[player.uniqueId] ?: throw PlayerNotFoundInCacheException()
         return cooldowns.isOnCooldown(type)
     }
@@ -39,22 +55,23 @@ class CooldownRepository : UUIDCache, KoinComponent {
     override fun loadCache(uuid: UUID) {
         val cooldowns = PlayerCooldowns()
         val loadedCooldowns = database.cooldowns.filter { it.player eq uuid }.toList()
-
-        loadedCooldowns.forEach {
-            println("LOADED ${it.type} for $uuid")
-            val type = cooldownsByType[it.type] ?: return
-            cooldowns.register(it.toDomain(type))
+        loadedCooldowns.forEach { cooldown ->
+            val type = cooldownsByType[cooldown.type] ?: let {
+                database.cooldowns.removeIf { cooldown.type eq it.type }
+                return@forEach
+            }
+            cooldowns.register(cooldown.toDomain(type))
         }
 
         cooldownsByType.values.forEach { type ->
             if (loadedCooldowns.any { it.type == type.type }) return@forEach
-
 
             val remoteCooldown = RemoteCooldown {
                 this.player = uuid
                 this.type = type.type
                 this.resetAt = System.currentTimeMillis()
             }
+
             database.cooldowns.add(remoteCooldown)
             cooldowns.register(remoteCooldown.toDomain(type))
         }
@@ -67,7 +84,6 @@ class CooldownRepository : UUIDCache, KoinComponent {
 
     override fun flushCache(uuid: UUID) {
         val cooldowns = cache.remove(uuid) ?: return
-        println("SAVING ${cooldowns.entries().size}")
         TaskDispatcher.dispatchAsync {
             cooldowns.entries().forEach { database.cooldowns.update(it.toRemote(uuid)) }
         }

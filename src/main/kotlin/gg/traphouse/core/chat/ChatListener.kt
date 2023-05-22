@@ -1,8 +1,8 @@
 package gg.traphouse.core.chat
 
-import io.papermc.paper.event.player.AsyncChatEvent
 import gg.traphouse.core.rank.RankService
 import gg.traphouse.core.util.StaffUtil
+import io.papermc.paper.event.player.AsyncChatEvent
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.format.NamedTextColor
@@ -20,7 +20,7 @@ class ChatListener : Listener, KoinComponent {
     private val chatFilter: ChatFilter by inject()
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
-    fun onPlayerChat(event: AsyncChatEvent) {
+    fun on(event: AsyncChatEvent) {
         val player = event.player
         val rank = rankService.getByPlayer(player)
 
