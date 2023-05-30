@@ -4,7 +4,7 @@ import dev.triumphteam.gui.components.InteractionModifier
 import dev.triumphteam.gui.guis.Gui
 import dev.triumphteam.gui.guis.GuiItem
 import gg.traphouse.core.ItemBuilder
-import gg.traphouse.core.TaskDispatcher
+import gg.traphouse.core.Task
 import gg.traphouse.core.util.GUIUtil
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
@@ -51,7 +51,7 @@ class FreezeGUI :
         setCloseGuiAction { event ->
             val player = event.player as Player
             if (freezeService.isFrozen(player)) {
-                TaskDispatcher.dispatchLater({ open(player) }, 1L)
+                Task.later({ open(player) }, 1L)
             }
         }
     }

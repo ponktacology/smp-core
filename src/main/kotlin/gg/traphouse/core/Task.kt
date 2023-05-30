@@ -1,15 +1,14 @@
 package gg.traphouse.core
 
 import org.bukkit.Bukkit
-import org.bukkit.plugin.java.JavaPlugin
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
-object TaskDispatcher : KoinComponent {
+object Task : KoinComponent {
 
     private val plugin: Plugin by inject()
 
-    fun dispatchAsync(runnable: Runnable) {
+    fun async(runnable: Runnable) {
         if (!Bukkit.isPrimaryThread()) {
             runnable.run()
             return
@@ -18,7 +17,7 @@ object TaskDispatcher : KoinComponent {
         Bukkit.getServer().scheduler.runTaskAsynchronously(plugin, runnable)
     }
 
-    fun dispatch(runnable: Runnable) {
+    fun sync(runnable: Runnable) {
         if (Bukkit.isPrimaryThread()) {
             runnable.run()
             return
@@ -27,14 +26,14 @@ object TaskDispatcher : KoinComponent {
         Bukkit.getServer().scheduler.runTask(plugin, runnable)
     }
 
-    fun dispatchLater(runnable: Runnable, ticks: Long) {
+    fun later(runnable: Runnable, ticks: Long) {
         Bukkit.getServer().scheduler.runTaskLater(plugin, runnable, ticks)
     }
 
-    fun runRepeatingAsync(runnable: Runnable, ticks: Long) {
+    fun repeatAsync(runnable: Runnable, ticks: Long) {
         Bukkit.getServer().scheduler.runTaskTimerAsynchronously(plugin, runnable, 0L, ticks)
     }
 
-    fun runRepeating(runnable: Runnable, ticks: Long) =
+    fun repeat(runnable: Runnable, ticks: Long) =
         Bukkit.getServer().scheduler.runTaskTimer(plugin, runnable, 0L, ticks)
 }

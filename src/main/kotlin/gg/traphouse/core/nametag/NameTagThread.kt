@@ -1,8 +1,10 @@
 package gg.traphouse.core.nametag
 
+import gg.traphouse.core.Config
 import java.util.concurrent.ConcurrentLinkedQueue
 
 internal class NameTagThread : Thread("NameTag Thread") {
+
     init {
         this.isDaemon = true
     }
@@ -18,7 +20,7 @@ internal class NameTagThread : Thread("NameTag Thread") {
                 }
             }
             try {
-                sleep(NameTagHandler.UPDATE_INTERVAL * 50L)
+                sleep(Config.NAMETAG_UPDATE_INTERVAL * 50L)
             } catch (e2: InterruptedException) {
                 e2.printStackTrace()
             }

@@ -35,13 +35,13 @@ class FreezeListener : Listener, NetworkListener, KoinComponent {
         var component = Component.text("[Freeze] ", NamedTextColor.AQUA)
             .append(Component.text("[${Config.SERVER_NAME}] ", NamedTextColor.BLUE))
             .append(rankService.getDisplayName(packet.issuer))
-            .append(Component.text(" froze "))
+            .append(Component.text(" zamroził "))
             .append(rankService.getDisplayName(player))
 
         Bukkit.getPlayer(player)?.let {
             component = component
                 .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/tp ${it.name}"))
-                .hoverEvent(HoverEvent.showText(Component.text("Click to teleport to ${it.name}")))
+                .hoverEvent(HoverEvent.showText(Component.text("Kliknij, aby się przeteleportować do ${it.name}")))
         }
 
         StaffUtil.messageStaff(component)
@@ -54,16 +54,16 @@ class FreezeListener : Listener, NetworkListener, KoinComponent {
         var component = Component.text("[Freeze] ", NamedTextColor.AQUA)
             .append(Component.text("[${Config.SERVER_NAME}] ", NamedTextColor.BLUE))
             .append(rankService.getDisplayName(player))
-            .append(Component.text(" logged out while frozen"))
+            .append(Component.text(" opuścił serwer podczas zamrożenia"))
 
         playerLookupService.getNameByUUID(packet.player)?.let {
             component = component.clickEvent(
                 ClickEvent.clickEvent(
                     ClickEvent.Action.RUN_COMMAND,
-                    "/ban -s $it perm Logged out while being frozen"
+                    "/ban -s $it perm Brak współpracy z administratorem"
                 )
             )
-                .hoverEvent(HoverEvent.showText(Component.text("Click to ban $it")))
+                .hoverEvent(HoverEvent.showText(Component.text("Kliknij, aby zbanować $it")))
         }
 
         StaffUtil.messageStaff(component)

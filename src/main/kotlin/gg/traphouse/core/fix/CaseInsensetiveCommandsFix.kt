@@ -9,6 +9,8 @@ import org.koin.core.component.inject
 
 class CaseInsensetiveCommandsFix : KoinComponent {
 
+    
+
     private val plugin: Plugin by inject()
 
     init {

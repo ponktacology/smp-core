@@ -1,21 +1,17 @@
 package gg.traphouse.core
 
-import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.format.NamedTextColor
+import gg.traphouse.core.util.SenderUtil.sendError
+import gg.traphouse.core.util.SenderUtil.sendSuccess
+import org.bukkit.entity.Player
 
 object ComponentHelper {
+
 
     /**
      * Creates message like {message} (now/no longer) {ending}
      */
-    fun createBoolean(prefix: String, suffix: String, state: Boolean) =
-        Component.empty()
-            .append(Component.text("$prefix ", NamedTextColor.YELLOW))
-            .append(
-                if (state) Component.text("now", NamedTextColor.GREEN) else Component.text(
-                    "no longer",
-                    NamedTextColor.RED
-                )
-            )
-            .append(Component.text(" $suffix", NamedTextColor.YELLOW))
+    fun Player.sendStateComponent(text: String, state: Boolean) {
+        if (state) this.sendSuccess(text.format("włączony"))
+        else this.sendError(text.format("wyłączony"))
+    }
 }

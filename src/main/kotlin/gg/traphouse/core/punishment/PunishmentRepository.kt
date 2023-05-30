@@ -21,7 +21,7 @@ class PunishmentRepository : KoinComponent {
     private val cache = ConcurrentHashMap<UUID, PlayerPunishments>()
 
     fun getByPlayer(player: Player, type: Punishment.Type): Punishment? {
-        val punishments = cache[player.uniqueId] ?: throw PlayerNotFoundInCacheException()
+        val punishments = cache[player.uniqueId] ?: throw PlayerNotFoundInCacheException(player)
         return punishments.findActive(type)
     }
 

@@ -2,7 +2,6 @@ package gg.traphouse.core.chat
 
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
-import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Bukkit
 
 class ChatService {
@@ -15,21 +14,19 @@ class ChatService {
         chatSettings.state = state
 
         when (state) {
-            ChatState.DISABLED -> Bukkit.broadcast(Component.text("Chat is now disabled.", NamedTextColor.RED))
-            ChatState.ENABLED -> Bukkit.broadcast(Component.text("Chat is now enabled.", NamedTextColor.GREEN))
+            ChatState.DISABLED -> Bukkit.broadcast(Component.text("Czat został wyłączony.", NamedTextColor.RED))
+            ChatState.ENABLED -> Bukkit.broadcast(Component.text("Czat został włączony.", NamedTextColor.GREEN))
             ChatState.DONATOR_ONLY -> Bukkit.broadcast(
                 Component.text(
-                    "Chat is now enabled only for donators.",
+                    "Czat został włączony tylko dla graczy z rangą.",
                     NamedTextColor.RED
                 )
             )
-
-            else -> {}
         }
     }
 
     fun broadcast(message: Component, raw: Boolean = false) {
-        val prefix = if (raw) Component.empty() else Component.empty().append(Component.text("[Alert] ", NamedTextColor.RED))
+        val prefix = if (raw) Component.empty() else Component.empty().append(Component.text("[INFO] ", NamedTextColor.RED))
         Bukkit.broadcast(prefix.append(message))
     }
 }

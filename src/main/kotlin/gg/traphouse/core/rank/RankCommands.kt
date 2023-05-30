@@ -3,6 +3,10 @@ package gg.traphouse.core.rank
 import gg.traphouse.core.player.PlayerContainer
 import gg.traphouse.core.staff.StaffService
 import gg.traphouse.core.util.SenderUtil
+import gg.traphouse.core.util.SenderUtil.sendError
+import gg.traphouse.core.util.SenderUtil.sendNoPermission
+import gg.traphouse.core.util.SenderUtil.sendSuccess
+import gg.traphouse.core.util.StaffUtil.isStaff
 import gg.traphouse.shared.Duration
 import me.vaperion.blade.annotation.argument.Name
 import me.vaperion.blade.annotation.argument.Optional
@@ -16,7 +20,6 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.JoinConfiguration
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Bukkit
-import org.bukkit.ChatColor
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.koin.core.component.KoinComponent
@@ -27,9 +30,9 @@ object RankCommands : KoinComponent {
     private val staffService: StaffService by inject()
     private val rankService: RankService by inject()
 
-    @Command("list")
-    @Description("Show all online players")
-    fun list(@Sender sender: Player) {
+    @Command("list", "online", "gracze", "who")
+    @Description("Lista graczy, którzy są aktualnie online")
+    fun list(@Sender sender: CommandSender) {
         val ranks = Component.join(
             JoinConfiguration.separator(
                 Component.text(", ", NamedTextColor.WHITE)
@@ -41,7 +44,7 @@ object RankCommands : KoinComponent {
             JoinConfiguration.separator(Component.text(", ", NamedTextColor.WHITE)),
             Bukkit.getOnlinePlayers()
                 .filter {
-                    val vanished = staffService.getByOnlinePlayer(it).vanish
+                    val vanished = !sender.isStaff() && staffService.getByOnlinePlayer(it).vanish
 
                     if (!vanished) {
                         visiblePlayers++
@@ -49,6 +52,7 @@ object RankCommands : KoinComponent {
 
                     return@filter !vanished
                 }
+                .sortedByDescending { rankService.getByPlayer(it).power }
                 .take(250)
                 .map {
                     return@map it.name().color(rankService.getByPlayer(it).color)
@@ -62,22 +66,22 @@ object RankCommands : KoinComponent {
     @Command("rank add", "grant")
     @Async
     @Permission("core.rank.add")
-    @Description("Add rank to the player")
+    @Description("Nadaje rangę graczowi")
     fun add(
         @Sender sender: CommandSender,
         @Name("player") player: PlayerContainer,
         @Name("rank") rank: Rank,
         @Name("duration") duration: Duration,
-        @Text @Optional("Promoted") @Name("reason")
+        @Text @Optional("Awans") @Name("reason")
         reason: String
     ) {
         if (rank == Rank.DEFAULT) {
-            sender.sendMessage("You can't grant a default rank.")
+            sender.sendError("Nie możesz nadać graczowi podstawowej rangi.")
             return
         }
         if (sender is Player) {
             if (RankValidator.isMorePowerful(rankService.getByPlayer(sender), rank)) {
-                sender.sendMessage("You don't have permission to add this rank to this player.")
+                sender.sendNoPermission()
                 return
             }
         }
@@ -94,44 +98,45 @@ object RankCommands : KoinComponent {
                 this.removed = false
             }
         )
-        sender.sendMessage("Successfully added ${rank.name} rank to the ${player.name}.")
+
+        sender.sendSuccess("Pomyślnie nadano ${player.name} rangę ${rank.name}.")
     }
 
     @Command("rank remove", "removegrant")
     @Async
     @Permission("core.rank.remove")
-    @Description("Remove rank from the player")
+    @Description("Usuwa rangę graczowi")
     fun remove(
         @Sender sender: CommandSender,
         @Name("player") player: PlayerContainer,
         @Name("rank") rank: Rank,
-        @Text @Optional("Demoted") @Name("reason")
+        @Text @Optional("Degrad") @Name("reason")
         reason: String
     ) {
         if (rank == Rank.DEFAULT) {
-            sender.sendMessage("You can't remove default rank from a player.")
+            sender.sendError("Nie możesz zdegradować gracza z podstawowej rangi.")
             return
         }
         if (sender is Player) {
             if (RankValidator.isMorePowerful(rankService.getByPlayer(sender), rank)) {
-                sender.sendMessage("You don't have permission to remove this rank from this player.")
+                sender.sendNoPermission()
                 return
             }
         }
         val issuerUUID = SenderUtil.resolveIssuerUUID(sender)
         rankService.removeRanks(player.uuid, rank, issuerUUID, reason)
-        sender.sendMessage("Successfully removed ${rank.name} from the ${player.name}.")
+        sender.sendSuccess("Pomyślnie zdegradowano gracza ${player.name} z rangi ${rank.name}.")
     }
 
     @Command("rank check")
     @Async
     @Permission("core.rank.check")
-    @Description("Check player's rank")
+    @Description("Sprawdza rangę gracza")
     fun check(
         @Sender sender: CommandSender,
         @Name("player") @Optional("me")
         player: PlayerContainer
     ) {
-        sender.sendMessage("${player.name}'s rank is ${rankService.getByUUID(player.uuid).name}.")
+        sender.sendSuccess("Ranga gracza ${player.name} to ${rankService.getByUUID(player.uuid).name}.")
     }
 }

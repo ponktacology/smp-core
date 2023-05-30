@@ -1,7 +1,7 @@
 package gg.traphouse.core.pm
 
 import gg.traphouse.core.SyncCatcher
-import gg.traphouse.core.TaskDispatcher
+import gg.traphouse.core.Task
 import gg.traphouse.core.UUIDCache
 import gg.traphouse.core.player.PlayerNotFoundInCacheException
 import org.bukkit.entity.Player
@@ -24,19 +24,19 @@ class PrivateMessageRepository : KoinComponent, UUIDCache {
     private val replyCache = ConcurrentHashMap<UUID, UUID>()
 
     fun settingsByPlayer(player: Player): PrivateMessageSettings {
-        return settingsCache[player.uniqueId] ?: throw PlayerNotFoundInCacheException()
+        return settingsCache[player.uniqueId] ?: throw PlayerNotFoundInCacheException(player)
     }
 
     fun isIgnoring(player: Player, other: UUID): Boolean {
-        val ignoredPlayers = ignoredCache[player.uniqueId] ?: throw PlayerNotFoundInCacheException()
+        val ignoredPlayers = ignoredCache[player.uniqueId] ?: throw PlayerNotFoundInCacheException(player)
         return ignoredPlayers.isIgnoring(other)
     }
 
     fun ignore(player: Player, ignored: UUID) {
-        val ignoredPLayers = ignoredCache[player.uniqueId] ?: throw PlayerNotFoundInCacheException()
+        val ignoredPLayers = ignoredCache[player.uniqueId] ?: throw PlayerNotFoundInCacheException(player)
         ignoredPLayers.ignore(ignored)
 
-        TaskDispatcher.dispatchAsync {
+        Task.async {
             database.ignored.add(RemoteIgnoredPlayer {
                 this.player = player.uniqueId
                 this.ignored = ignored
@@ -46,10 +46,10 @@ class PrivateMessageRepository : KoinComponent, UUIDCache {
     }
 
     fun unIgnore(player: Player, ignored: UUID) {
-        val ignoredPLayers = ignoredCache[player.uniqueId] ?: throw PlayerNotFoundInCacheException()
+        val ignoredPLayers = ignoredCache[player.uniqueId] ?: throw PlayerNotFoundInCacheException(player)
         ignoredPLayers.unIgnore(ignored)
 
-        TaskDispatcher.dispatchAsync {
+        Task.async {
             database.ignored.removeIf { it.player eq player.uniqueId and (it.ignored eq ignored) }
         }
     }
@@ -89,7 +89,7 @@ class PrivateMessageRepository : KoinComponent, UUIDCache {
         replyCache.remove(uuid)
         ignoredCache.remove(uuid)
         settingsCache.remove(uuid)?.let {
-            TaskDispatcher.dispatchAsync { database.settings.update(it.toRemote()) }
+            Task.async { database.settings.update(it.toRemote()) }
         }
     }
 }

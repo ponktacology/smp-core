@@ -12,6 +12,6 @@ object WorldArgumentProvider : ArgumentProvider<World> {
     override fun provide(ctx: Context, arg: Argument): World? {
         val name = arg.string
         if (name.isNullOrEmpty()) return null
-        return Bukkit.getWorld(name) ?: throw BladeExitMessage("Invalid duration format.")
+        return Bukkit.getWorld(name) ?: throw BladeExitMessage("Nie znaleziono takiego świata.")
     }
 }

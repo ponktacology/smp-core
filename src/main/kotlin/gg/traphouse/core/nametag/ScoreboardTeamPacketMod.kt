@@ -3,7 +3,6 @@ package gg.traphouse.core.nametag
 import com.comphenix.protocol.PacketType
 import com.comphenix.protocol.ProtocolLibrary
 import com.comphenix.protocol.events.PacketContainer
-import com.comphenix.protocol.utility.MinecraftReflection
 import com.comphenix.protocol.wrappers.WrappedChatComponent
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
@@ -24,6 +23,7 @@ class ScoreboardTeamPacketMod {
     ) {
         packet = ProtocolLibrary.getProtocolManager()
             .createPacket(PacketType.Play.Server.SCOREBOARD_TEAM) // Create a new scoreboard team packet
+
         try {
             packet.integers.write(0, paramInt) // Mode -create team
             packet.strings.write(0, name) // Give the team a name
@@ -31,7 +31,9 @@ class ScoreboardTeamPacketMod {
                 val optStruct = packet.optionalStructures.read(0) // Team Data
                 if (optStruct.isPresent) { // Make sure the structure exists (it always does)
                     val struct = optStruct.get()
-                    struct.chatComponents.write(0, WrappedChatComponent.fromText(name)) // TeamName
+                    struct.chatComponents.write(0, WrappedChatComponent.fromJson(
+                        GsonComponentSerializer.gson().serialize(prefix)
+                    )) // TeamName
                     struct.chatComponents.write(
                         1,
                         WrappedChatComponent.fromJson(
@@ -46,12 +48,14 @@ class ScoreboardTeamPacketMod {
                     ) // Team Suffix
                     struct.integers.write(
                         0,
-                        1
+                        0x01
                     ) // Bit mask. 0x01: Allow friendly fire, 0x02: can see invisible players on same team.
+                    /*
                     struct.getEnumModifier(
                         ChatColor::class.java,
                         MinecraftReflection.getMinecraftClass("EnumChatFormat")
                     ).write(0, color) // TeamColor
+                     */
                     packet.optionalStructures.write(
                         0,
                         Optional.of(struct)
@@ -61,11 +65,9 @@ class ScoreboardTeamPacketMod {
         } catch (e: Exception) {
             e.printStackTrace()
         }
+
         if (paramInt == 0) {
-            var collection = packet.modifier.read(2) as MutableCollection<String>
-            if (collection == null || collection.isEmpty()) {
-                collection = ArrayList<String>()
-            }
+            val collection = packet.modifier.read(2) as? MutableCollection<String> ?: ArrayList<String>()
             collection.addAll(players)
             packet.modifier.write(2, collection)
         }
@@ -91,10 +93,7 @@ class ScoreboardTeamPacketMod {
         } catch (e: Exception) {
             e.printStackTrace()
         }
-        var collection = packet.modifier.read(2) as MutableCollection<String>?
-        if (collection.isNullOrEmpty()) {
-            collection = ArrayList<String>()
-        }
+        val collection = packet.modifier.read(2) as? MutableCollection<String> ?: ArrayList<String>()
         collection.add(player)
         packet.modifier.write(2, collection)
     }

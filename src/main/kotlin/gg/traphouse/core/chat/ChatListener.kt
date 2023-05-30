@@ -2,6 +2,7 @@ package gg.traphouse.core.chat
 
 import gg.traphouse.core.rank.RankService
 import gg.traphouse.core.util.StaffUtil
+import gg.traphouse.core.util.StaffUtil.isStaff
 import io.papermc.paper.event.player.AsyncChatEvent
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.TextComponent
@@ -22,30 +23,30 @@ class ChatListener : Listener, KoinComponent {
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     fun on(event: AsyncChatEvent) {
         val player = event.player
-        val rank = rankService.getByPlayer(player)
 
-        if (rank.isStaff()) return
+        if (player.isStaff()) return
         if (when (chatService.chatState()) {
-            ChatState.DISABLED -> {
-                player.sendMessage(Component.text("Chat is currently disabled.", NamedTextColor.RED))
-                true
-            }
-
-            ChatState.DONATOR_ONLY -> {
-                if (!rank.isDonator()) {
-                    player.sendMessage(
-                            Component.text(
-                                    "Chat is currently only available to donators.",
-                                    NamedTextColor.RED
-                                )
-                        )
+                ChatState.DISABLED -> {
+                    player.sendMessage(Component.text("Czat jest aktualnie wyłączony.", NamedTextColor.RED))
                     true
                 }
-                false
-            }
 
-            else -> false
-        }
+                ChatState.DONATOR_ONLY -> {
+                    val rank = rankService.getByPlayer(player)
+                    if (!rank.isDonator()) {
+                        player.sendMessage(
+                            Component.text(
+                                "Czat jest aktualnie włączony tylko dla rang.",
+                                NamedTextColor.RED
+                            )
+                        )
+                        true
+                    }
+                    false
+                }
+
+                else -> false
+            }
         ) {
             event.isCancelled = true
         }
@@ -54,15 +55,14 @@ class ChatListener : Listener, KoinComponent {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
     fun onChatEvent(event: AsyncChatEvent) {
         val player = event.player
-        val rank = rankService.getByPlayer(player)
         val text = (event.message() as TextComponent).content()
 
-        if (!rank.isStaff() && chatFilter.isFiltered(text)) {
+        if (!player.isStaff() && chatFilter.isFiltered(text)) {
             event.viewers().removeIf { it is Player && it != player }
             StaffUtil.messageStaff(
                 Component
                     .empty()
-                    .append(Component.text("[Filtered] ", NamedTextColor.RED))
+                    .append(Component.text("[Filtr] ", NamedTextColor.RED))
                     .append(
                         event.renderer()
                             .render(event.player, event.player.displayName(), event.message(), event.player)

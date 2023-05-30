@@ -28,7 +28,7 @@ class RankRepository : KoinComponent, UUIDCache {
     private val permissionAttachments = HashMap<UUID, PermissionAttachment>()
 
     fun getByPlayer(player: Player): Rank {
-        val grants = cache[player.uniqueId] ?: throw PlayerNotFoundInCacheException()
+        val grants = cache[player.uniqueId] ?: throw PlayerNotFoundInCacheException(player)
         return grants.findPrimary()
     }
 
@@ -66,7 +66,7 @@ class RankRepository : KoinComponent, UUIDCache {
             Bukkit.getPlayer(uuid)?.let { player ->
                 NameTagHandler.reloadPlayer(player)
                 rankService.updatePlayerListName(player)
-                TaskDispatcher.dispatch { recalculatePermissions(player) }
+                Task.sync { recalculatePermissions(player) }
             }
         }
     }
@@ -97,7 +97,7 @@ class RankRepository : KoinComponent, UUIDCache {
             it.unGrant(rank, issuer, reason)
             Bukkit.getPlayer(uuid)?.let { player ->
                 NameTagHandler.reloadPlayer(player)
-                TaskDispatcher.dispatch { recalculatePermissions(player) }
+                Task.sync { recalculatePermissions(player) }
             }
         }
     }
@@ -112,7 +112,7 @@ class RankRepository : KoinComponent, UUIDCache {
                 this.rank = Rank.DEFAULT
                 this.addedAt = System.currentTimeMillis()
                 this.issuer = Console.UUID
-                this.reason = "Default Rank"
+                this.reason = "Podstawowa ranga"
                 this.duration = Duration.PERMANENT
                 this.removed = false
             }
@@ -126,7 +126,7 @@ class RankRepository : KoinComponent, UUIDCache {
     }
 
     fun recalculatePermissions(player: Player) {
-        val grants = cache[player.uniqueId] ?: throw PlayerNotFoundInCacheException()
+        val grants = cache[player.uniqueId] ?: throw PlayerNotFoundInCacheException(player)
         val attachment = permissionAttachments.computeIfAbsent(player.uniqueId) { player.addAttachment(plugin) }
         attachment.permissions.forEach { (t, _) -> attachment.unsetPermission(t) }
         grants.activeGrants().forEach { grant ->

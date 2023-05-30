@@ -1,17 +1,30 @@
 package gg.traphouse.core.player
 
-import gg.traphouse.core.TaskDispatcher
+import gg.traphouse.core.Task
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 
-class PlayerNotFoundInCacheException(val player: Player? = null) : IllegalStateException("player not online") {
+class PlayerNotFoundInCacheException(val player: Player? = null) :
+    IllegalStateException("${player?.name} player not online") {
 
     init {
         player?.let {
             if (Bukkit.isPrimaryThread()) {
-                it.kick(Component.text("Couldn't load your profile data correctly."))
-            } else TaskDispatcher.dispatch { it.kick(Component.text("Couldn't load your profile data correctly.")) }
+                kick(it)
+            } else Task.sync {
+                kick(it)
+            }
         }
+    }
+
+    private fun kick(player: Player) {
+        player.kick(
+            Component.text(
+                "Wystąpił błąd w trakcie cachowania twoich danych.",
+                NamedTextColor.RED
+            )
+        )
     }
 }

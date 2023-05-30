@@ -1,8 +1,9 @@
 package gg.traphouse.core.cooldown
 
-import gg.traphouse.core.TaskDispatcher
+import gg.traphouse.core.Task
 import gg.traphouse.core.UUIDCache
 import gg.traphouse.core.player.PlayerNotFoundInCacheException
+import gg.traphouse.core.util.StaffUtil.isStaff
 import org.bukkit.entity.Player
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -22,7 +23,7 @@ class CooldownRepository : UUIDCache, KoinComponent {
     fun registerPersistentCooldown(cooldownType: CooldownType) {
         cooldownsByType[cooldownType.type] = cooldownType
 
-        TaskDispatcher.dispatchAsync {
+        Task.async {
             cache.entries.forEach { entry ->
                 val remoteCooldown = RemoteCooldown {
                     this.player = entry.key
@@ -37,24 +38,25 @@ class CooldownRepository : UUIDCache, KoinComponent {
     }
 
     fun isOnCooldown(player: Player, type: CooldownType): Boolean {
-        if (player.hasPermission("core.cooldown.bypass")) return false
-        val cooldowns = cache[player.uniqueId] ?: throw PlayerNotFoundInCacheException()
+        if (player.isStaff()) return false
+        val cooldowns = cache[player.uniqueId] ?: throw PlayerNotFoundInCacheException(player)
         return cooldowns.isOnCooldown(type)
     }
 
     fun cooldown(player: Player, type: CooldownType): Long {
-        val cooldowns = cache[player.uniqueId] ?: throw PlayerNotFoundInCacheException()
+        val cooldowns = cache[player.uniqueId] ?: throw PlayerNotFoundInCacheException(player)
         return cooldowns.cooldown(type)
     }
 
     fun reset(player: Player, type: CooldownType) {
-        val cooldowns = cache[player.uniqueId] ?: throw PlayerNotFoundInCacheException()
+        val cooldowns = cache[player.uniqueId] ?: throw PlayerNotFoundInCacheException(player)
         cooldowns.reset(type)
     }
 
     override fun loadCache(uuid: UUID) {
         val cooldowns = PlayerCooldowns()
         val loadedCooldowns = database.cooldowns.filter { it.player eq uuid }.toList()
+
         loadedCooldowns.forEach { cooldown ->
             val type = cooldownsByType[cooldown.type] ?: let {
                 database.cooldowns.removeIf { cooldown.type eq it.type }
@@ -84,7 +86,7 @@ class CooldownRepository : UUIDCache, KoinComponent {
 
     override fun flushCache(uuid: UUID) {
         val cooldowns = cache.remove(uuid) ?: return
-        TaskDispatcher.dispatchAsync {
+        Task.async {
             cooldowns.entries().forEach { database.cooldowns.update(it.toRemote(uuid)) }
         }
     }

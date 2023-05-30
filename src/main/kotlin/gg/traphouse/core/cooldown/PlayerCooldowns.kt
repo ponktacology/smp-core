@@ -21,6 +21,9 @@ class PlayerCooldowns {
     }
 
     fun entries() = cooldownsById.values.toList()
+    override fun toString(): String {
+        return "PlayerCooldowns(cooldownsById=$cooldownsById)"
+    }
 
 
 }

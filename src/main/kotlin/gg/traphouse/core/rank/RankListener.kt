@@ -42,7 +42,7 @@ class RankListener : Listener, KoinComponent, NetworkListener {
                                         .append(Component.newline())
                                         .append(
                                             Component.text(
-                                                "Click to send a private message to ${event.player.name}",
+                                                "Kliknij, aby wysłać prywatną wiadomość do ${event.player.name}",
                                                 NamedTextColor.YELLOW
                                             )
                                         )

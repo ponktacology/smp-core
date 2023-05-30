@@ -9,6 +9,7 @@ import me.vaperion.blade.annotation.command.Description
 import me.vaperion.blade.annotation.command.Permission
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
 import org.bukkit.World
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
@@ -43,6 +44,6 @@ object ProtectionCommands : KoinComponent {
     @Command("testcolor")
     @Permission("test.color")
     fun color(@Sender sender: CommandSender, @Text @Name("message") message: String) {
-        sender.sendMessage(MiniMessage.get().parse(message))
+        sender.sendMessage(MiniMessage.miniMessage().deserialize(message, TagResolver.standard()))
     }
 }

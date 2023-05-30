@@ -4,7 +4,7 @@ import dev.triumphteam.gui.components.InteractionModifier
 import dev.triumphteam.gui.guis.Gui
 import dev.triumphteam.gui.guis.GuiItem
 import gg.traphouse.core.ItemBuilder
-import gg.traphouse.core.TaskDispatcher
+import gg.traphouse.core.Task
 import net.kyori.adventure.text.Component
 import org.bukkit.ChatColor
 import org.bukkit.Material
@@ -24,5 +24,5 @@ object GUIUtil {
 
     fun title(title: String) = ChatColor.RED.toString() + ChatColor.BOLD + title
 
-    fun Gui.openSync(player: Player) = TaskDispatcher.dispatch { this.open(player) }
+    fun Gui.openSync(player: Player) = Task.sync { this.open(player) }
 }

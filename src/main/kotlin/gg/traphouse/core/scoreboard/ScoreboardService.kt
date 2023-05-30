@@ -1,6 +1,7 @@
 package gg.traphouse.core.scoreboard
 
-import gg.traphouse.core.TaskDispatcher
+import gg.traphouse.core.Config
+import gg.traphouse.core.Task
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.koin.core.component.KoinComponent
@@ -12,7 +13,7 @@ class ScoreboardService : KoinComponent {
     private var provider: ScoreboardProvider? = null
 
     fun start() {
-        TaskDispatcher.runRepeatingAsync(ScoreboardTask(), 10L)
+        Task.repeatAsync(ScoreboardTask(), Config.SCOREBOARD_UPDATE_INTERVAL)
     }
 
     fun registerProvider(provider: ScoreboardProvider) {

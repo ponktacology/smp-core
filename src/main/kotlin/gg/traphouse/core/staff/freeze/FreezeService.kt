@@ -1,6 +1,6 @@
 package gg.traphouse.core.staff.freeze
 
-import gg.traphouse.core.TaskDispatcher
+import gg.traphouse.core.Task
 import gg.traphouse.core.nametag.NameTagHandler
 import gg.traphouse.shared.network.NetworkService
 import org.bukkit.entity.Player
@@ -19,7 +19,7 @@ class FreezeService : KoinComponent {
         freezeRepository.freeze(player)
         FreezeGUI().open(player)
         NameTagHandler.reloadPlayer(player)
-        TaskDispatcher.dispatchAsync { networkService.publish(PacketFreeze(issuer, player.uniqueId)) }
+        Task.async { networkService.publish(PacketFreeze(issuer, player.uniqueId)) }
     }
 
     fun unFreeze(player: Player) {
@@ -29,6 +29,6 @@ class FreezeService : KoinComponent {
     }
 
     fun loggedOutWhileFrozen(player: Player) {
-        TaskDispatcher.dispatchAsync { networkService.publish(PacketFreezeLogout(player.uniqueId)) }
+        Task.async { networkService.publish(PacketFreezeLogout(player.uniqueId)) }
     }
 }

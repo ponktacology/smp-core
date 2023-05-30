@@ -1,8 +1,8 @@
 package gg.traphouse.core.cooldown
 
+import gg.traphouse.core.util.SenderUtil.sendOnCooldown
+import gg.traphouse.core.util.StaffUtil.isStaff
 import io.papermc.paper.event.player.AsyncChatEvent
-import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
@@ -18,10 +18,8 @@ class CooldownListener : KoinComponent, Listener {
     fun onPlayerMessage(event: AsyncChatEvent) {
         val player = event.player
 
-        if (!player.hasPermission("chat.cooldown.bypass") &&
-            cooldownService.hasCooldown(player, CoreCooldowns.CHAT)
-        ) {
-            player.sendMessage(Component.text("Wait before using chat again.", NamedTextColor.RED))
+        if (!player.isStaff() && cooldownService.hasCooldown(player, CoreCooldowns.CHAT)) {
+            player.sendOnCooldown("Odczekaj chwilę zanim znowu wyślesz wiadomość.")
             event.isCancelled = true
             return
         }
@@ -33,10 +31,8 @@ class CooldownListener : KoinComponent, Listener {
     fun onPlayerCommand(event: PlayerCommandPreprocessEvent) {
         val player = event.player
 
-        if (!player.hasPermission("command.cooldown.bypass") &&
-            cooldownService.hasCooldown(player, CoreCooldowns.COMMAND)
-        ) {
-            player.sendMessage(Component.text("Wait before using commands again.", NamedTextColor.RED))
+        if (!player.isStaff() && cooldownService.hasCooldown(player, CoreCooldowns.COMMAND)) {
+            player.sendOnCooldown("Odczekaj chwilę zanim znowu użyjesz komendy.")
             event.isCancelled = true
             return
         }

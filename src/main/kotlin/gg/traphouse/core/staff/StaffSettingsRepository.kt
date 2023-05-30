@@ -1,7 +1,7 @@
 package gg.traphouse.core.staff
 
 import gg.traphouse.core.SyncCatcher
-import gg.traphouse.core.TaskDispatcher
+import gg.traphouse.core.Task
 import gg.traphouse.core.UUIDCache
 import gg.traphouse.core.player.PlayerNotFoundInCacheException
 import org.bukkit.entity.Player
@@ -22,7 +22,7 @@ class StaffSettingsRepository : UUIDCache, KoinComponent {
     private val Database.staffSettings get() = this.sequenceOf(StaffSettingsTable)
     private val cache = ConcurrentHashMap<UUID, StaffSettings>()
 
-    fun getByOnlinePlayer(player: Player) = cache[player.uniqueId] ?: throw PlayerNotFoundInCacheException()
+    fun getByOnlinePlayer(player: Player) = cache[player.uniqueId] ?: throw PlayerNotFoundInCacheException(player)
 
     override fun loadCache(uuid: UUID) {
         SyncCatcher.verify()
@@ -44,7 +44,7 @@ class StaffSettingsRepository : UUIDCache, KoinComponent {
     override fun flushCache(uuid: UUID) {
         val settings = cache.remove(uuid) ?: return
 
-        TaskDispatcher.dispatchAsync {
+        Task.async {
             database.staffSettings.update(settings.toRemote())
         }
     }

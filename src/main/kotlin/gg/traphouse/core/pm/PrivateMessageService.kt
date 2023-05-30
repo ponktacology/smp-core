@@ -1,8 +1,9 @@
 package gg.traphouse.core.pm
 
-import gg.traphouse.core.ComponentHelper
-import gg.traphouse.core.SyncCatcher
+import gg.traphouse.core.ComponentHelper.sendStateComponent
 import gg.traphouse.core.rank.RankService
+import gg.traphouse.core.util.SenderUtil.sendError
+import gg.traphouse.core.util.StaffUtil.isStaff
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Bukkit
@@ -18,7 +19,7 @@ class PrivateMessageService : KoinComponent {
 
     fun reply(sender: Player, message: String) {
         val replier = getReplier(sender) ?: run {
-            sender.sendMessage("You don't have anyone to reply to.")
+            sender.sendError("Nie masz komu odpisać.")
             return
         }
 
@@ -26,19 +27,24 @@ class PrivateMessageService : KoinComponent {
     }
 
     fun message(sender: Player, receiver: Player, message: String) {
-        if (!sender.hasPermission("pm.bypassignore")) {
+        if (sender == receiver) {
+            sender.sendError("Nie możesz wysłać prywatnej wiadomości do samego siebie.")
+            return
+        }
+
+        if (!sender.isStaff()) {
             if (hasDisabledPrivateMessages(sender)) {
-                sender.sendMessage("Your private messages are currently disabled. Enable them by using /togglepm.")
+                sender.sendError("Nie możesz wysyłać wiadomości, gdyż masz je wyłączone. Użyj komendy /tpm, aby to zmienić.")
                 return
             }
 
             if (isIgnoring(sender, receiver.uniqueId)) {
-                sender.sendMessage("You can't send message to the player you are ignoring. Unignore them using /unignore ${receiver.name}")
+                sender.sendError("Nie możesz wysyłać wiadomości do gracza, którego ignorujesz. Przestań go ignorować komendą /odignoruj ${receiver.name}")
                 return
             }
 
             if (hasDisabledPrivateMessages(receiver) || isIgnoring(receiver, sender.uniqueId)) {
-                sender.sendMessage("This player has disabled private messages.")
+                sender.sendError("Gracz ma wyłączone prywatne wiadomości.")
                 return
             }
         }
@@ -48,14 +54,14 @@ class PrivateMessageService : KoinComponent {
 
         sender.sendMessage(
             Component.empty()
-                .append(Component.text("(To ", NamedTextColor.AQUA))
+                .append(Component.text("(Od ", NamedTextColor.AQUA))
                 .append(rankService.getDisplayName(receiver))
                 .append(Component.text(") ", NamedTextColor.AQUA))
                 .append(Component.text(message, NamedTextColor.WHITE))
         )
         receiver.sendMessage(
             Component.empty()
-                .append(Component.text("(From ", NamedTextColor.AQUA))
+                .append(Component.text("(Do ", NamedTextColor.AQUA))
                 .append(rankService.getDisplayName(sender))
                 .append(Component.text(") ", NamedTextColor.AQUA))
                 .append(Component.text(message, NamedTextColor.WHITE))
@@ -72,7 +78,7 @@ class PrivateMessageService : KoinComponent {
     fun togglePrivateMessages(player: Player) {
         val settings = privateMessageRepository.settingsByPlayer(player)
         settings.enabled = !settings.enabled
-        player.sendMessage(ComponentHelper.createBoolean("Your private messages are", "enabled.", settings.enabled))
+        player.sendStateComponent("Tryb ignorowania prywatnych wiadomości został %s.", !settings.enabled)
     }
 
     fun ignore(player: Player, uuid: UUID) = privateMessageRepository.ignore(player, uuid)

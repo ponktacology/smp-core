@@ -16,14 +16,14 @@ object FreezeCommands : KoinComponent {
     private val freezeService: FreezeService by inject()
 
     @Command("freeze")
-    @Description("Freeze a player")
+    @Description("Zamraża gracza")
     @Permission("core.freeze")
     fun freeze(@Sender sender: CommandSender, @Name("player") player: Player) {
         freezeService.freeze(if (sender is Player) sender.uniqueId else Console.UUID, player)
     }
 
     @Command("unfreeze")
-    @Description("Unfreeze a player")
+    @Description("Odmraża gracza")
     @Permission("core.unfreeze")
     fun unfreeze(@Sender sender: CommandSender, @Name("player") player: Player) {
         freezeService.unFreeze(player)

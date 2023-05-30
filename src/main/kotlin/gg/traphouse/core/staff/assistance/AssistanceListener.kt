@@ -24,14 +24,14 @@ class AssistanceListener : NetworkListener, KoinComponent {
         var component = Component.text("[Report] ", NamedTextColor.RED)
             .append(Component.text("[${Config.SERVER_NAME}] ", NamedTextColor.BLUE))
             .append(rankService.getDisplayName(issuer))
-            .append(Component.text(" reported ", NamedTextColor.GRAY))
+            .append(Component.text(" zgłosił ", NamedTextColor.GRAY))
             .append(rankService.getDisplayName(player))
-            .append(Component.text(" for: ", NamedTextColor.GRAY))
+            .append(Component.text(" za: ", NamedTextColor.GRAY))
             .append(Component.text(packet.reason, NamedTextColor.GRAY))
         Bukkit.getPlayer(player)?.let {
             component = component
                 .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/tp ${it.name}"))
-                .hoverEvent(HoverEvent.showText(Component.text("Click to teleport to ${it.name}")))
+                .hoverEvent(HoverEvent.showText(Component.text("Kliknij, aby się przeteleportować do ${it.name}")))
         }
         StaffUtil.messageStaff(component)
     }
@@ -39,15 +39,15 @@ class AssistanceListener : NetworkListener, KoinComponent {
     @NetworkHandler
     fun onPlayerReport(packet: PacketPlayerRequest) {
         val player = packet.player
-        var component = Component.text("[Request] ", NamedTextColor.LIGHT_PURPLE)
+        var component = Component.text("[HelpOP] ", NamedTextColor.LIGHT_PURPLE)
             .append(Component.text("[${Config.SERVER_NAME}] ", NamedTextColor.BLUE))
             .append(rankService.getDisplayName(player))
-            .append(Component.text(" requested help: ", NamedTextColor.GRAY))
+            .append(Component.text(" prosi o pomoc: ", NamedTextColor.GRAY))
             .append(Component.text(packet.request, NamedTextColor.GRAY))
         Bukkit.getPlayer(player)?.let {
             component = component
                 .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/tp ${it.name}"))
-                .hoverEvent(HoverEvent.showText(Component.text("Click to teleport to ${it.name}")))
+                .hoverEvent(HoverEvent.showText(Component.text("Kliknij, aby się przeteleportować do ${it.name}")))
         }
         StaffUtil.messageStaff(component)
     }

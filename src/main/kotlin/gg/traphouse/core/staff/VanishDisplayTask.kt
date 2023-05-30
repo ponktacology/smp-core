@@ -16,7 +16,7 @@ class VanishDisplayTask : Runnable, KoinComponent {
             val staffSettings = staffService.getByOnlinePlayer(it)
 
             if (staffSettings.vanish) {
-                it.sendActionBar(Component.text("HIDDEN", NamedTextColor.GREEN, TextDecoration.BOLD))
+                it.sendActionBar(Component.text("VANISH", NamedTextColor.GREEN, TextDecoration.BOLD))
             }
         }
     }

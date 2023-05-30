@@ -1,7 +1,7 @@
 package gg.traphouse.core.punishment
 
 import gg.traphouse.core.Config
-import gg.traphouse.core.TaskDispatcher
+import gg.traphouse.core.Task
 import gg.traphouse.core.rank.RankService
 import gg.traphouse.core.util.StaffUtil
 import gg.traphouse.shared.TimeFormatter
@@ -30,7 +30,16 @@ class PunishmentListener : KoinComponent, Listener, NetworkListener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
     fun onPlayerChatMessage(event: AsyncChatEvent) {
         punishmentService.getByPlayer(event.player, Punishment.Type.MUTE)?.let {
-            event.player.sendMessage(Component.text("You can't use chat while muted!", NamedTextColor.RED))
+            event.player.sendMessage(
+                Component.text("Nie możesz używać czatu podczas wyciszenia.", NamedTextColor.RED)
+                    .append(
+                        if (it.duration.isPermanent()) Component.empty()
+                        else Component.text(
+                            " Twoje wyciszenie zostanie zniesione za ${TimeFormatter.formatCompact(System.currentTimeMillis() - it.addedAt + it.duration.toMillis())}",
+                            NamedTextColor.RED
+                        )
+                    )
+            )
             event.isCancelled = true
         }
     }
@@ -39,19 +48,19 @@ class PunishmentListener : KoinComponent, Listener, NetworkListener {
     fun onPunishment(packet: PacketPunishment) {
         val punishment = punishmentRepository.getById(packet.punishmentId) ?: error("invalid punishment")
         Bukkit.getPlayer(punishment.player)?.let {
-            TaskDispatcher.dispatch {
+            Task.sync {
                 val permanent = punishment.duration.isPermanent()
                 var component = Component.newline()
                     .append(
                         if (punishment.type != Punishment.Type.KICK) Component.text(
-                            "You have been${if (permanent) " permanently " else " "}${punishment.type.addFormat}!",
+                            "Zostałeś${if (permanent) " permanentnie " else " "}${punishment.type.addFormat}!",
                             NamedTextColor.RED,
                             TextDecoration.ITALIC
                         ).append(Component.newline())
                         else Component.empty()
                     )
                     .append(Component.newline())
-                    .append(Component.text("Reason: ${punishment.reason}", NamedTextColor.RED))
+                    .append(Component.text("Powód: ${punishment.reason}", NamedTextColor.RED))
 
                 if (punishment.type != Punishment.Type.KICK) {
                     if (!permanent) {
@@ -59,7 +68,7 @@ class PunishmentListener : KoinComponent, Listener, NetworkListener {
                             Component.newline()
                                 .append(
                                     Component.text(
-                                        "Expires at: ${TimeFormatter.formatDate(punishment.duration + punishment.addedAt)}",
+                                        "Wygasa: ${TimeFormatter.formatDate(punishment.duration + punishment.addedAt)}",
                                         NamedTextColor.RED
                                     )
                                 )
@@ -71,7 +80,7 @@ class PunishmentListener : KoinComponent, Listener, NetworkListener {
                                 .append(Component.newline())
                                 .append(
                                     Component.text(
-                                        "You can appeal at discord dc.traphouse.gg",
+                                        "Możesz się odwołać na discordzie dc.traphouse.gg",
                                         NamedTextColor.RED
                                     )
                                 )
@@ -120,18 +129,17 @@ class PunishmentListener : KoinComponent, Listener, NetworkListener {
         add: Boolean,
         silent: Boolean
     ) {
-        var component = Component.text("")
-            .append(Component.text("Player ", NamedTextColor.RED))
+        var component = Component.text("! ", NamedTextColor.RED)
             .append(rankService.getDisplayName(player))
-            .append(Component.text(" has been", NamedTextColor.RED))
+            .append(Component.text(" został", NamedTextColor.RED))
 
         if (permanent) {
-            component = component.append(Component.text(" permanently", NamedTextColor.RED))
+            component = component.append(Component.text(" permanentnie", NamedTextColor.RED))
         }
 
         component = component.append(Component.text(" "))
             .append(Component.text(if (add) type.addFormat else type.removeFormat, NamedTextColor.RED))
-            .append(Component.text(" by ", NamedTextColor.RED))
+            .append(Component.text(" przez ", NamedTextColor.RED))
             .append(rankService.getDisplayName(issuer))
             .hoverEvent(HoverEvent.showText(Component.text(reason)))
 

@@ -1,12 +1,16 @@
 package gg.traphouse.core.staff
 
-import gg.traphouse.core.ComponentHelper
-import gg.traphouse.core.util.SenderUtil.sendError
+import gg.traphouse.core.ComponentHelper.sendStateComponent
+import gg.traphouse.core.util.SenderUtil.sendNoPermission
+import me.vaperion.blade.annotation.argument.Name
 import me.vaperion.blade.annotation.argument.Optional
 import me.vaperion.blade.annotation.argument.Sender
+import me.vaperion.blade.annotation.argument.Text
 import me.vaperion.blade.annotation.command.Command
 import me.vaperion.blade.annotation.command.Description
 import me.vaperion.blade.annotation.command.Permission
+import org.bukkit.Bukkit
+import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -15,62 +19,94 @@ object StaffCommands : KoinComponent {
 
     private val staffService: StaffService by inject()
 
+    @Command("sudo")
+    @Permission("core.sudo")
+    fun sudo(
+        @Sender sender: CommandSender,
+        @Text @Name("command") command: String,
+        @Optional @Name("player") player: Player?
+    ) {
+        player?.let {
+            Bukkit.dispatchCommand(it, command)
+            return
+        }
+
+        Bukkit.getOnlinePlayers().forEach { Bukkit.dispatchCommand(it, command) }
+    }
+
+    @Command("chat")
+    @Permission("core.chat")
+    fun chat(
+        @Sender sender: CommandSender,
+        @Text @Name("message") command: String,
+        @Optional @Name("player") player: Player?
+    ) {
+        player?.let {
+            it.chat(command)
+            return
+        }
+
+        Bukkit.getOnlinePlayers().forEach { it.chat(command) }
+    }
+
+
     @Command("vanish", "v")
     @Permission("core.vanish")
-    @Description("Toggles hidden mode")
+    @Description("Zmienia tryb vanish")
     fun vanish(@Sender sender: Player, @Optional player: Player?) {
         player?.let {
             if (!sender.hasPermission("core.vanish.other")) {
-                sender.sendError("No permission.")
+                sender.sendNoPermission()
                 return
             }
 
             val vanish = staffService.toggleVanish(it)
-            sender.sendMessage(ComponentHelper.createBoolean("${it.name} is", "hidden.", vanish))
-            it.sendMessage(ComponentHelper.createBoolean("You are", "hidden. Toggled by ${sender.name}.", vanish))
+            sender.sendStateComponent("Tryb vanish gracza ${it.name} został %s.", vanish)
+            it.sendStateComponent("Tryb vanish został %s przez gracza ${sender.name}.", vanish)
             return
         }
+
         val vanish = staffService.toggleVanish(sender)
-        sender.sendMessage(ComponentHelper.createBoolean("You are", "hidden.", vanish))
+        sender.sendStateComponent("Tryb vanish został %s.", vanish)
     }
 
     @Command("god", "g")
     @Permission("core.god")
-    @Description("Toggles god mode")
-    fun god(@Sender sender: Player, @Optional player: Player?) {
+    @Description("Zmienia tryb god")
+    fun god(@Sender sender: Player, @Optional @Name("player") player: Player?) {
         player?.let {
             if (!sender.hasPermission("core.god.other")) {
-                sender.sendError("No permission.")
+                sender.sendNoPermission()
                 return
             }
 
             val god = staffService.toggleGod(it)
-            sender.sendMessage(ComponentHelper.createBoolean("${it.name} is", "invincible.", god))
-            it.sendMessage(ComponentHelper.createBoolean("You are", "invincible. Toggled by ${sender.name}.", god))
+            sender.sendStateComponent("Tryb god gracza ${it.name} został %s.", god)
+            it.sendStateComponent("Tryb god został %s przez gracza ${sender.name}.", god)
             return
         }
 
         val god = staffService.toggleGod(sender)
-        sender.sendMessage(ComponentHelper.createBoolean("You are", "invincible.", god))
+        sender.sendStateComponent("Tryb god został %s.", god)
     }
 
     @Command("fly", "f")
     @Permission("core.fly")
-    @Description("Toggles flight mode")
-    fun fly(@Sender sender: Player, @Optional player: Player?) {
+    @Description("Zmienia tryb file")
+    fun fly(@Sender sender: Player, @Optional @Name("player") player: Player?) {
         player?.let {
             if (!sender.hasPermission("core.fly.other")) {
-                sender.sendError("No permission.")
+                sender.sendNoPermission()
                 return
             }
 
             val fly = staffService.toggleFly(it)
-            sender.sendMessage(ComponentHelper.createBoolean("${it.name} is", "flying.", fly))
-            it.sendMessage(ComponentHelper.createBoolean("You are", "flying. Toggled by ${sender.name}.", fly))
+            sender.sendStateComponent("Tryb latania gracza ${it.name} został %s.", fly)
+            it.sendStateComponent("Tryb latania został %s przez gracza ${sender.name}.", fly)
             return
         }
 
         val fly = staffService.toggleFly(sender)
-        sender.sendMessage(ComponentHelper.createBoolean("You are", "flying.", fly))
+        sender.sendStateComponent("Tryb latania został %s.", fly)
     }
 }

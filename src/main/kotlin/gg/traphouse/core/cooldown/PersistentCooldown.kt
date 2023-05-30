@@ -22,4 +22,8 @@ class PersistentCooldown(
     override fun hashCode(): Int {
         return id
     }
+
+    override fun toString(): String {
+        return "PersistentCooldown(id=$id, type=$type)"
+    }
 }

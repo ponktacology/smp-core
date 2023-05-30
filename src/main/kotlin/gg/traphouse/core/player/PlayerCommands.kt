@@ -11,10 +11,10 @@ import org.bukkit.entity.Player
 object PlayerCommands {
 
     @Command("ping")
-    @Description("Check player's ping")
+    @Description("Pokazuje ping gracza")
     fun ping(@Sender sender: Player, @Optional("self") target: Player) {
         sender.sendMessage(
-            Component.text("${target.name}'s ping: ", NamedTextColor.YELLOW)
+            Component.text("${target.name} ping: ", NamedTextColor.YELLOW)
                 .append(Component.text(target.ping, NamedTextColor.GRAY))
         )
     }

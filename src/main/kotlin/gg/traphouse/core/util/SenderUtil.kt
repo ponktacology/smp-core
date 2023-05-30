@@ -1,6 +1,7 @@
 package gg.traphouse.core.util
 
 import gg.traphouse.core.Console
+import gg.traphouse.core.Unicode
 import me.vaperion.blade.exception.BladeExitMessage
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
@@ -16,15 +17,22 @@ object SenderUtil {
         else -> throw BladeExitMessage("Couldn't resolve issuer.")
     }
 
-    fun Player.sendSuccess(success: String) = sendSuccess(Component.text(success))
+    fun Player.sendNoPermission() = this.sendPrefixed(Unicode.WARNING_SIGN, NamedTextColor.RED, "No permission.")
 
-    fun Player.sendError(error: String) = sendError(Component.text(error))
+    fun Player.sendOnCooldown(message: String) = this.sendPrefixed(Unicode.CLOCK, NamedTextColor.YELLOW, message)
 
-    fun Player.sendSuccess(success: Component) {
-        this.sendMessage(Component.text("☺ ", NamedTextColor.GREEN).append(success))
-    }
+    fun CommandSender.sendSuccess(success: Component) =
+        this.sendPrefixed(Unicode.HAPPY_FACE, NamedTextColor.GREEN, success)
 
-    fun Player.sendError(error: Component) {
-        this.sendMessage(Component.text("☹ ", NamedTextColor.RED).append(error))
-    }
+    fun CommandSender.sendSuccess(success: String) = sendSuccess(Component.text(success))
+
+    fun CommandSender.sendError(error: Component) = this.sendPrefixed(Unicode.SAD_FACE, NamedTextColor.RED, error)
+
+    fun CommandSender.sendError(error: String) = sendError(Component.text(error))
+
+    fun CommandSender.sendPrefixed(prefix: String, color: NamedTextColor, message: Component) =
+        this.sendMessage(Component.text("$prefix ", color).append(message))
+
+    fun CommandSender.sendPrefixed(prefix: String, color: NamedTextColor, message: String) =
+        this.sendPrefixed(prefix, color, Component.text(message))
 }

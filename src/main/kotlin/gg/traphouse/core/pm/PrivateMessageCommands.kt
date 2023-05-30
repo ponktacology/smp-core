@@ -1,7 +1,8 @@
 package gg.traphouse.core.pm
 
-import gg.traphouse.core.ComponentHelper
 import gg.traphouse.core.player.PlayerContainer
+import gg.traphouse.core.util.SenderUtil.sendError
+import gg.traphouse.core.util.SenderUtil.sendSuccess
 import me.vaperion.blade.annotation.argument.Name
 import me.vaperion.blade.annotation.argument.Sender
 import me.vaperion.blade.annotation.argument.Text
@@ -17,7 +18,7 @@ object PrivateMessageCommands : KoinComponent {
     private val privateMessageService: PrivateMessageService by inject()
 
     @Command("msg", "pm", "whisper", "tell")
-    @Description("Send player a private message")
+    @Description("Wysyła prywatną wiadomość do gracza")
     fun msg(
         @Sender sender: Player,
         @Name("player") player: Player,
@@ -25,42 +26,51 @@ object PrivateMessageCommands : KoinComponent {
         message: String
     ) = privateMessageService.message(sender, player, message)
 
-    @Command("reply", "r")
-    @Description("Reply to a previously messaged player")
+    @Command("reply", "r", "odpisz")
+    @Description("Odpisuje na prywatną wiadomość od gracza")
     fun reply(
         @Sender sender: Player,
         @Name("message") @Text
         message: String
     ) = privateMessageService.reply(sender, message)
 
-    @Command("ignore")
-    @Description("Ignore a player")
+    @Command("ignore", "ignoruj")
+    @Description("Ignoruje prywatne wiadomości od gracza")
     @Async
     fun ignore(@Sender sender: Player, @Name("player") player: PlayerContainer) {
+        if (sender.uniqueId == player.uuid) {
+            sender.sendError("Nie możesz ignorować samego siebie.")
+            return
+        }
+
         if (privateMessageService.isIgnoring(sender, player.uuid)) {
-            sender.sendMessage("You are already ignoring this player.")
+            sender.sendError("Już ignorujesz tego gracza.")
             return
         }
 
         privateMessageService.ignore(sender, player.uuid)
-        sender.sendMessage(ComponentHelper.createBoolean("You are", "ignoring ${player.name}.", true))
-
+        sender.sendSuccess("Od teraz ignorujesz wszystkie prywatne wiadomości od ${player.name}.")
     }
 
-    @Command("unignore")
-    @Description("Unignore a player")
+    @Command("unignore", "odignoruj")
+    @Description("Przestaje ignorować prywatne wiadomości od gracza")
     @Async
     fun unIgnore(@Sender sender: Player, @Name("player") player: PlayerContainer) {
+        if (sender.uniqueId == player.uuid) {
+            sender.sendError("Nie możesz ignorować samego siebie.")
+            return
+        }
+
         if (!privateMessageService.isIgnoring(sender, player.uuid)) {
-            sender.sendMessage("You are not ignoring this player.")
+            sender.sendError("Nie ignorujesz tego gracza.")
             return
         }
 
         privateMessageService.unIgnore(sender, player.uuid)
-        sender.sendMessage(ComponentHelper.createBoolean("You are", "ignoring ${player.name}.", false))
+        sender.sendSuccess("Przestałeś ignorować prywatne wiadomości od ${player.name}.")
     }
 
-    @Command("togglepm", "tpm")
-    @Description("Toggle private messages")
+    @Command("tpm", "wyjebane")
+    @Description("Zmienia status ignorowania wszystkich prywatnych wiadomości")
     fun togglepm(@Sender sender: Player) = privateMessageService.togglePrivateMessages(sender)
 }

@@ -10,7 +10,7 @@ class NameTagListener : Listener {
     @EventHandler
     fun onPlayerJoin(event: PlayerJoinEvent) {
         NameTagHandler.initiatePlayer(event.player)
-        NameTagHandler.reloadPlayer(event.player)
+        NameTagHandler.reloadPlayerNow(event.player)
     }
 
     @EventHandler

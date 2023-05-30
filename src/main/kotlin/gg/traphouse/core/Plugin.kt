@@ -22,7 +22,10 @@ import gg.traphouse.core.punishment.PunishmentListener
 import gg.traphouse.core.punishment.PunishmentRepository
 import gg.traphouse.core.rank.*
 import gg.traphouse.core.scoreboard.ScoreboardService
-import gg.traphouse.core.staff.*
+import gg.traphouse.core.staff.StaffCommands
+import gg.traphouse.core.staff.StaffSettingsListener
+import gg.traphouse.core.staff.StaffSettingsRepository
+import gg.traphouse.core.staff.VanishDisplayTask
 import gg.traphouse.core.staff.assistance.AssistanceCommands
 import gg.traphouse.core.staff.assistance.AssistanceListener
 import gg.traphouse.core.staff.chat.StaffChatCommands
@@ -54,6 +57,8 @@ class Plugin : JavaPlugin() {
     }
 
     override fun onEnable() {
+        saveDefaultConfig()
+
         val punishmentListener = PunishmentListener()
         val rankListener = RankListener()
         val freezeListener = FreezeListener()
@@ -67,7 +72,6 @@ class Plugin : JavaPlugin() {
         server.pluginManager.registerEvents(BenchmarkListener(), this)
         server.pluginManager.registerEvents(CooldownListener(), this)
         server.pluginManager.registerEvents(freezeListener, this)
-        server.pluginManager.registerEvents(VanishListener(), this)
         server.pluginManager.registerEvents(StaffSettingsListener(), this)
 
         blade = Blade.forPlatform(BladeBukkitPlatform(this)).bind {
@@ -111,7 +115,7 @@ class Plugin : JavaPlugin() {
         NameTagHandler.init(this)
         NameTagHandler.registerProvider(CoreNameTagProvider())
 
-        TaskDispatcher.runRepeatingAsync(VanishDisplayTask(), 10L)
+        Task.repeatAsync(VanishDisplayTask(), 10L)
 
         Bukkit.getWorlds().forEach {
             it.setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, false)
@@ -121,9 +125,11 @@ class Plugin : JavaPlugin() {
     override fun onDisable() {
         Bukkit.getOnlinePlayers().forEach {
             it.kick(
-                Component.text("Server is restarting!", NamedTextColor.RED)
-                    .append(Component.newline())
-                    .append(Component.text("Please rejoin in a few minutes.", NamedTextColor.YELLOW))
+                Component.newline().append(
+                    Component.text("Serwer jest aktualnie restartowany!", NamedTextColor.RED)
+                        .append(Component.newline())
+                        .append(Component.text("Spróbuj dołączyć ponownie za parę minut.", NamedTextColor.YELLOW))
+                )
             )
         }
         val punishmentRepository: PunishmentRepository = koinApp.koin.get()

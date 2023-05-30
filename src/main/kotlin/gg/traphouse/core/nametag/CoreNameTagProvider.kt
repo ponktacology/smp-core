@@ -21,7 +21,7 @@ class CoreNameTagProvider : NameTagProvider("Rank", 0), KoinComponent {
         val otherRank = rankService.getByPlayer(viewed)
         val staffSettings = staffService.getByOnlinePlayer(viewer)
         val suffix = if (staffSettings.vanish && otherRank.isStaff()) {
-            Component.text(" HIDDEN", NamedTextColor.GREEN, TextDecoration.BOLD)
+            Component.text(" VANISH", NamedTextColor.GREEN, TextDecoration.BOLD)
         } else if (freezeService.isFrozen(viewer)) {
             Component.text(" FROZEN", NamedTextColor.DARK_RED, TextDecoration.BOLD)
         } else Component.empty()
@@ -31,7 +31,9 @@ class CoreNameTagProvider : NameTagProvider("Rank", 0), KoinComponent {
         if (prefix != Component.empty()) {
             previous.prefix = rank.getPrefix().append(Component.text(" "))
         }
+
         previous.suffix = suffix
+        previous.namePrefix = Char('A'.code + rank.ordinal).toString()
     }
 
 
