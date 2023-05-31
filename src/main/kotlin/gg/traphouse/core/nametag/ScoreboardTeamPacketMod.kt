@@ -3,6 +3,7 @@ package gg.traphouse.core.nametag
 import com.comphenix.protocol.PacketType
 import com.comphenix.protocol.ProtocolLibrary
 import com.comphenix.protocol.events.PacketContainer
+import com.comphenix.protocol.utility.MinecraftReflection
 import com.comphenix.protocol.wrappers.WrappedChatComponent
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
@@ -31,9 +32,7 @@ class ScoreboardTeamPacketMod {
                 val optStruct = packet.optionalStructures.read(0) // Team Data
                 if (optStruct.isPresent) { // Make sure the structure exists (it always does)
                     val struct = optStruct.get()
-                    struct.chatComponents.write(0, WrappedChatComponent.fromJson(
-                        GsonComponentSerializer.gson().serialize(prefix)
-                    )) // TeamName
+                    struct.chatComponents.write(0, WrappedChatComponent.fromText(name)) // TeamName
                     struct.chatComponents.write(
                         1,
                         WrappedChatComponent.fromJson(
@@ -50,12 +49,10 @@ class ScoreboardTeamPacketMod {
                         0,
                         0x01
                     ) // Bit mask. 0x01: Allow friendly fire, 0x02: can see invisible players on same team.
-                    /*
                     struct.getEnumModifier(
                         ChatColor::class.java,
                         MinecraftReflection.getMinecraftClass("EnumChatFormat")
-                    ).write(0, color) // TeamColor
-                     */
+                    ).write(0, color)
                     packet.optionalStructures.write(
                         0,
                         Optional.of(struct)

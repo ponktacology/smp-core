@@ -14,7 +14,7 @@ class CooldownListener : KoinComponent, Listener {
 
     private val cooldownService: CooldownService by inject()
 
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     fun onPlayerMessage(event: AsyncChatEvent) {
         val player = event.player
 
@@ -27,7 +27,7 @@ class CooldownListener : KoinComponent, Listener {
         cooldownService.reset(player, CoreCooldowns.CHAT)
     }
 
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     fun onPlayerCommand(event: PlayerCommandPreprocessEvent) {
         val player = event.player
 

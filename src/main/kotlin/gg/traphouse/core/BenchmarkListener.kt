@@ -14,14 +14,23 @@ class BenchmarkListener : Listener {
     private val timings = ConcurrentHashMap<UUID, Long>()
 
     @EventHandler(priority = EventPriority.LOWEST)
-    fun onAsyncLoginFirst(event: AsyncPlayerPreLoginEvent) {
+    fun onFirst(event: AsyncPlayerPreLoginEvent) {
         timings[event.uniqueId] = System.currentTimeMillis()
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
+    fun onLast(event: AsyncPlayerPreLoginEvent) {
+        if (event.loginResult != AsyncPlayerPreLoginEvent.Result.ALLOWED) {
+            timings.remove(event.uniqueId)
+            return
+        }
+
+        timings[event.uniqueId] = System.currentTimeMillis() - (timings[event.uniqueId] ?: 0L)
+    }
+
+    @EventHandler
     fun onPlayerJoinLast(event: PlayerJoinEvent) {
-        val loginStart = timings.remove(event.player.uniqueId) ?: return
-        val elapsed = System.currentTimeMillis() - loginStart
+        val elapsed = timings.remove(event.player.uniqueId) ?: return
         event.player.sendSuccess("Załadowane twoje dane w ${elapsed}ms.")
     }
 

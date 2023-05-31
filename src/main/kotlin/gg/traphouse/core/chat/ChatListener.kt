@@ -20,7 +20,7 @@ class ChatListener : Listener, KoinComponent {
     private val chatService: ChatService by inject()
     private val chatFilter: ChatFilter by inject()
 
-    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    @EventHandler(ignoreCancelled = true)
     fun on(event: AsyncChatEvent) {
         val player = event.player
 

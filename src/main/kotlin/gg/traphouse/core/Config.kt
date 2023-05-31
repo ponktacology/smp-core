@@ -9,7 +9,7 @@ object Config : KoinComponent {
 
     private val config: FileConfiguration by inject()
 
-    const val NAMETAG_UPDATE_INTERVAL = 1L
+    const val NAMETAG_UPDATE_INTERVAL = 20L
     const val SCOREBOARD_UPDATE_INTERVAL = 20L
 
     val NAME_CACHE_EXPIRY_SECONDS = TimeUnit.SECONDS.convert(1, TimeUnit.DAYS)

@@ -29,7 +29,7 @@ class CacheListener : Listener, KoinComponent {
     private val freezeRepository: FreezeRepository by inject()
     private val staffSettingsRepository: StaffSettingsRepository by inject()
 
-    private val cacheList = listOf<gg.traphouse.core.UUIDCache>(
+    private val cacheList = listOf<UUIDCache>(
         rankRepository,
         privateMessageRepository,
         cooldownRepository,
@@ -55,6 +55,16 @@ class CacheListener : Listener, KoinComponent {
         }
     }
 
+    @EventHandler(priority = EventPriority.HIGHEST)
+    fun onPlayerLoginDisallowed(event: AsyncPlayerPreLoginEvent) {
+        if (event.loginResult != AsyncPlayerPreLoginEvent.Result.ALLOWED) {
+            cacheList.forEach { it.flushCache(event.uniqueId) }
+            punishmentRepository.flushCache(event.uniqueId)
+            scoreboardRepository.flushCache(event.uniqueId)
+            freezeRepository.flushCache(event.uniqueId)
+        }
+    }
+
     @EventHandler(priority = EventPriority.LOWEST)
     fun onPlayerJoin(event: PlayerJoinEvent) {
         val player = event.player
@@ -67,17 +77,7 @@ class CacheListener : Listener, KoinComponent {
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
-    fun onPlayerLoginDisallowed(event: AsyncPlayerPreLoginEvent) {
-        if (event.loginResult != AsyncPlayerPreLoginEvent.Result.ALLOWED) {
-            cacheList.forEach { it.flushCache(event.uniqueId) }
-            punishmentRepository.flushCache(event.uniqueId)
-            scoreboardRepository.flushCache(event.uniqueId)
-            freezeRepository.flushCache(event.uniqueId)
-        }
-    }
-
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.HIGHEST)
     fun onPlayerQuit(event: PlayerQuitEvent) {
         val uuid = event.player.uniqueId
         event.quitMessage(Component.empty())

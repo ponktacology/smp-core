@@ -8,6 +8,7 @@ import me.vaperion.blade.annotation.argument.Sender
 import me.vaperion.blade.annotation.argument.Text
 import me.vaperion.blade.annotation.command.Command
 import me.vaperion.blade.annotation.command.Description
+import me.vaperion.blade.annotation.command.ParseQuotes
 import me.vaperion.blade.annotation.command.Permission
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
@@ -21,6 +22,7 @@ object StaffCommands : KoinComponent {
 
     @Command("sudo")
     @Permission("core.sudo")
+    @ParseQuotes
     fun sudo(
         @Sender sender: CommandSender,
         @Text @Name("command") command: String,
@@ -36,6 +38,7 @@ object StaffCommands : KoinComponent {
 
     @Command("chat")
     @Permission("core.chat")
+    @ParseQuotes
     fun chat(
         @Sender sender: CommandSender,
         @Text @Name("message") command: String,
